@@ -3432,11 +3432,13 @@ static void RenderImGuiUI() {
             }
 
             ImVec2 textP = ImVec2(p.x + 20.0f, p.y + imgHeight + 20.0f);
-            drawList->AddText(g_imFontHeading, g_imFontHeading->FontSize, textP, IM_COL32(255, 255, 255, 255), title);
+            ImGui::PushFont(g_imFontHeading);
+            drawList->AddText(textP, IM_COL32(255, 255, 255, 255), title);
             
             ImVec2 badgeP = ImVec2(p.x + size.x - 70.0f, p.y + imgHeight + 20.0f);
             ImU32 badgeCol = isBeta ? IM_COL32(255, 100, 0, 255) : IM_COL32(0, 200, 100, 255);
-            drawList->AddText(g_imFontHeading, g_imFontHeading->FontSize, badgeP, badgeCol, subtitle);
+            drawList->AddText(badgeP, badgeCol, subtitle);
+            ImGui::PopFont();
             
             ImVec2 descP = ImVec2(p.x + 20.0f, p.y + imgHeight + 60.0f);
             drawList->AddText(descP, IM_COL32(200, 200, 200, 255), desc1);
