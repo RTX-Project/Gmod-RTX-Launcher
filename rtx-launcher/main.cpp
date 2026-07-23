@@ -2483,7 +2483,7 @@ static float g_uiAlpha = 1.0f;
 static float g_pageTransitionAlpha = 1.0f;
 static Page g_targetPage = Page::Overview;
 static bool g_isPageTransitioning = false;
-
+static bool g_isSmoothScrolling = false;
 struct WindowAnim {
     bool active = false;
     float startW = 0.0f, startH = 0.0f, startX = 0.0f, startY = 0.0f;
@@ -2506,6 +2506,7 @@ static void CalculateUiScale(float& outW, float& outH) {
 }
 
 static bool IsAnimationActive() {
+    if (g_isSmoothScrolling) return true;
     if (g_wizardIsSliding) return true;
     if (g_winAnim.active) return true;
     if (g_isPageTransitioning) return true;
@@ -2896,6 +2897,7 @@ static void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
 }
 
 static void RenderImGuiUI() {
+    g_isSmoothScrolling = false;
     float dummyW, dummyH;
     CalculateUiScale(dummyW, dummyH);
     ImGui::GetIO().FontGlobalScale = g_uiScale;
@@ -3192,6 +3194,10 @@ static void RenderImGuiUI() {
             if (targetScrollY_Welcome < 0.0f) targetScrollY_Welcome = 0.0f;
             if (targetScrollY_Welcome > maxScroll) targetScrollY_Welcome = maxScroll;
 
+            if (std::abs(targetScrollY_Welcome - currentScrollY_Welcome) > 0.5f) {
+                g_isSmoothScrolling = true;
+            }
+
             currentScrollY_Welcome += (targetScrollY_Welcome - currentScrollY_Welcome) * 20.0f * ImGui::GetIO().DeltaTime;
             ImGui::SetScrollY(currentScrollY_Welcome);
 
@@ -3393,6 +3399,10 @@ static void RenderImGuiUI() {
         float maxScroll = ImGui::GetScrollMaxY();
         if (targetScrollY < 0.0f) targetScrollY = 0.0f;
         if (targetScrollY > maxScroll) targetScrollY = maxScroll;
+
+        if (std::abs(targetScrollY - currentScrollY) > 0.5f) {
+            g_isSmoothScrolling = true;
+        }
 
         currentScrollY += (targetScrollY - currentScrollY) * 20.0f * ImGui::GetIO().DeltaTime;
         ImGui::SetScrollY(currentScrollY);
