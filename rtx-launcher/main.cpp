@@ -3181,13 +3181,14 @@ static void RenderImGuiUI() {
             static float currentScrollY_Welcome = 0.0f;
 
             float actualScrollY = ImGui::GetScrollY();
-            if (std::abs(actualScrollY - currentScrollY_Welcome) > 2.0f) {
+            float wheel = ImGui::GetIO().MouseWheel;
+            if (wheel == 0.0f && std::abs(actualScrollY - currentScrollY_Welcome) > 2.0f) {
                 targetScrollY_Welcome = actualScrollY;
                 currentScrollY_Welcome = actualScrollY;
             }
 
-            if (ImGui::IsWindowHovered()) {
-                targetScrollY_Welcome -= ImGui::GetIO().MouseWheel * 120.0f;
+            if (ImGui::IsWindowHovered() && wheel != 0.0f) {
+                targetScrollY_Welcome -= wheel * 100.0f;
             }
 
             float maxScroll = ImGui::GetScrollMaxY();
@@ -3198,7 +3199,8 @@ static void RenderImGuiUI() {
                 g_isSmoothScrolling = true;
             }
 
-            currentScrollY_Welcome += (targetScrollY_Welcome - currentScrollY_Welcome) * 20.0f * ImGui::GetIO().DeltaTime;
+            float lerpT = std::min(10.0f * ImGui::GetIO().DeltaTime, 0.5f);
+            currentScrollY_Welcome += (targetScrollY_Welcome - currentScrollY_Welcome) * lerpT;
             ImGui::SetScrollY(currentScrollY_Welcome);
 
             ImGui::PushFont(g_imFontSmall);
@@ -3387,13 +3389,14 @@ static void RenderImGuiUI() {
         static float currentScrollY = 0.0f;
 
         float actualScrollY = ImGui::GetScrollY();
-        if (std::abs(actualScrollY - currentScrollY) > 2.0f) {
+        float wheel = ImGui::GetIO().MouseWheel;
+        if (wheel == 0.0f && std::abs(actualScrollY - currentScrollY) > 2.0f) {
             targetScrollY = actualScrollY;
             currentScrollY = actualScrollY;
         }
 
-        if (ImGui::IsWindowHovered()) {
-            targetScrollY -= ImGui::GetIO().MouseWheel * 120.0f;
+        if (ImGui::IsWindowHovered() && wheel != 0.0f) {
+            targetScrollY -= wheel * 100.0f;
         }
 
         float maxScroll = ImGui::GetScrollMaxY();
@@ -3404,7 +3407,8 @@ static void RenderImGuiUI() {
             g_isSmoothScrolling = true;
         }
 
-        currentScrollY += (targetScrollY - currentScrollY) * 20.0f * ImGui::GetIO().DeltaTime;
+        float lerpT = std::min(10.0f * ImGui::GetIO().DeltaTime, 0.5f);
+        currentScrollY += (targetScrollY - currentScrollY) * lerpT;
         ImGui::SetScrollY(currentScrollY);
 
         ImGui::TextWrapped("%s", pageNotes.c_str());
