@@ -32,6 +32,3 @@
 - Активный номер сборки в коде: **`Build 119`**.
 - Проект успешно компилируется MSVC C++17 без единой ошибки и предупреждений.
 
-## Артефакты
-- **[summary_artifact.md](file:///c:/Users/user/.gemini/antigravity-ide/brain/d9cf0ebb-f3b5-447e-a219/fa0005dd151f/summary_artifact.md)** – Сводка ключевых решений.
-- **[walkthrough.md](file:///c:/Users/user/.gemini/antigravity-ide/brain/d9cf0ebb-f3b5-447e-a219/fa0005dd151f/walkthrough.md)** – История изменений и проверки.
