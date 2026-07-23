@@ -3100,7 +3100,7 @@ static void RenderImGuiUI() {
         ImGui::PopTextWrapPos();
         ImGui::PopFont();
 
-        if (g_launcherUpdateInfo.hasUpdate) {
+        if (false && g_launcherUpdateInfo.hasUpdate) { // DISABLED HUGE BANNER
             ImGui::SetCursorPos(ImVec2(45, 185));
             ImVec2 cardSize(770.0f, 185.0f);
             ImDrawList* dl = ImGui::GetWindowDrawList();
@@ -3168,7 +3168,7 @@ static void RenderImGuiUI() {
         }
 
         // --- МИНИ-ЛЕНТА НОВОСТЕЙ (СПРАВА) ---
-        if (!g_launcherUpdateInfo.hasUpdate) { // Показываем ленту только если нет большой плашки апдейта
+        if (true) { // Показываем ленту всегда
             ImGui::SetCursorPos(ImVec2(460, 65));
             ImVec2 newsSize(355.0f, 290.0f);
             ImDrawList* dl = ImGui::GetWindowDrawList();
@@ -3197,6 +3197,27 @@ static void RenderImGuiUI() {
             ImGui::PopStyleColor();
         }
 
+        if (g_launcherUpdateInfo.hasUpdate) {
+            ImGui::SetCursorPos(ImVec2(45, 360));
+            ImGui::PushFont(g_imFontSmall);
+            ImGui::TextColored(ImVec4(0.00f, 0.90f, 0.46f, 1.0f), u8"Доступно обновление");
+            ImGui::SameLine();
+            ImGui::SetCursorPosY(358);
+            if (ImGui::Button(u8"Скачать", ImVec2(80, 20))) {
+                g_app.isDownloading = true;
+                RunInBackground([]() {
+                    LauncherUpdater::DownloadAndApplyUpdate(g_launcherUpdateInfo.downloadUrl,
+                        [](const std::wstring& msg) { AppendLog(msg); },
+                        [](float p) {
+                            g_app.downloadProgress = p;
+                            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"Загрузка обновления..."; }
+                        },
+                        g_app.githubToken);
+                });
+            }
+            ImGui::PopFont();
+        }
+
         ImGui::SetCursorPos(ImVec2(45, 385));
         PushAccentButton();
         if (isRunning) ImGui::BeginDisabled();
@@ -3219,24 +3240,6 @@ static void RenderImGuiUI() {
 
         ImGui::SameLine(45 + 390);
         if (ImGui::Button(u8"Обновления", ImVec2(170, 50))) SwitchPage(Page::Updates);
-
-        if (g_launcherUpdateInfo.hasUpdate) {
-            ImGui::SameLine(45 + 575);
-            PushAccentButton();
-            if (ImGui::Button(u8"● Скачать обновление", ImVec2(210, 50))) {
-                g_app.isDownloading = true;
-                RunInBackground([]() {
-                    LauncherUpdater::DownloadAndApplyUpdate(g_launcherUpdateInfo.downloadUrl,
-                        [](const std::wstring& msg) { AppendLog(msg); },
-                        [](float p) {
-                            g_app.downloadProgress = p;
-                            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"Загрузка обновления..."; }
-                        },
-                        g_app.githubToken);
-                });
-            }
-            PopAccentButton();
-        }
 
         ImGui::SetCursorPos(ImVec2(860 - 90, 500 - 35));
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
