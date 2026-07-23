@@ -3337,8 +3337,8 @@ static void RenderImGuiUI() {
 
         if (g_launcherUpdateInfo.hasUpdate) {
             std::string updateHeader = u8"Доступно новое обновление: v" + WStringToUTF8(g_launcherUpdateInfo.version);
-            if (g_launcherUpdateInfo.releaseId > 0) {
-                updateHeader += " (Release #" + std::to_string(g_launcherUpdateInfo.releaseId) + ")";
+            if (g_launcherUpdateInfo.buildNumber > 0) {
+                updateHeader += u8" (Сборка #" + std::to_string(g_launcherUpdateInfo.buildNumber) + ")";
             }
             ImGui::PushFont(g_imFontHeading);
             ImGui::TextColored(ImVec4(1.0f, 0.78f, 0.25f, 1.0f), "⭐ %s", updateHeader.c_str());
