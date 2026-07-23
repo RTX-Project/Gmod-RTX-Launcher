@@ -12,7 +12,7 @@
 class LauncherUpdater {
 public:
     inline static const std::wstring CURRENT_VERSION = L"0.0.1-alpha";
-    inline static const int CURRENT_BUILD_NUMBER = 123; // Сборка #123: Фикс отображения внутреннего Release ID вместо номера сборки
+    inline static const int CURRENT_BUILD_NUMBER = 124; // Сборка #124: Полное удаление старого видеоплеера (VideoPlayer, Media Foundation)
     inline static const long long CURRENT_RELEASE_ID = 0;
     inline static const std::wstring REPO_OWNER = L"RTX-Project";
     inline static const std::wstring REPO_NAME = L"Gmod-RTX-Launcher";

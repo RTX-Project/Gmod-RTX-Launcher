@@ -57,7 +57,7 @@
 #include "GameFixesUpdater.h"
 #include "Resource.h"
 #include "ArchiveExtract.h"
-#include "VideoPlayer.h"
+
 #include "LauncherUpdater.h"
 
 #pragma comment(lib, "comctl32.lib")
@@ -161,7 +161,7 @@ struct DiskInfo {
 enum class LaunchModeModalState { Closed, Opening, Open, Closing };
 LaunchModeModalState g_launchModalState = LaunchModeModalState::Closed;
 float g_launchModalTimer = 0.0f;
-VideoPlayer* g_videoPlayer = nullptr;
+
 void (*g_onLaunchModeSelected)() = nullptr;
 
 
@@ -2240,7 +2240,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 if (id == ID_NAV_MODE_LIGHTING) {
                     if (g_app.rtxSelectedIndex != 0) {
                         g_app.rtxSelectedIndex = 0;
-                        if (g_videoPlayer) g_videoPlayer->Rewind();
+
                     }
                 }
                 else {
@@ -2568,9 +2568,7 @@ static void SwitchPage(Page page) {
         g_winAnim.endX = (screenW - targetW) / 2.0f;
         g_winAnim.endY = (screenH - targetH) / 2.0f;
     }
-    if (page == Page::Updates && g_app.rtxSelectedIndex == 0) {
-        if (g_videoPlayer) g_videoPlayer->Rewind();
-    }
+
 }
 
 static void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
@@ -3071,18 +3069,7 @@ static void RenderImGuiUI() {
 
     if (g_app.currentPage == Page::Overview) {
 
-        if (g_app.launchMode == 1 && g_app.currentPage == Page::Overview) {
-            if (g_videoPlayer && g_videoPlayer->GetShaderResourceView()) {
-                ImGui::GetBackgroundDrawList()->AddImage(
-                    (ImTextureID)g_videoPlayer->GetShaderResourceView(),
-                    ImVec2(0, 0),
-                    ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y),
-                    ImVec2(0, 0),
-                    ImVec2(1, 1),
-                    IM_COL32(255, 255, 255, 75)
-                );
-            }
-        }
+
         ImGui::SetCursorPos(S(45, 65));
         ImGui::PushFont(g_imFontTitle);
         ImGui::Text("METROSTROI");
@@ -3419,7 +3406,7 @@ static void RenderImGuiUI() {
         if (ImGui::Selectable(u8"Полное освещение (Бета)", g_app.rtxSelectedIndex == 0)) {
             if (g_app.rtxSelectedIndex != 0) {
                 g_app.rtxSelectedIndex = 0;
-                if (g_videoPlayer) g_videoPlayer->Rewind();
+
             }
         }
         if (ImGui::Selectable(u8"Освещение + текстуры (Скоро)", g_app.rtxSelectedIndex == 1)) g_app.rtxSelectedIndex = 1;
@@ -3945,7 +3932,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     (void)lpCmdLine;
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
     (void)CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
-    MFStartup(MF_VERSION, MFSTARTUP_NOSOCKET);
+
     Theme::Init();
     g_app.gpuInfo = DetectGPU();
 
@@ -3997,10 +3984,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     if (!CreateDeviceD3D(hwnd)) {
 
-        if (g_videoPlayer) {
-            delete g_videoPlayer;
-            g_videoPlayer = nullptr;
-        }
         CleanupDeviceD3D();
         ::UnregisterClassW(wc.lpszClassName, wc.hInstance);
         return 1;
@@ -4075,20 +4058,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
-    g_videoPlayer = new VideoPlayer(g_pd3dDevice, g_pd3dDeviceContext);
-    wchar_t exeDir[MAX_PATH];
-    GetModuleFileNameW(nullptr, exeDir, MAX_PATH);
-    std::filesystem::path videoPath = std::filesystem::path(exeDir).parent_path() / L"background-video" / L"secret.mp4";
-    if (!std::filesystem::exists(videoPath)) {
-        videoPath = std::filesystem::path(exeDir).parent_path().parent_path().parent_path() / L"rtx-launcher" / L"background-video" / L"secret.mp4";
-    }
-    bool videoLoaded = g_videoPlayer->Open(videoPath.c_str());
-    if (videoLoaded) {
-        AppendLog(L"Video loaded successfully");
-    }
-    else {
-        AppendLog(L"Video failed to load");
-    }
+
 
     bool done = false;
     while (!done) {
@@ -4138,44 +4108,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        if (g_videoPlayer) {
-            g_videoPlayer->Update(io.DeltaTime);
-        }
+
 
         RenderImGuiUI();
 
-        if (g_app.currentPage == Page::Updates && g_app.rtxSelectedIndex == 0) {
-            if (g_videoPlayer && g_videoPlayer->GetShaderResourceView()) {
-                float wW = io.DisplaySize.x;
-                float wH = io.DisplaySize.y;
-                float vW = (float)g_videoPlayer->GetWidth();
-                float vH = (float)g_videoPlayer->GetHeight();
-                ImVec2 uv0(0, 0), uv1(1, 1);
-                if (vW > 0 && vH > 0 && wW > 0 && wH > 0) {
-                    float wAspect = wW / wH;
-                    float vAspect = vW / vH;
-                    if (wAspect > vAspect) {
-                        float scaledH = wW / vAspect;
-                        float hDiff = (scaledH - wH) / 2.0f;
-                        uv0.y = hDiff / scaledH;
-                        uv1.y = 1.0f - uv0.y;
-                    }
-                    else {
-                        float scaledW = wH * vAspect;
-                        float wDiff = (scaledW - wW) / 2.0f;
-                        uv0.x = wDiff / scaledW;
-                        uv1.x = 1.0f - uv0.x;
-                    }
-                }
-                ImGui::GetBackgroundDrawList()->AddImage(
-                    (ImTextureID)g_videoPlayer->GetShaderResourceView(),
-                    ImVec2(0, 0),
-                    ImVec2(wW, wH),
-                    uv0, uv1,
-                    IM_COL32(255, 255, 255, 140)
-                );
-            }
-        }
+
 
         ImGui::Render();
         const float clear_color_with_alpha[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
@@ -4192,10 +4129,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         }
     }
 
-    if (g_videoPlayer) {
-        delete g_videoPlayer;
-        g_videoPlayer = nullptr;
-    }
 
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
@@ -4207,6 +4140,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     Theme::Shutdown();
     CoUninitialize();
-    MFShutdown();
+
     return 0;
 }
