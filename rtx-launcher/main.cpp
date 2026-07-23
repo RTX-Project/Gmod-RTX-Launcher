@@ -56,7 +56,7 @@
 #include "BinaryPatcher.h"
 #include "GameFixesUpdater.h"
 #include "Resource.h"
-#include "ZipExtract.h"
+#include "ArchiveExtract.h"
 #include "VideoPlayer.h"
 #include "LauncherUpdater.h"
 
@@ -971,7 +971,7 @@ static bool ExtractResourceZipToDir(int resourceId, const std::wstring& destDir)
 
     wchar_t tempPath[MAX_PATH];
     GetTempPathW(MAX_PATH, tempPath);
-    std::wstring tempZip = std::wstring(tempPath) + L"dxvk_temp_res.zip";
+    std::wstring tempZip = std::wstring(tempPath) + L"dxvk_temp_res.7z";
 
     FILE* f = nullptr;
     if (_wfopen_s(&f, tempZip.c_str(), L"wb") != 0 || !f) return false;
@@ -980,7 +980,7 @@ static bool ExtractResourceZipToDir(int resourceId, const std::wstring& destDir)
 
     bool success = true;
     try {
-        ZipExtract::extractAndFlatten(tempZip, destDir);
+        ArchiveExtract::extractAndFlatten(tempZip, destDir);
     }
     catch (...) {
         success = false;

@@ -50,6 +50,23 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="lzma\C\7zAlloc.c" />
+    <ClCompile Include="lzma\C\7zArcIn.c" />
+    <ClCompile Include="lzma\C\7zBuf.c" />
+    <ClCompile Include="lzma\C\7zBuf2.c" />
+    <ClCompile Include="lzma\C\7zCrc.c" />
+    <ClCompile Include="lzma\C\7zCrcOpt.c" />
+    <ClCompile Include="lzma\C\7zDec.c" />
+    <ClCompile Include="lzma\C\7zFile.c" />
+    <ClCompile Include="lzma\C\7zStream.c" />
+    <ClCompile Include="lzma\C\Bcj2.c" />
+    <ClCompile Include="lzma\C\Bra.c" />
+    <ClCompile Include="lzma\C\Bra86.c" />
+    <ClCompile Include="lzma\C\BraIA64.c" />
+    <ClCompile Include="lzma\C\CpuArch.c" />
+    <ClCompile Include="lzma\C\Delta.c" />
+    <ClCompile Include="lzma\C\LzmaDec.c" />
+    <ClCompile Include="lzma\C\Lzma2Dec.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PROGRESS.md" />

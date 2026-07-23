@@ -12,7 +12,7 @@
 class LauncherUpdater {
 public:
     inline static const std::wstring CURRENT_VERSION = L"0.0.1-alpha";
-    inline static const int CURRENT_BUILD_NUMBER = 120; // Сборка #120: Полное масштабирование всех окон (High-DPI 4K/2K)
+    inline static const int CURRENT_BUILD_NUMBER = 121; // Сборка #121: Полная интеграция LZMA C SDK и .7z архива вместо .zip
     inline static const long long CURRENT_RELEASE_ID = 0;
     inline static const std::wstring REPO_OWNER = L"RTX-Project";
     inline static const std::wstring REPO_NAME = L"Gmod-RTX-Launcher";

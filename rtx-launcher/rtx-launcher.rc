@@ -2,4 +2,4 @@
 
 IDI_APP_ICON ICON "app_icon.ico"
 IDR_FONT_MOSCOWSANS RCDATA "moscowsansregular.ttf"
-IDR_DXVK_ZIP RCDATA "dxvk-remix-gmod.zip"
+IDR_DXVK_ZIP RCDATA "dxvk-remix-gmod.7z"
