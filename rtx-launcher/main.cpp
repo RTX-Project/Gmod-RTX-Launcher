@@ -3173,7 +3173,31 @@ static void RenderImGuiUI() {
 
             ImGui::SetCursorPos(S(480, 110));
             ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
-            ImGui::BeginChild("NewsFeedScroll", ImVec2(newsSize.x - S(30), newsSize.y - S(60)), false);
+            ImGui::BeginChild("NewsFeedScroll", ImVec2(newsSize.x - S(30), newsSize.y - S(60)), false, ImGuiWindowFlags_NoScrollWithMouse);
+            
+            static float targetScrollY_Welcome = 0.0f;
+            static float currentScrollY_Welcome = 0.0f;
+
+            if (ImGui::IsWindowHovered()) {
+                targetScrollY_Welcome -= ImGui::GetIO().MouseWheel * 120.0f;
+            }
+
+            float actualScrollY = ImGui::GetScrollY();
+            if (std::abs(actualScrollY - currentScrollY_Welcome) > 1.5f) {
+                targetScrollY_Welcome = actualScrollY;
+                currentScrollY_Welcome = actualScrollY;
+            }
+
+            float maxScroll = ImGui::GetScrollMaxY();
+            if (targetScrollY_Welcome < 0.0f) targetScrollY_Welcome = 0.0f;
+            if (targetScrollY_Welcome > maxScroll) targetScrollY_Welcome = maxScroll;
+
+            currentScrollY_Welcome += (targetScrollY_Welcome - currentScrollY_Welcome) * 15.0f * ImGui::GetIO().DeltaTime;
+            
+            if (std::abs(currentScrollY_Welcome - actualScrollY) > 0.5f) {
+                ImGui::SetScrollY(currentScrollY_Welcome);
+            }
+
             ImGui::PushFont(g_imFontSmall);
             std::string notesUtf8 = g_changelogHistoryText;
             if (notesUtf8.empty()) {
