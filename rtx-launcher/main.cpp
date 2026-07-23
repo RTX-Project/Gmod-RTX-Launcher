@@ -132,7 +132,7 @@ enum class Page {
 #ifdef _DEBUG
     , Developer = 3
 #endif
-    , UpdateCheck = 4, InstallerWizard = 5, Authors = 6
+    , UpdateCheck = 4, InstallerWizard = 5, Authors = 6, RtxMods = 7
 };
 
 enum class WizardStep { Welcome = 0, RtxPreset = 1, LaunchMode = 2, DriveSelect = 3, Progress = 4, Complete = 5 };
@@ -3241,6 +3241,11 @@ static void RenderImGuiUI() {
         ImGui::SetCursorPos(S(440, 385));
         if (ImGui::Button(u8"Обновления", S(170, 50))) SwitchPage(Page::Updates);
 
+        ImGui::SetCursorPos(S(630, 385));
+        if (isRunning) ImGui::BeginDisabled();
+        if (ImGui::Button(u8"Моды RTX", S(170, 50))) SwitchPage(Page::RtxMods);
+        if (isRunning) ImGui::EndDisabled();
+
         ImGui::SetCursorPos(S(860 - 90, 500 - 35));
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
@@ -3395,6 +3400,55 @@ static void RenderImGuiUI() {
             }
         }
 
+        ImGui::EndChild();
+    }
+    else if (g_app.currentPage == Page::RtxMods) {
+        ImGui::SetCursorPos(S(40, 44));
+        ImGui::PushFont(g_imFontTitle);
+        ImGui::Text(u8"МОДЫ RTX");
+        ImGui::PopFont();
+
+        ImGui::SetCursorPos(S(40, 90));
+        if (ImGui::Button(u8"Назад", S(90, 32))) SwitchPage(Page::Overview);
+
+        ImGui::SameLine(S(140));
+        if (ImGui::Button(u8"Проверить обновления", S(180, 32))) LoadRtxReleases();
+
+        ImGui::SetCursorPos(S(40, 132));
+        ImGui::BeginChild("ModesList", S(250, 330), true);
+        if (ImGui::Selectable(u8"Полное освещение (Бета)", g_app.rtxSelectedIndex == 0)) {
+            if (g_app.rtxSelectedIndex != 0) {
+                g_app.rtxSelectedIndex = 0;
+                if (g_videoPlayer) g_videoPlayer->Rewind();
+            }
+        }
+        if (ImGui::Selectable(u8"Освещение + текстуры (Скоро)", g_app.rtxSelectedIndex == 1)) g_app.rtxSelectedIndex = 1;
+        ImGui::EndChild();
+
+        ImGui::SetCursorPos(S(310, 132));
+        ImGui::BeginChild("ModeDesc", S(510, 330), true);
+        if (g_app.rtxSelectedIndex == 0) {
+            ImGui::PushFont(g_imFontHeading);
+            ImGui::Text(u8"Режим: Полное освещение (Бета)");
+            ImGui::PopFont();
+            ImGui::Spacing();
+            ImGui::TextWrapped(u8"В этом режиме оригинальные материалы остаются без изменений, добавляется только трассировка лучей.");
+            ImGui::Spacing();
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+            ImGui::TextWrapped(u8"Отлично подходит для сохранения классического вида игры с современными технологиями RTX.");
+            ImGui::PopStyleColor();
+        }
+        else if (g_app.rtxSelectedIndex == 1) {
+            ImGui::PushFont(g_imFontHeading);
+            ImGui::Text(u8"Режим: Освещение + текстуры (Скоро)");
+            ImGui::PopFont();
+            ImGui::Spacing();
+            ImGui::TextWrapped(u8"Этот режим будет включать в себя замену оригинальных текстур на PBR материалы высокого разрешения.");
+            ImGui::Spacing();
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+            ImGui::TextWrapped(u8"Находится в стадии разработки. Скоро будет доступен для скачивания.");
+            ImGui::PopStyleColor();
+        }
         ImGui::EndChild();
     }
     else if (g_app.currentPage == Page::Settings) {
