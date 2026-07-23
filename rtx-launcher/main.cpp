@@ -3316,7 +3316,7 @@ static void RenderImGuiUI() {
         }
 
         ImGui::SetCursorPos(ImVec2(40, 132));
-        ImGui::BeginChild("UpdatesMainChild", ImVec2(780, 330), true);
+        ImGui::BeginChild("UpdatesMainChild", ImVec2(780, 345), true);
 
         ImGui::PushFont(g_imFontHeading);
         ImGui::TextColored(ImVec4(0.0f, 0.90f, 0.46f, 1.0f), u8"● ТЕКУЩАЯ СБОРКА: Build %d (Версия v%s)",
@@ -3343,7 +3343,6 @@ static void RenderImGuiUI() {
         ImGui::TextDisabled(u8"ОПИСАНИЕ ИЗМЕНЕНИЙ (CHANGELOG С GITHUB):");
 
         ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.08f, 0.09f, 0.12f, 1.0f));
-        ImGui::BeginChild("ChangelogPageScroll", ImVec2(760, 170), true);
         ImGui::PushFont(g_imFontSmall);
         std::string pageNotes = WStringToUTF8(g_launcherUpdateInfo.releaseNotes);
         if (pageNotes.empty()) {
@@ -3353,9 +3352,16 @@ static void RenderImGuiUI() {
                 pageNotes = u8"Для данной сборки нет дополнительного текста описания в релизе GitHub.";
             }
         }
+        
+        ImVec2 textSize = ImGui::CalcTextSize(pageNotes.c_str(), nullptr, false, 740.0f);
+        float childHeight = textSize.y + 16.0f;
+        if (childHeight > 150.0f) childHeight = 150.0f;
+        if (childHeight < 36.0f) childHeight = 36.0f;
+
+        ImGui::BeginChild("ChangelogPageScroll", ImVec2(760, childHeight), true);
         ImGui::TextWrapped("%s", pageNotes.c_str());
-        ImGui::PopFont();
         ImGui::EndChild();
+        ImGui::PopFont();
         ImGui::PopStyleColor();
 
         ImGui::Spacing();
