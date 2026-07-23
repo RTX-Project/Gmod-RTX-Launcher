@@ -35,6 +35,7 @@
 #include <string>
 #include <thread>
 #undef max
+#include <cmath>
 #include <atomic>
 #include <mutex>
 #include <filesystem>
@@ -3353,7 +3354,31 @@ static void RenderImGuiUI() {
         if (childHeight > S(150.0f)) childHeight = S(150.0f);
         if (childHeight < S(36.0f)) childHeight = S(36.0f);
 
-        ImGui::BeginChild("ChangelogPageScroll", ImVec2(S(760.0f), childHeight), true);
+        ImGui::BeginChild("ChangelogPageScroll", ImVec2(S(760.0f), childHeight), true, ImGuiWindowFlags_NoScrollWithMouse);
+        
+        static float targetScrollY = 0.0f;
+        static float currentScrollY = 0.0f;
+
+        if (ImGui::IsWindowHovered()) {
+            targetScrollY -= ImGui::GetIO().MouseWheel * 120.0f;
+        }
+
+        float actualScrollY = ImGui::GetScrollY();
+        if (std::abs(actualScrollY - currentScrollY) > 1.5f) {
+            targetScrollY = actualScrollY;
+            currentScrollY = actualScrollY;
+        }
+
+        float maxScroll = ImGui::GetScrollMaxY();
+        if (targetScrollY < 0.0f) targetScrollY = 0.0f;
+        if (targetScrollY > maxScroll) targetScrollY = maxScroll;
+
+        currentScrollY += (targetScrollY - currentScrollY) * 15.0f * ImGui::GetIO().DeltaTime;
+        
+        if (std::abs(currentScrollY - actualScrollY) > 0.5f) {
+            ImGui::SetScrollY(currentScrollY);
+        }
+
         ImGui::TextWrapped("%s", pageNotes.c_str());
         ImGui::EndChild();
         ImGui::PopFont();
