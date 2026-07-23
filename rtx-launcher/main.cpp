@@ -3435,7 +3435,8 @@ static void RenderImGuiUI() {
             ImGui::PushFont(g_imFontHeading);
             drawList->AddText(textP, IM_COL32(255, 255, 255, 255), title);
             
-            ImVec2 badgeP = ImVec2(p.x + size.x - 70.0f, p.y + imgHeight + 20.0f);
+            float subtitleWidth = ImGui::CalcTextSize(subtitle).x;
+            ImVec2 badgeP = ImVec2(p.x + size.x - 20.0f - subtitleWidth, p.y + imgHeight + 20.0f);
             ImU32 badgeCol = isBeta ? IM_COL32(255, 100, 0, 255) : IM_COL32(0, 200, 100, 255);
             drawList->AddText(badgeP, badgeCol, subtitle);
             ImGui::PopFont();

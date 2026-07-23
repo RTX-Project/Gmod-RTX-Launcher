@@ -12,7 +12,7 @@
 class LauncherUpdater {
 public:
     inline static const std::wstring CURRENT_VERSION = L"0.0.1-alpha";
-    inline static const int CURRENT_BUILD_NUMBER = 126; // Сборка #126: Новый визуальный стиль раздела "Моды RTX" в виде карточек
+    inline static const int CURRENT_BUILD_NUMBER = 127; // Сборка #127: Исправлен съезжающий текст статуса (Бета/Скоро) в карточках модов RTX
     inline static const long long CURRENT_RELEASE_ID = 0;
     inline static const std::wstring REPO_OWNER = L"RTX-Project";
     inline static const std::wstring REPO_NAME = L"Gmod-RTX-Launcher";
