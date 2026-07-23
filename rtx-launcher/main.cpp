@@ -3178,25 +3178,22 @@ static void RenderImGuiUI() {
             static float targetScrollY_Welcome = 0.0f;
             static float currentScrollY_Welcome = 0.0f;
 
-            if (ImGui::IsWindowHovered()) {
-                targetScrollY_Welcome -= ImGui::GetIO().MouseWheel * 120.0f;
-            }
-
             float actualScrollY = ImGui::GetScrollY();
-            if (std::abs(actualScrollY - currentScrollY_Welcome) > 1.5f) {
+            if (std::abs(actualScrollY - currentScrollY_Welcome) > 2.0f) {
                 targetScrollY_Welcome = actualScrollY;
                 currentScrollY_Welcome = actualScrollY;
+            }
+
+            if (ImGui::IsWindowHovered()) {
+                targetScrollY_Welcome -= ImGui::GetIO().MouseWheel * 120.0f;
             }
 
             float maxScroll = ImGui::GetScrollMaxY();
             if (targetScrollY_Welcome < 0.0f) targetScrollY_Welcome = 0.0f;
             if (targetScrollY_Welcome > maxScroll) targetScrollY_Welcome = maxScroll;
 
-            currentScrollY_Welcome += (targetScrollY_Welcome - currentScrollY_Welcome) * 15.0f * ImGui::GetIO().DeltaTime;
-            
-            if (std::abs(currentScrollY_Welcome - actualScrollY) > 0.5f) {
-                ImGui::SetScrollY(currentScrollY_Welcome);
-            }
+            currentScrollY_Welcome += (targetScrollY_Welcome - currentScrollY_Welcome) * 20.0f * ImGui::GetIO().DeltaTime;
+            ImGui::SetScrollY(currentScrollY_Welcome);
 
             ImGui::PushFont(g_imFontSmall);
             std::string notesUtf8 = g_changelogHistoryText;
@@ -3383,25 +3380,22 @@ static void RenderImGuiUI() {
         static float targetScrollY = 0.0f;
         static float currentScrollY = 0.0f;
 
-        if (ImGui::IsWindowHovered()) {
-            targetScrollY -= ImGui::GetIO().MouseWheel * 120.0f;
-        }
-
         float actualScrollY = ImGui::GetScrollY();
-        if (std::abs(actualScrollY - currentScrollY) > 1.5f) {
+        if (std::abs(actualScrollY - currentScrollY) > 2.0f) {
             targetScrollY = actualScrollY;
             currentScrollY = actualScrollY;
+        }
+
+        if (ImGui::IsWindowHovered()) {
+            targetScrollY -= ImGui::GetIO().MouseWheel * 120.0f;
         }
 
         float maxScroll = ImGui::GetScrollMaxY();
         if (targetScrollY < 0.0f) targetScrollY = 0.0f;
         if (targetScrollY > maxScroll) targetScrollY = maxScroll;
 
-        currentScrollY += (targetScrollY - currentScrollY) * 15.0f * ImGui::GetIO().DeltaTime;
-        
-        if (std::abs(currentScrollY - actualScrollY) > 0.5f) {
-            ImGui::SetScrollY(currentScrollY);
-        }
+        currentScrollY += (targetScrollY - currentScrollY) * 20.0f * ImGui::GetIO().DeltaTime;
+        ImGui::SetScrollY(currentScrollY);
 
         ImGui::TextWrapped("%s", pageNotes.c_str());
         ImGui::EndChild();
