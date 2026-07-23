@@ -3403,13 +3403,32 @@ static void RenderImGuiUI() {
 
         ImGui::SetCursorPos(S(40, 132));
         ImGui::BeginChild("ModesList", S(250, 330), true);
-        if (ImGui::Selectable(u8"Полное освещение (Бета)", g_app.rtxSelectedIndex == 0)) {
-            if (g_app.rtxSelectedIndex != 0) {
-                g_app.rtxSelectedIndex = 0;
-
+        auto drawRoundedSelectable = [](const char* label, bool selected) {
+            ImVec2 size = ImVec2(ImGui::GetContentRegionAvail().x, 30.0f);
+            bool clicked = false;
+            
+            if (selected) {
+                ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_Header));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_HeaderActive));
+            } else {
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_HeaderActive));
             }
+            ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.05f, 0.5f));
+            if (ImGui::Button(label, size)) clicked = true;
+            ImGui::PopStyleVar();
+            ImGui::PopStyleColor(3);
+            return clicked;
+        };
+
+        if (drawRoundedSelectable(u8"Полное освещение (Бета)", g_app.rtxSelectedIndex == 0)) {
+            g_app.rtxSelectedIndex = 0;
         }
-        if (ImGui::Selectable(u8"Освещение + текстуры (Скоро)", g_app.rtxSelectedIndex == 1)) g_app.rtxSelectedIndex = 1;
+        if (drawRoundedSelectable(u8"Освещение + текстуры (Скоро)", g_app.rtxSelectedIndex == 1)) {
+            g_app.rtxSelectedIndex = 1;
+        }
         ImGui::EndChild();
 
         ImGui::SetCursorPos(S(310, 132));
