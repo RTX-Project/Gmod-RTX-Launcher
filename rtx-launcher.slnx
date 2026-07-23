@@ -1,0 +1,8 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="rtx-launcher/rtx-launcher.vcxproj" Id="3f9241bc-e93f-4073-9a7b-d3636bde400e" />
+  <Project Path="rtx-installer/rtx-installer.vcxproj" Id="a9471b02-5e4d-4871-92e1-748956271911" />
+</Solution>

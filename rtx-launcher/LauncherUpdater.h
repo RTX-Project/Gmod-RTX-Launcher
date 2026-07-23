@@ -1,0 +1,233 @@
+// LauncherUpdater.h - Модуль автоматической проверки и установки обновлений лаунчера
+// Репозиторий: https://github.com/RTX-Project/Gmod-RTX-Launcher
+#pragma once
+#include <windows.h>
+#include <string>
+#include <functional>
+#include <thread>
+#include <filesystem>
+#include "HttpClient.h"
+#include "JsonValue.h"
+
+class LauncherUpdater {
+public:
+    inline static const std::wstring CURRENT_VERSION = L"0.0.1-alpha";
+    inline static const int CURRENT_BUILD_NUMBER = 117; // Сборка #117: Изменено название создателя на RTX Project
+    inline static const long long CURRENT_RELEASE_ID = 0;
+    inline static const std::wstring REPO_OWNER = L"RTX-Project";
+    inline static const std::wstring REPO_NAME = L"Gmod-RTX-Launcher";
+
+    struct UpdateInfo {
+        bool hasUpdate = false;
+        bool isMicroUpdate = false;
+        long long releaseId = 0;
+        int buildNumber = 0;
+        std::wstring version;
+        std::wstring publishedAt;
+        std::wstring downloadUrl;
+        std::wstring releaseNotes;
+    };
+
+    inline static bool INCLUDE_PRERELEASES = true;
+
+    // Проверка релиза на GitHub
+    static UpdateInfo CheckForUpdate(const std::wstring& authToken = L"") {
+        UpdateInfo info;
+        try {
+            std::wstring url = INCLUDE_PRERELEASES ?
+                (L"https://api.github.com/repos/" + REPO_OWNER + L"/" + REPO_NAME + L"/releases") :
+                (L"https://api.github.com/repos/" + REPO_OWNER + L"/" + REPO_NAME + L"/releases/latest");
+            
+            // Если передан токен (для приватного репозитория)
+            std::string jsonStr = HttpClient::getText(url, L"RTX-Launcher-Updater", authToken);
+            if (jsonStr.empty()) return info;
+
+            JsonValue rootJson = JsonValue::parse(jsonStr);
+            JsonValue targetRelease;
+
+            if (rootJson.isArray()) {
+                if (rootJson.arrayValue.empty()) return info;
+                targetRelease = rootJson.arrayValue[0];
+            } else if (rootJson.isObject()) {
+                targetRelease = rootJson;
+            } else {
+                return info;
+            }
+
+            std::string tagNameUtf8 = targetRelease["tag_name"].asString();
+            std::string relNameUtf8 = targetRelease["name"].asString();
+            std::wstring latestVersion = UTF8ToWString(tagNameUtf8);
+            if (latestVersion.rfind(L"v", 0) == 0 || latestVersion.rfind(L"V", 0) == 0) {
+                latestVersion = latestVersion.substr(1);
+            }
+
+            long long releaseId = targetRelease["id"].asInt64(0);
+            std::string pubAtUtf8 = targetRelease["published_at"].asString();
+            std::wstring publishedAt = UTF8ToWString(pubAtUtf8);
+            int remoteBuild = ParseBuildNumber(tagNameUtf8, relNameUtf8);
+
+            info.version = latestVersion;
+            info.releaseId = releaseId;
+            info.publishedAt = publishedAt;
+            info.buildNumber = remoteBuild;
+            
+            bool isNewerVersion = IsVersionNewer(latestVersion, CURRENT_VERSION);
+            bool isNewerBuild = (remoteBuild > CURRENT_BUILD_NUMBER);
+            
+            // Если версия выше ИЛИ выложен свежий билд
+            if (isNewerVersion || isNewerBuild) {
+                info.hasUpdate = true;
+                info.isMicroUpdate = (!isNewerVersion && isNewerBuild);
+            }
+
+            // Извлекаем дистрибутивы и описания изменений
+            if (targetRelease["assets"].isArray()) {
+                for (const auto& asset : targetRelease["assets"].arrayValue) {
+                    std::string name = asset["name"].asString();
+                    std::string dlUrl = asset["browser_download_url"].asString();
+                    if (!dlUrl.empty()) {
+                        std::string lowerName = name;
+                        for (char &c : lowerName) c = (char)tolower((unsigned char)c);
+
+                        if (lowerName.find("installer") != std::string::npos) {
+                            continue; // Пропускаем инсталлятор, нам нужен только сам лаунчер
+                        }
+
+                        if (info.downloadUrl.empty()) {
+                            info.downloadUrl = UTF8ToWString(dlUrl);
+                        }
+                        if (lowerName.find(".exe") != std::string::npos || lowerName.find(".zip") != std::string::npos || lowerName.find(".bin") != std::string::npos) {
+                            info.downloadUrl = UTF8ToWString(dlUrl);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Резервный URL, если в массиве ассетов ничего не найдено, но тег существует
+            if (info.downloadUrl.empty() && !tagNameUtf8.empty()) {
+                info.downloadUrl = L"https://github.com/" + REPO_OWNER + L"/" + REPO_NAME + L"/releases/download/" + UTF8ToWString(tagNameUtf8) + L"/system_data.bin";
+            }
+            
+            std::string body = targetRelease["body"].asString();
+            info.releaseNotes = UTF8ToWString(body);
+        }
+        catch (const std::exception& ex) {
+            info.releaseNotes = L"Ошибка проверки обновлений: " + UTF8ToWString(ex.what());
+        }
+        catch (...) {
+            info.releaseNotes = L"Неизвестная ошибка при подключении к GitHub API.";
+        }
+        return info;
+    }
+
+    // Автоматическое скачивание и бесшовная замена текущего .exe файла
+    static bool DownloadAndApplyUpdate(const std::wstring& downloadUrl,
+                                        std::function<void(const std::wstring&)> logCb,
+                                        std::function<void(float)> progressCb,
+                                        const std::wstring& authToken = L"") {
+        try {
+            if (downloadUrl.empty()) {
+                logCb(L"[Updater] Ошибка: Ссылка для скачивания обновления пуста.");
+                return false;
+            }
+
+            wchar_t exePathBuf[MAX_PATH];
+            GetModuleFileNameW(nullptr, exePathBuf, MAX_PATH);
+            std::wstring currentExePath = exePathBuf;
+
+            wchar_t tempDirBuf[MAX_PATH];
+            GetTempPathW(MAX_PATH, tempDirBuf);
+            std::wstring tempExePath = std::wstring(tempDirBuf) + L"rtx_launcher_new.exe";
+
+            logCb(L"[Updater] Скачивание обновления с: " + downloadUrl);
+
+            HttpClient::downloadFile(downloadUrl, tempExePath, L"RTX-Launcher-Updater",
+                [progressCb](uint64_t downloaded, uint64_t total) -> bool {
+                    if (total > 0) {
+                        progressCb((float)downloaded / (float)total);
+                    }
+                    return true;
+                }, authToken);
+
+            logCb(L"[Updater] Обновление успешно загружено во временный файл.");
+            logCb(L"[Updater] Перезапуск лаунчера для применения изменений...");
+
+            // Формируем командную строку перезапуска батником
+            std::wstring cmdScript = L"/c timeout /t 1 /nobreak & move /y \"" + tempExePath + L"\" \"" + currentExePath + L"\" & start \"\" \"" + currentExePath + L"\"";
+
+            SHELLEXECUTEINFOW sei = {};
+            sei.cbSize = sizeof(sei);
+            sei.lpVerb = L"open";
+            sei.lpFile = L"cmd.exe";
+            sei.lpParameters = cmdScript.c_str();
+            sei.nShow = SW_HIDE;
+            if (ShellExecuteExW(&sei)) {
+                ExitProcess(0);
+                return true;
+            }
+            else {
+                logCb(L"[Updater] Не удалось запустить скрипт автозамены cmd.exe");
+            }
+        }
+        catch (const std::exception& ex) {
+            logCb(L"[Updater] Ошибка при обновлении: " + UTF8ToWString(ex.what()));
+        }
+        return false;
+    }
+
+private:
+    static int ParseBuildNumber(const std::string& tag, const std::string& name) {
+        std::string full = tag + " " + name;
+        std::string lower = full;
+        for (char &c : lower) c = (char)tolower((unsigned char)c);
+
+        int maxBuildFound = 0;
+        size_t pos = 0;
+
+        while ((pos = lower.find_first_of("0123456789", pos)) != std::string::npos) {
+            size_t start = pos;
+            while (pos < lower.size() && isdigit((unsigned char)lower[pos])) {
+                pos++;
+            }
+            int val = atoi(lower.substr(start, pos - start).c_str());
+
+            bool isBuildToken = false;
+            if (start >= 5 && lower.substr(start - 5, 5) == "build") isBuildToken = true;
+            else if (start >= 6 && lower.substr(start - 6, 5) == "build") isBuildToken = true;
+            else if (start >= 1 && (lower[start - 1] == 'b' || lower[start - 1] == '#' || lower[start - 1] == 'v')) isBuildToken = true;
+
+            // Игнорируем обычные года в названии (например, 2026), если перед ними нет слова build
+            if (val >= 2020 && val <= 2100 && !isBuildToken) {
+                continue;
+            }
+
+            if (val > maxBuildFound) {
+                maxBuildFound = val;
+            }
+        }
+        return maxBuildFound;
+    }
+
+    static bool IsVersionNewer(const std::wstring& vNew, const std::wstring& vCurrent) {
+        int n1 = 0, n2 = 0, n3 = 0;
+        int c1 = 0, c2 = 0, c3 = 0;
+        int matchNew = swscanf_s(vNew.c_str(), L"%d.%d.%d", &n1, &n2, &n3);
+        swscanf_s(vCurrent.c_str(), L"%d.%d.%d", &c1, &c2, &c3);
+
+        // Если парсер нашел меньше двух чисел (например, тег "111" или "Build"), это не семантическая версия.
+        if (matchNew < 2) return false;
+
+        if (n1 != c1) return n1 > c1;
+        if (n2 != c2) return n2 > c2;
+        return n3 > c3;
+    }
+
+    static std::wstring UTF8ToWString(const std::string& str) {
+        if (str.empty()) return std::wstring();
+        int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
+        std::wstring wstrTo(size_needed, 0);
+        MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
+        return wstrTo;
+    }
+};

@@ -1,0 +1,30 @@
+# Build outputs
+x64/
+*.exe
+*.dll
+*.pdb
+*.obj
+*.lib
+*.idb
+*.tlog
+*.lastbuildstate
+*.iobj
+*.ipdb
+*.res
+*.bin
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+
+# Local config & plugins
+imgui.ini
+latest_release/
+graphify-out/
+.codegraph/
+
+# Temp files
+*.temp
+*.tmp
+temp_mod.zip
