@@ -3403,7 +3403,7 @@ static void RenderImGuiUI() {
 
         ImGui::SetCursorPos(S(40, 132));
         
-        auto drawRTXModeCard = [](const char* id, const char* title, const char* subtitle, bool selected, ImU32 imgColor, bool isBeta, const char* desc1, const char* desc2) {
+        auto drawRTXModeCard = [](const char* id, const char* title, const char* subtitle, bool selected, ImU32 imgColor, bool isBeta, const char* desc) {
             ImVec2 size = S(360, 320);
             ImVec2 p = ImGui::GetCursorScreenPos();
             
@@ -3442,19 +3442,18 @@ static void RenderImGuiUI() {
             ImGui::PopFont();
             
             ImVec2 descP = ImVec2(p.x + 20.0f, p.y + imgHeight + 60.0f);
-            drawList->AddText(descP, IM_COL32(200, 200, 200, 255), desc1);
-            drawList->AddText(ImVec2(descP.x, descP.y + 25.0f), IM_COL32(150, 150, 150, 255), desc2);
+            drawList->AddText(ImGui::GetFont(), ImGui::GetFontSize(), descP, IM_COL32(200, 200, 200, 255), desc, NULL, size.x - 40.0f);
             
             return clicked;
         };
 
-        if (drawRTXModeCard("Mode0", u8"Полное освещение", u8"Бета", g_app.rtxSelectedIndex == 0, IM_COL32(180, 80, 20, 255), true, u8"Оригинальные материалы игры остаются без изменений.", u8"Добавляется только трассировка лучей.")) {
+        if (drawRTXModeCard("Mode0", u8"Полное освещение", u8"Бета", g_app.rtxSelectedIndex == 0, IM_COL32(180, 80, 20, 255), true, u8"Оригинальные материалы игры остаются без изменений.\nДобавляется только трассировка лучей.")) {
             g_app.rtxSelectedIndex = 0;
         }
 
         ImGui::SameLine(S(40 + 360 + 30));
 
-        if (drawRTXModeCard("Mode1", u8"Освещение + текстуры", u8"Скоро", g_app.rtxSelectedIndex == 1, IM_COL32(20, 80, 180, 255), false, u8"Замена оригинальных текстур на PBR материалы.", u8"Находится в стадии активной разработки.")) {
+        if (drawRTXModeCard("Mode1", u8"Освещение + текстуры", u8"Скоро", g_app.rtxSelectedIndex == 1, IM_COL32(20, 80, 180, 255), false, u8"Замена оригинальных текстур на PBR материалы.\nНаходится в стадии активной разработки.")) {
             g_app.rtxSelectedIndex = 1;
         }
     }
