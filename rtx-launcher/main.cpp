@@ -2929,8 +2929,8 @@ static void RenderImGuiUI() {
 
     // --- Custom Title Bar ---
     ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.08f, 0.08f, 0.08f, 1.0f));
-    ImGui::BeginChild("TitleBar", ImVec2(0, 32), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-    ImGui::SetCursorPos(ImVec2(16, 7));
+    ImGui::BeginChild("TitleBar", ImVec2(0, S(32.0f)), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    ImGui::SetCursorPos(S(16, 7));
     ImGui::PushFont(g_imFontSmall);
     std::string titleStr = "RTX Launcher v" + WStringToUTF8(LauncherUpdater::CURRENT_VERSION) + " (Build " + std::to_string(LauncherUpdater::CURRENT_BUILD_NUMBER) + ")";
     ImGui::TextDisabled("%s", titleStr.c_str());
@@ -2941,14 +2941,14 @@ static void RenderImGuiUI() {
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
 
-    ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() - 96, 0));
+    ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() - S(96.0f), 0));
     if (g_app.currentPage != Page::UpdateCheck) {
-        if (ImGui::Button("-", ImVec2(48, 32))) {
+        if (ImGui::Button("-", S(48, 32))) {
             ShowWindow(g_app.hMain, SW_MINIMIZE);
         }
         ImGui::SameLine(0, 0);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
-        if (ImGui::Button("X", ImVec2(48, 32))) {
+        if (ImGui::Button("X", S(48, 32))) {
             PostQuitMessage(0);
         }
         ImGui::PopStyleColor(); // hover
@@ -3083,19 +3083,19 @@ static void RenderImGuiUI() {
                 );
             }
         }
-        ImGui::SetCursorPos(ImVec2(45, 65));
+        ImGui::SetCursorPos(S(45, 65));
         ImGui::PushFont(g_imFontTitle);
         ImGui::Text("METROSTROI");
         ImGui::PopFont();
 
-        ImGui::SetCursorPos(ImVec2(45, 112));
+        ImGui::SetCursorPos(S(45, 112));
         ImGui::PushFont(g_imFontHeading);
         ImGui::TextColored(ImVec4(0.46f, 0.73f, 0.0f, 1.0f), "REMASTERED - RTX REMIX");
         ImGui::PopFont();
 
-        ImGui::SetCursorPos(ImVec2(45, 150));
+        ImGui::SetCursorPos(S(45, 150));
         ImGui::PushFont(g_imFontRegular);
-        ImGui::PushTextWrapPos(430.0f);
+        ImGui::PushTextWrapPos(S(430.0f));
         ImGui::TextDisabled(u8"Модификация с трассировкой лучей высокого качества");
         ImGui::PopTextWrapPos();
         ImGui::PopFont();
@@ -3150,8 +3150,8 @@ static void RenderImGuiUI() {
             PopAccentButton();
         }
         else if (!g_app.gpuInfo.compatibilityNotice.empty()) {
-            ImGui::SetCursorPos(ImVec2(45, 195));
-            ImVec2 cardSize(380.0f, 95.0f);
+            ImGui::SetCursorPos(S(45, 195));
+            ImVec2 cardSize = S(380.0f, 95.0f);
             ImDrawList* dl = ImGui::GetWindowDrawList();
             ImVec2 pMin = ImGui::GetCursorScreenPos();
             ImVec2 pMax = ImVec2(pMin.x + cardSize.x, pMin.y + cardSize.y);
@@ -3159,9 +3159,9 @@ static void RenderImGuiUI() {
             dl->AddRectFilled(pMin, pMax, IM_COL32(40, 26, 12, 220), 10.0f);
             dl->AddRect(pMin, pMax, IM_COL32(255, 160, 0, 220), 10.0f, 0, 1.0f);
 
-            ImGui::SetCursorPos(ImVec2(55, 203));
+            ImGui::SetCursorPos(S(55, 203));
             ImGui::PushFont(g_imFontRegular);
-            ImGui::PushTextWrapPos(415.0f);
+            ImGui::PushTextWrapPos(S(415.0f));
             ImGui::TextColored(ImVec4(1.0f, 0.78f, 0.25f, 1.0f), "⚠️ %s", g_app.gpuInfo.compatibilityNotice.c_str());
             ImGui::PopTextWrapPos();
             ImGui::PopFont();
@@ -3169,8 +3169,8 @@ static void RenderImGuiUI() {
 
         // --- МИНИ-ЛЕНТА НОВОСТЕЙ (СПРАВА) ---
         if (true) { // Показываем ленту всегда
-            ImGui::SetCursorPos(ImVec2(460, 65));
-            ImVec2 newsSize(355.0f, 290.0f);
+            ImGui::SetCursorPos(S(460, 65));
+            ImVec2 newsSize = S(355.0f, 290.0f);
             ImDrawList* dl = ImGui::GetWindowDrawList();
             ImVec2 pMinNews = ImGui::GetCursorScreenPos();
             ImVec2 pMaxNews = ImVec2(pMinNews.x + newsSize.x, pMinNews.y + newsSize.y);
@@ -3178,14 +3178,14 @@ static void RenderImGuiUI() {
             dl->AddRectFilled(pMinNews, pMaxNews, IM_COL32(20, 24, 32, 180), 8.0f);
             dl->AddRect(pMinNews, pMaxNews, IM_COL32(255, 255, 255, 15), 8.0f, 0, 1.0f);
 
-            ImGui::SetCursorPos(ImVec2(460 + 20, 65 + 15));
+            ImGui::SetCursorPos(S(480, 80));
             ImGui::PushFont(g_imFontHeading);
             ImGui::TextColored(ImVec4(0.85f, 0.85f, 0.85f, 1.0f), u8"ПОСЛЕДНИЕ ИЗМЕНЕНИЯ");
             ImGui::PopFont();
 
-            ImGui::SetCursorPos(ImVec2(460 + 20, 65 + 45));
+            ImGui::SetCursorPos(S(480, 110));
             ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
-            ImGui::BeginChild("NewsFeedScroll", ImVec2(newsSize.x - 30, newsSize.y - 60), false);
+            ImGui::BeginChild("NewsFeedScroll", ImVec2(newsSize.x - S(30), newsSize.y - S(60)), false);
             ImGui::PushFont(g_imFontSmall);
             std::string notesUtf8 = g_changelogHistoryText;
             if (notesUtf8.empty()) {
@@ -3198,12 +3198,12 @@ static void RenderImGuiUI() {
         }
 
         if (g_launcherUpdateInfo.hasUpdate) {
-            ImGui::SetCursorPos(ImVec2(45, 360));
+            ImGui::SetCursorPos(S(45, 360));
             ImGui::PushFont(g_imFontSmall);
             ImGui::TextColored(ImVec4(0.00f, 0.90f, 0.46f, 1.0f), u8"Доступно обновление");
             ImGui::SameLine();
-            ImGui::SetCursorPosY(358);
-            if (ImGui::Button(u8"Скачать", ImVec2(80, 20))) {
+            ImGui::SetCursorPosY(S(358));
+            if (ImGui::Button(u8"Скачать", S(80, 20))) {
                 g_app.isDownloading = true;
                 RunInBackground([]() {
                     LauncherUpdater::DownloadAndApplyUpdate(g_launcherUpdateInfo.downloadUrl,
@@ -3218,16 +3218,16 @@ static void RenderImGuiUI() {
             ImGui::PopFont();
         }
 
-        ImGui::SetCursorPos(ImVec2(45, 385));
+        ImGui::SetCursorPos(S(45, 385));
         PushAccentButton();
         if (isRunning) ImGui::BeginDisabled();
-        if (ImGui::Button(u8"Запуск", ImVec2(190, 50))) DoLaunchGame();
+        if (ImGui::Button(u8"Запуск", S(190, 50))) DoLaunchGame();
         if (isRunning) ImGui::EndDisabled();
         PopAccentButton();
 
-        ImGui::SameLine(45 + 205);
+        ImGui::SetCursorPos(S(250, 385));
         if (isRunning) ImGui::BeginDisabled();
-        if (ImGui::Button(u8"Настройки", ImVec2(170, 50))) SwitchPage(Page::Settings);
+        if (ImGui::Button(u8"Настройки", S(170, 50))) SwitchPage(Page::Settings);
         if (isRunning) ImGui::EndDisabled();
 
         // Фоновая автоматическая проверка обновлений каждые 5 часов (18000 секунд)
@@ -3238,15 +3238,15 @@ static void RenderImGuiUI() {
             CheckLauncherUpdatesAsync();
         }
 
-        ImGui::SameLine(45 + 390);
-        if (ImGui::Button(u8"Обновления", ImVec2(170, 50))) SwitchPage(Page::Updates);
+        ImGui::SetCursorPos(S(440, 385));
+        if (ImGui::Button(u8"Обновления", S(170, 50))) SwitchPage(Page::Updates);
 
-        ImGui::SetCursorPos(ImVec2(860 - 90, 500 - 35));
+        ImGui::SetCursorPos(S(860 - 90, 500 - 35));
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.1f));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1, 1, 1, 0.2f));
-        if (ImGui::Button(u8"Авторы", ImVec2(80, 25))) SwitchPage(Page::Authors);
+        if (ImGui::Button(u8"Авторы", S(80, 25))) SwitchPage(Page::Authors);
         ImGui::PopStyleColor(4);
 
         // --- Полоса прогресса и информации при запуске / скачивании ---
@@ -3265,7 +3265,7 @@ static void RenderImGuiUI() {
             ImVec4 textColor = g_app.isFirstLaunchMode ? ImVec4(0.0f, 0.82f, 1.0f, 1.0f) : ImVec4(0.46f, 0.73f, 0.0f, 1.0f);
             ImU32 barColor = g_app.isFirstLaunchMode ? IM_COL32(0, 195, 255, 255) : IM_COL32(118, 185, 0, 255);
 
-            ImGui::SetCursorPos(ImVec2(45, 446));
+            ImGui::SetCursorPos(S(45, 446));
             ImGui::PushFont(g_imFontSmall);
             if (!uStats.empty()) {
                 ImGui::TextColored(textColor, "%s — %s", uTitle.c_str(), uStats.c_str());
@@ -3282,9 +3282,9 @@ static void RenderImGuiUI() {
             ImGui::PopFont();
 
             // Полоска прогресса
-            ImVec2 barPos = ImVec2(45, 468);
-            float barWidth = 770.0f;
-            float barHeight = 8.0f;
+            ImVec2 barPos = S(45, 468);
+            float barWidth = S(770.0f);
+            float barHeight = S(8.0f);
             ImGui::SetCursorPos(barPos);
 
             ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -3305,21 +3305,21 @@ static void RenderImGuiUI() {
         }
     }
     else if (g_app.currentPage == Page::Updates) {
-        ImGui::SetCursorPos(ImVec2(40, 44));
+        ImGui::SetCursorPos(S(40, 44));
         ImGui::PushFont(g_imFontTitle);
         ImGui::Text(u8"ОБНОВЛЕНИЯ И ЧЕЙНДЖЛОГ");
         ImGui::PopFont();
 
-        ImGui::SetCursorPos(ImVec2(40, 90));
-        if (ImGui::Button(u8"Назад", ImVec2(90, 32))) SwitchPage(Page::Overview);
+        ImGui::SetCursorPos(S(40, 90));
+        if (ImGui::Button(u8"Назад", S(90, 32))) SwitchPage(Page::Overview);
 
-        ImGui::SameLine(140);
-        if (ImGui::Button(u8"Проверить обновления", ImVec2(180, 32))) {
+        ImGui::SameLine(S(140.0f));
+        if (ImGui::Button(u8"Проверить обновления", S(180, 32))) {
             CheckLauncherUpdatesAsync();
         }
 
-        ImGui::SetCursorPos(ImVec2(40, 132));
-        ImGui::BeginChild("UpdatesMainChild", ImVec2(780, 345), true);
+        ImGui::SetCursorPos(S(40, 132));
+        ImGui::BeginChild("UpdatesMainChild", S(780, 345), true);
 
         ImGui::PushFont(g_imFontHeading);
         ImGui::TextColored(ImVec4(0.0f, 0.90f, 0.46f, 1.0f), u8"● ТЕКУЩАЯ СБОРКА: Build %d (Версия v%s)",
@@ -3356,12 +3356,12 @@ static void RenderImGuiUI() {
             }
         }
         
-        ImVec2 textSize = ImGui::CalcTextSize(pageNotes.c_str(), nullptr, false, 740.0f);
-        float childHeight = textSize.y + 16.0f;
-        if (childHeight > 150.0f) childHeight = 150.0f;
-        if (childHeight < 36.0f) childHeight = 36.0f;
+        ImVec2 textSize = ImGui::CalcTextSize(pageNotes.c_str(), nullptr, false, S(740.0f));
+        float childHeight = textSize.y + S(16.0f);
+        if (childHeight > S(150.0f)) childHeight = S(150.0f);
+        if (childHeight < S(36.0f)) childHeight = S(36.0f);
 
-        ImGui::BeginChild("ChangelogPageScroll", ImVec2(760, childHeight), true);
+        ImGui::BeginChild("ChangelogPageScroll", ImVec2(S(760.0f), childHeight), true);
         ImGui::TextWrapped("%s", pageNotes.c_str());
         ImGui::EndChild();
         ImGui::PopFont();
@@ -3370,7 +3370,7 @@ static void RenderImGuiUI() {
         ImGui::Spacing();
         if (g_launcherUpdateInfo.hasUpdate) {
             PushAccentButton();
-            if (ImGui::Button(u8"СКАЧАТЬ И УСТАНОВИТЬ ОБНОВЛЕНИЕ", ImVec2(320, 40))) {
+            if (ImGui::Button(u8"СКАЧАТЬ И УСТАНОВИТЬ ОБНОВЛЕНИЕ", S(320, 40))) {
                 g_app.isDownloading = true;
                 RunInBackground([]() {
                     LauncherUpdater::DownloadAndApplyUpdate(g_launcherUpdateInfo.downloadUrl,
@@ -3390,7 +3390,7 @@ static void RenderImGuiUI() {
                 { std::lock_guard<std::mutex> lock(g_app.statsMutex); stats = g_app.downloadTitleText; }
                 ImGui::TextColored(ImVec4(1.0f, 0.78f, 0.25f, 1.0f), "%s %.0f%%", WStringToUTF8(stats).c_str(), g_app.downloadProgress * 100.0f);
                 ImGui::PushStyleColor(ImGuiCol_PlotHistogram, GetAdaptiveProgressColor(g_app.downloadProgress));
-                ImGui::ProgressBar(g_app.downloadProgress, ImVec2(760, 15), "");
+                ImGui::ProgressBar(g_app.downloadProgress, S(760, 15), "");
                 ImGui::PopStyleColor();
             }
         }
@@ -3398,16 +3398,16 @@ static void RenderImGuiUI() {
         ImGui::EndChild();
     }
     else if (g_app.currentPage == Page::Settings) {
-        ImGui::SetCursorPos(ImVec2(40, 44));
+        ImGui::SetCursorPos(S(40, 44));
         ImGui::PushFont(g_imFontTitle);
         ImGui::Text(u8"НАСТРОЙКИ");
         ImGui::PopFont();
 
-        ImGui::SetCursorPos(ImVec2(40, 90));
-        if (ImGui::Button(u8"Назад", ImVec2(90, 32))) SwitchPage(Page::Overview);
+        ImGui::SetCursorPos(S(40, 90));
+        if (ImGui::Button(u8"Назад", S(90, 32))) SwitchPage(Page::Overview);
 
-        ImGui::SetCursorPos(ImVec2(40, 132));
-        ImGui::BeginChild("SettingsChild", ImVec2(780, 330), true);
+        ImGui::SetCursorPos(S(40, 132));
+        ImGui::BeginChild("SettingsChild", S(780, 330), true);
 
         // Левая колонка
         ImGui::BeginGroup();
@@ -3417,13 +3417,13 @@ static void RenderImGuiUI() {
         ImGui::TextColored(ImVec4(0.85f, 0.85f, 0.85f, 1.0f), "%s", pathUtf8.c_str());
 
         ImGui::Spacing();
-        if (ImGui::Button(u8"Сменить диск", ImVec2(300, 36))) {
+        if (ImGui::Button(u8"Сменить диск", S(300, 36))) {
             ShowDiskSelectionModal(OnDiskChanged);
         }
 
         ImGui::Spacing(); ImGui::Spacing();
         ImGui::TextDisabled(u8"РЕЖИМ ЗАПУСКА:");
-        if (ImGui::Button(g_app.launchMode == 2 ? u8"Режим: Совместимость" : u8"Режим: Обычный", ImVec2(300, 36))) {
+        if (ImGui::Button(g_app.launchMode == 2 ? u8"Режим: Совместимость" : u8"Режим: Обычный", S(300, 36))) {
             g_app.launchMode = (g_app.launchMode == 2) ? 1 : 2;
             SaveSettings();
         }
@@ -3444,17 +3444,17 @@ static void RenderImGuiUI() {
         ImGui::EndGroup();
 
         // Правая колонка
-        ImGui::SameLine(360);
+        ImGui::SameLine(S(360.0f));
         ImGui::BeginGroup();
         ImGui::TextDisabled(u8"ВОССТАНОВЛЕНИЕ:");
-        if (ImGui::Button(g_app.optRepair ? u8"Удалять лишние файлы: Вкл" : u8"Удалять лишние файлы: Выкл", ImVec2(310, 36))) {
+        if (ImGui::Button(g_app.optRepair ? u8"Удалять лишние файлы: Вкл" : u8"Удалять лишние файлы: Выкл", S(310, 36))) {
             g_app.optRepair = !g_app.optRepair;
             SaveSettings();
         }
 
         ImGui::Spacing(); ImGui::Spacing();
         ImGui::TextDisabled(u8"РЕПОЗИТОРИЙ И ФИКСЫ:");
-        if (ImGui::Button(u8"Открыть RTX GitHub", ImVec2(310, 36))) DoOpenRtxGithub();
+        if (ImGui::Button(u8"Открыть RTX GitHub", S(310, 36))) DoOpenRtxGithub();
         ImGui::EndGroup();
 
         ImGui::EndChild();
@@ -3523,16 +3523,16 @@ static void RenderImGuiUI() {
         ImGui::EndChild();
     }
     else if (g_app.currentPage == Page::Authors) {
-        ImGui::SetCursorPos(ImVec2(40, 44));
+        ImGui::SetCursorPos(S(40, 44));
         ImGui::PushFont(g_imFontTitle);
         ImGui::Text(u8"АВТОРЫ И БЛАГОДАРНОСТИ");
         ImGui::PopFont();
 
-        ImGui::SetCursorPos(ImVec2(40, 90));
-        if (ImGui::Button(u8"Назад", ImVec2(90, 32))) SwitchPage(Page::Overview);
+        ImGui::SetCursorPos(S(40, 90));
+        if (ImGui::Button(u8"Назад", S(90, 32))) SwitchPage(Page::Overview);
 
-        ImGui::SetCursorPos(ImVec2(40, 132));
-        ImGui::BeginChild("AuthorsChild", ImVec2(780, 330), true);
+        ImGui::SetCursorPos(S(40, 132));
+        ImGui::BeginChild("AuthorsChild", S(780, 330), true);
 
         ImGui::PushFont(g_imFontHeading);
         ImGui::TextColored(ImVec4(0.46f, 0.73f, 0.0f, 1.0f), u8"RTX Launcher & Logic");
