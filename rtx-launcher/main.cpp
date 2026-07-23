@@ -3402,60 +3402,58 @@ static void RenderImGuiUI() {
         if (ImGui::Button(u8"Проверить обновления", S(180, 32))) LoadRtxReleases();
 
         ImGui::SetCursorPos(S(40, 132));
-        ImGui::BeginChild("ModesList", S(250, 330), true);
-        auto drawRoundedSelectable = [](const char* label, bool selected) {
-            ImVec2 size = ImVec2(ImGui::GetContentRegionAvail().x, 30.0f);
-            bool clicked = false;
+        
+        auto drawRTXModeCard = [](const char* id, const char* title, const char* subtitle, bool selected, ImU32 imgColor, bool isBeta, const char* desc1, const char* desc2) {
+            ImVec2 size = S(360, 320);
+            ImVec2 p = ImGui::GetCursorScreenPos();
+            
+            bool clicked = ImGui::InvisibleButton(id, size);
+            bool hovered = ImGui::IsItemHovered();
+            bool active = ImGui::IsItemActive();
+            
+            ImDrawList* drawList = ImGui::GetWindowDrawList();
+            
+            float rounding = 12.0f;
+            ImU32 bgColor = IM_COL32(28, 30, 36, 255);
+            if (hovered) bgColor = IM_COL32(35, 38, 45, 255);
+            if (active) bgColor = IM_COL32(20, 22, 26, 255);
+            
+            drawList->AddRectFilled(p, ImVec2(p.x + size.x, p.y + size.y), bgColor, rounding);
+            
+            float imgHeight = size.y * 0.55f;
+            drawList->AddRectFilled(p, ImVec2(p.x + size.x, p.y + imgHeight), imgColor, rounding, ImDrawFlags_RoundCornersTop);
+            
+            drawList->AddRectFilledMultiColor(p, ImVec2(p.x + size.x, p.y + imgHeight), IM_COL32(0,0,0,0), IM_COL32(0,0,0,0), IM_COL32(0,0,0,180), IM_COL32(0,0,0,180));
             
             if (selected) {
-                ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_Header));
-                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
-                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_HeaderActive));
-            } else {
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
-                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_HeaderActive));
+                drawList->AddRect(p, ImVec2(p.x + size.x, p.y + size.y), IM_COL32(255, 200, 0, 255), rounding, 0, 2.0f);
+            } else if (hovered) {
+                drawList->AddRect(p, ImVec2(p.x + size.x, p.y + size.y), IM_COL32(100, 100, 100, 150), rounding, 0, 1.0f);
             }
-            ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.05f, 0.5f));
-            if (ImGui::Button(label, size)) clicked = true;
-            ImGui::PopStyleVar();
-            ImGui::PopStyleColor(3);
+
+            ImVec2 textP = ImVec2(p.x + 20.0f, p.y + imgHeight + 20.0f);
+            drawList->AddText(g_imFontHeading, g_imFontHeading->FontSize, textP, IM_COL32(255, 255, 255, 255), title);
+            
+            ImVec2 badgeP = ImVec2(p.x + size.x - 70.0f, p.y + imgHeight + 20.0f);
+            ImU32 badgeCol = isBeta ? IM_COL32(255, 100, 0, 255) : IM_COL32(0, 200, 100, 255);
+            drawList->AddText(g_imFontHeading, g_imFontHeading->FontSize, badgeP, badgeCol, subtitle);
+            
+            ImVec2 descP = ImVec2(p.x + 20.0f, p.y + imgHeight + 60.0f);
+            drawList->AddText(descP, IM_COL32(200, 200, 200, 255), desc1);
+            drawList->AddText(ImVec2(descP.x, descP.y + 25.0f), IM_COL32(150, 150, 150, 255), desc2);
+            
             return clicked;
         };
 
-        if (drawRoundedSelectable(u8"Полное освещение (Бета)", g_app.rtxSelectedIndex == 0)) {
+        if (drawRTXModeCard("Mode0", u8"Полное освещение", u8"Бета", g_app.rtxSelectedIndex == 0, IM_COL32(180, 80, 20, 255), true, u8"Оригинальные материалы игры остаются без изменений.", u8"Добавляется только трассировка лучей.")) {
             g_app.rtxSelectedIndex = 0;
         }
-        if (drawRoundedSelectable(u8"Освещение + текстуры (Скоро)", g_app.rtxSelectedIndex == 1)) {
+
+        ImGui::SameLine(S(40 + 360 + 30));
+
+        if (drawRTXModeCard("Mode1", u8"Освещение + текстуры", u8"Скоро", g_app.rtxSelectedIndex == 1, IM_COL32(20, 80, 180, 255), false, u8"Замена оригинальных текстур на PBR материалы.", u8"Находится в стадии активной разработки.")) {
             g_app.rtxSelectedIndex = 1;
         }
-        ImGui::EndChild();
-
-        ImGui::SetCursorPos(S(310, 132));
-        ImGui::BeginChild("ModeDesc", S(510, 330), true);
-        if (g_app.rtxSelectedIndex == 0) {
-            ImGui::PushFont(g_imFontHeading);
-            ImGui::Text(u8"Режим: Полное освещение (Бета)");
-            ImGui::PopFont();
-            ImGui::Spacing();
-            ImGui::TextWrapped(u8"В этом режиме оригинальные материалы остаются без изменений, добавляется только трассировка лучей.");
-            ImGui::Spacing();
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
-            ImGui::TextWrapped(u8"Отлично подходит для сохранения классического вида игры с современными технологиями RTX.");
-            ImGui::PopStyleColor();
-        }
-        else if (g_app.rtxSelectedIndex == 1) {
-            ImGui::PushFont(g_imFontHeading);
-            ImGui::Text(u8"Режим: Освещение + текстуры (Скоро)");
-            ImGui::PopFont();
-            ImGui::Spacing();
-            ImGui::TextWrapped(u8"Этот режим будет включать в себя замену оригинальных текстур на PBR материалы высокого разрешения.");
-            ImGui::Spacing();
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
-            ImGui::TextWrapped(u8"Находится в стадии разработки. Скоро будет доступен для скачивания.");
-            ImGui::PopStyleColor();
-        }
-        ImGui::EndChild();
     }
     else if (g_app.currentPage == Page::Settings) {
         ImGui::SetCursorPos(S(40, 44));
