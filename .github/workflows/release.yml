@@ -21,7 +21,9 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Build Solution
-      run: msbuild rtx-launcher.slnx /p:Configuration=Release /p:Platform=x64
+      run: |
+        msbuild rtx-launcher\rtx-launcher.vcxproj /p:Configuration=Release /p:Platform=x64
+        msbuild rtx-installer\rtx-installer.vcxproj /p:Configuration=Release /p:Platform=x64
       
     - name: Release to GitHub
       uses: softprops/action-gh-release@v2
@@ -29,7 +31,7 @@ jobs:
       with:
         tag_name: ${{ github.event_name == 'workflow_dispatch' && '0.0.2' || github.ref_name }}
         files: |
-          x64/Release/rtx-installer.exe
-          x64/Release/system_data.bin
+          rtx-installer/x64/Release/rtx-installer.exe
+          rtx-launcher/x64/Release/system_data.bin
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
