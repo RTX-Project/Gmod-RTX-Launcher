@@ -72,7 +72,9 @@ void RenderUI_Overview() {
         
         static float s_transition = 0.0f; // 0.0 = Button, 1.0 = Progress bar
         float targetTransition = isDownloading ? 1.0f : 0.0f;
-        s_transition += (targetTransition - s_transition) * ImGui::GetIO().DeltaTime * 10.0f;
+        float dt = ImGui::GetIO().DeltaTime * 10.0f;
+        if (dt > 1.0f) dt = 1.0f;
+        s_transition += (targetTransition - s_transition) * dt;
         
         float btnW = S(160.0f) + (S(360.0f) - S(160.0f)) * s_transition;
         float btnH = S(45.0f) + (S(12.0f) - S(45.0f)) * s_transition;
