@@ -23,6 +23,12 @@ public:
     bool isObject() const { return type == Type::Object; }
     bool isArray()  const { return type == Type::Array; }
     bool isString() const { return type == Type::String; }
+    bool isNull()   const { return type == Type::Null; }
+    
+    bool has(const std::string& key) const {
+        if (type != Type::Object) return false;
+        return objectValue.find(key) != objectValue.end();
+    }
 
     // Доступ к полю объекта; возвращает пустой JsonValue(Null), если не найдено.
     const JsonValue& operator[](const std::string& key) const {
