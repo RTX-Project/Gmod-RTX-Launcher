@@ -505,7 +505,12 @@ static void LoadSettings() {
         else if (line.rfind(L"hasLaunchedGame=", 0) == 0) {
             g_app.hasLaunchedGame = (_wtoi(line.substr(16).c_str()) != 0);
         }
+        else if (line.rfind(L"receiveBetaUpdates=", 0) == 0) {
+            g_app.receiveBetaUpdates = (_wtoi(line.substr(19).c_str()) != 0);
+        }
     }
+
+    LauncherUpdater::INCLUDE_PRERELEASES = g_app.receiveBetaUpdates;
 
     if (!g_app.installRootPath.empty() && g_app.hBtnChangeDisk) {
         ShowWindow(g_app.hBtnChangeDisk, SW_SHOW);
