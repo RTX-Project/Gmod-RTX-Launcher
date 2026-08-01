@@ -1,0 +1,33 @@
+name: Beta Build (No Release)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-beta:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build Solution
+      run: |
+        msbuild rtx-launcher\rtx-launcher.vcxproj /p:Configuration=Release /p:Platform=x64
+        msbuild rtx-installer\rtx-installer.vcxproj /p:Configuration=Release /p:Platform=x64
+        
+    - name: Upload Beta Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: RTX-Launcher-Beta-Build
+        path: |
+          rtx-installer/x64/Release/rtx-installer.exe
+          rtx-launcher/x64/Release/system_data.bin

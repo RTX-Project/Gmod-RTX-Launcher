@@ -27,11 +27,19 @@ jobs:
         msbuild rtx-launcher\rtx-launcher.vcxproj /p:Configuration=Release /p:Platform=x64
         msbuild rtx-installer\rtx-installer.vcxproj /p:Configuration=Release /p:Platform=x64
       
+    - name: Extract Version
+      id: extract_version
+      run: |
+        $versionLine = Get-Content rtx-launcher\LauncherUpdater.h | Select-String 'CURRENT_VERSION ='
+        $version = $versionLine -replace '.*L"([^"]+)".*', '$1'
+        echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+
     - name: Release to GitHub
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
       with:
         tag_name: ${{ github.event_name == 'workflow_dispatch' && '0.0.2' || github.ref_name }}
+        name: v${{ env.VERSION }}-Beta
         files: |
           rtx-installer/x64/Release/rtx-installer.exe
           rtx-launcher/x64/Release/system_data.bin
