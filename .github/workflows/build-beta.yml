@@ -30,12 +30,15 @@ jobs:
       run: |
         dir rtx-launcher\x64\Release\
 
-    - name: Extract Build Number
+    - name: Extract Build Number and Version
       id: extract_build
       run: |
         $buildLine = Get-Content rtx-launcher\LauncherUpdater.h | Select-String 'CURRENT_BUILD_NUMBER ='
         $build = $buildLine -replace '.*=\s*(\d+).*', '$1'
         echo "BUILD_NUM=$build" | Out-File -FilePath $env:GITHUB_ENV -Append
+        $versionLine = Get-Content rtx-launcher\LauncherUpdater.h | Select-String 'CURRENT_VERSION ='
+        $version = $versionLine -replace '.*L"([^"]+)".*', '$1'
+        echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
 
     - name: Generate Changelog
       run: |
@@ -46,7 +49,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: beta-latest
-        name: Beta Build ${{ env.BUILD_NUM }}
+        name: v${{ env.VERSION }}-Beta (Build ${{ env.BUILD_NUM }})
         prerelease: true
         body_path: changelog.txt
         files: |
