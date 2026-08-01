@@ -104,19 +104,20 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                     std::wstring currentUrl = uriStr ? uriStr : L"";
                                     if (uriStr) CoTaskMemFree(uriStr);
 
-                                    if (currentUrl.find(L"/downloads") == std::wstring::npos && currentUrl.find(L"moddb.com") != std::wstring::npos) {
-                                        // We are on the main mod page, redirect to downloads page
-                                        std::wstring script = L"window.location.href = window.location.href.split('?')[0] + '/downloads';";
-                                        sender->ExecuteScript(script.c_str(), nullptr);
-                                    } else if (currentUrl.find(L"/downloads") != std::wstring::npos && currentUrl.find(L"/start/") == std::wstring::npos) {
-                                        // On the downloads page, find the latest file link
-                                        std::wstring script = L"var el = document.querySelector('.table.table.downloads .row a.image'); if(el) window.location.href = el.href;";
-                                        sender->ExecuteScript(script.c_str(), nullptr);
-                                    } else if (currentUrl.find(L"/start/") != std::wstring::npos) {
-                                        // On the start page, click the download button
-                                        std::wstring script = L"var el = document.querySelector('a.button.button-download'); if(el) window.location.href = el.href;";
-                                        sender->ExecuteScript(script.c_str(), nullptr);
-                                    }
+                                    std::wstring script = 
+                                        L"setInterval(function() {"
+                                        L"  var url = window.location.href;"
+                                        L"  if (url.indexOf('/downloads') == -1 && url.indexOf('moddb.com') != -1) {"
+                                        L"    window.location.href = url.split('?')[0] + '/downloads';"
+                                        L"  } else if (url.indexOf('/downloads') != -1 && url.indexOf('/start/') == -1) {"
+                                        L"    var el = document.querySelector('.table.table.downloads .row a.image') || document.querySelector('a[href*=\"/downloads/start/\"]');"
+                                        L"    if (el) window.location.href = el.href;"
+                                        L"  } else if (url.indexOf('/start/') != -1) {"
+                                        L"    var el = document.querySelector('a.button.button-download') || document.querySelector('a[href*=\"/downloads/mirror/\"]');"
+                                        L"    if (el) window.location.href = el.href;"
+                                        L"  }"
+                                        L"}, 1000);";
+                                    sender->ExecuteScript(script.c_str(), nullptr);
                                     return S_OK;
                                 }).Get(), &token);
 
@@ -133,12 +134,29 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
             state->finished = true;
         }
 
+        // Timeout timer
+        SetTimer(state->hwnd, 1, 25000, nullptr); // 25 seconds timeout
+
         // Message loop for this thread
         MSG msg;
         while (GetMessage(&msg, nullptr, 0, 0)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-            if (state->finished && msg.message == WM_CLOSE) {
+            
+            if (msg.message == WM_TIMER && msg.wParam == 1) {
+                KillTimer(state->hwnd, 1);
+                if (!state->finished) {
+                    state->finished = true;
+                    state->onError();
+                    PostMessage(state->hwnd, WM_CLOSE, 0, 0);
+                }
+            }
+
+            if (msg.message == WM_CLOSE) {
+                if (!state->finished) {
+                    state->finished = true;
+                    state->onError();
+                }
                 break;
             }
         }
