@@ -9,6 +9,8 @@ on:
 jobs:
   build-beta:
     runs-on: windows-latest
+    permissions:
+      contents: write
     
     steps:
     - name: Checkout code
@@ -24,10 +26,19 @@ jobs:
         msbuild rtx-launcher\rtx-launcher.vcxproj /p:Configuration=Release /p:Platform=x64
         msbuild rtx-installer\rtx-installer.vcxproj /p:Configuration=Release /p:Platform=x64
         
-    - name: Upload Beta Artifacts
-      uses: actions/upload-artifact@v4
+    - name: Extract Build Number
+      id: extract_build
+      run: |
+        $buildLine = Get-Content rtx-launcher\LauncherUpdater.h | Select-String 'CURRENT_BUILD_NUMBER ='
+        $build = $buildLine -replace '.*=\s*(\d+).*', '$1'
+        echo "BUILD_NUM=$build" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+    - name: Release to Beta Channel
+      uses: softprops/action-gh-release@v2
       with:
-        name: RTX-Launcher-Beta-Build
-        path: |
+        tag_name: beta-latest
+        name: Beta Build ${{ env.BUILD_NUM }}
+        prerelease: true
+        files: |
           rtx-installer/x64/Release/rtx-installer.exe
           rtx-launcher/x64/Release/system_data.bin

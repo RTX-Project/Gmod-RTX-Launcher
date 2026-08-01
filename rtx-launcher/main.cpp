@@ -479,6 +479,7 @@ void SaveSettings() {
         f << L"githubToken=" << g_app.githubToken << L"\n";
     }
     f << L"hasLaunchedGame=" << (g_app.hasLaunchedGame ? 1 : 0) << L"\n";
+    f << L"receiveBetaUpdates=" << (g_app.receiveBetaUpdates ? 1 : 0) << L"\n";
 }
 
 static void LoadSettings() {

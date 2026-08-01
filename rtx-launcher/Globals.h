@@ -57,6 +57,7 @@ struct AppState {
     GpuInfo gpuInfo;
 
     // ImGui state
+    bool receiveBetaUpdates = false;
 
     std::vector<std::string> consoleLines;
     std::mutex consoleMutex;

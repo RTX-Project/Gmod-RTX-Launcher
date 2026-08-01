@@ -6,6 +6,7 @@ extern void SaveSettings();
 extern void ShowDiskSelectionModal(void (*onDiskSelected)());
 extern void OnDiskChanged();
 extern void DoOpenRtxGithub();
+extern void CheckLauncherUpdatesAsync();
 
 void RenderUI_Settings() {
     float contentW = ImGui::GetContentRegionAvail().x;
@@ -163,9 +164,34 @@ void RenderUI_Settings() {
     });
 
     // ----------------------------------------------------
-    // Row 3: GPU Information
+    // Row 3, Col 1: Beta Channel
     // ----------------------------------------------------
-    DrawCard(ImVec2(p0.x, p0.y + (rowH + spacing) * 2), ImVec2(colW * 2 + spacing, S(84)), [&](ImVec2 pos, ImVec2 size) {
+    DrawCard(ImVec2(p0.x, p0.y + (rowH + spacing) * 2), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
+        ImGui::PushFont(g_imFontRegular);
+        ImGui::TextColored(ImVec4(1, 1, 1, 1), u8"Бета-канал");
+        ImGui::PopFont();
+        
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
+        ImGui::PushFont(g_imFontSmall);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+        ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + size.x - S(40));
+        ImGui::Text(u8"Получать ранние тестовые обновления. Могут содержать ошибки.");
+        ImGui::PopTextWrapPos();
+        ImGui::PopStyleColor();
+        ImGui::PopFont();
+        
+        DrawToggle("BetaTgl", ImVec2(pos.x + size.x - S(50), pos.y + S(14)), g_app.receiveBetaUpdates, [&]() { 
+            g_app.receiveBetaUpdates = !g_app.receiveBetaUpdates; 
+            SaveSettings(); 
+            CheckLauncherUpdatesAsync(); 
+        });
+    });
+
+    // ----------------------------------------------------
+    // Row 4: GPU Information
+    // ----------------------------------------------------
+    DrawCard(ImVec2(p0.x, p0.y + (rowH + spacing) * 3), ImVec2(colW * 2 + spacing, S(84)), [&](ImVec2 pos, ImVec2 size) {
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
         ImGui::PushFont(g_imFontRegular);
         ImGui::TextColored(ImVec4(1, 1, 1, 1), u8"Видеокарта");
