@@ -43,6 +43,12 @@
 
 #include "HexPatcher.h"
 #include "Theme.h"
+#include "UI_Overview.h"
+#include "UI_Updates.h"
+#include "UI_Settings.h"
+#include "UI_RtxMods.h"
+#include "UI_Authors.h"
+#include "UI_Wizard.h"
 #include <d3d11.h>
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -136,14 +142,35 @@ enum class Page {
     , UpdateCheck = 4, InstallerWizard = 5, Authors = 6, RtxMods = 7
 };
 
-enum class WizardStep { Welcome = 0, RtxPreset = 1, LaunchMode = 2, DriveSelect = 3, Progress = 4, Complete = 5 };
-static WizardStep g_wizardStep = WizardStep::Welcome;
-static WizardStep g_wizardTargetStep = WizardStep::Welcome;
-static bool g_wizardIsSliding = false;
-static float g_wizardSlideProgress = 0.0f;
-static bool g_autoStartGameAfterInstall = true;
+enum class WizardStep { Welcome = 0, LaunchMode = 1, DriveSelect = 2, Progress = 3, Complete = 4 };
+enum class RtxModsView { GamesList = 0, ModsList = 1 };
 
-static void GoToWizardStep(WizardStep newStep) {
+WizardStep g_wizardStep = WizardStep::Welcome;
+WizardStep g_wizardTargetStep = WizardStep::Welcome;
+bool g_wizardIsSliding = false;
+float g_wizardSlideProgress = 0.0f;
+
+bool g_pageIsSliding = false;
+float g_pageSlideProgress = 0.0f;
+float g_pageSlideDelayTimer = 0.0f;
+Page g_pageTarget = Page::Overview;
+Page g_pagePrevious = Page::Overview;
+
+RtxModsView g_rtxModsView = RtxModsView::GamesList;
+RtxModsView g_rtxModsPreviousView = RtxModsView::GamesList;
+bool g_rtxModsIsSliding = false;
+float g_rtxModsSlideProgress = 0.0f;
+float g_rtxModsSlideDelayTimer = 0.0f;
+
+enum class SidebarMenu { Main, RtxGames };
+SidebarMenu g_sidebarMenu = SidebarMenu::Main;
+SidebarMenu g_sidebarMenuPrevious = SidebarMenu::Main;
+
+bool g_autoStartGameAfterInstall = true;
+
+// SwitchMainPage moved below
+
+void GoToWizardStep(WizardStep newStep) {
     if (g_wizardStep == newStep) return;
     g_wizardTargetStep = newStep;
     g_wizardIsSliding = true;
@@ -167,9 +194,13 @@ void (*g_onLaunchModeSelected)() = nullptr;
 
 
 enum class DiskModalState { Closed, Opening, Open, Transforming, ProgressBar, Closing };
-static DiskModalState g_diskModalState = DiskModalState::Closed;
-static float g_diskModalTimer = 0.0f;
-static float g_diskModalAlpha = 0.0f;
+DiskModalState g_diskModalState = DiskModalState::Closed;
+float g_diskModalTimer = 0.0f;
+float g_diskModalAlpha = 0.0f;
+
+enum class SidebarAnimState { None, WizardOut_MenuIn, SubMenuTransition };
+SidebarAnimState g_sidebarAnimState = SidebarAnimState::None;
+float g_sidebarAnimTimer = 0.0f;
 
 struct GpuInfo {
     std::string name;
@@ -181,8 +212,8 @@ struct GpuInfo {
     std::string compatibilityNotice;
 };
 
-static LauncherUpdater::UpdateInfo g_launcherUpdateInfo;
-static std::atomic<bool> g_isCheckingLauncherUpdate{ false };
+LauncherUpdater::UpdateInfo g_launcherUpdateInfo;
+std::atomic<bool> g_isCheckingLauncherUpdate{ false };
 
 // ----------------------------------------------------------------------------
 // Глобальное состояние приложения
@@ -207,6 +238,7 @@ struct AppState {
     std::wstring installRootPath;
     std::wstring githubToken;
     int launchMode = 0; // 0 = unset, 1 = normal, 2 = compatibility
+    bool hasLaunchedGame = false;
     bool showDiskModal = false;
     bool showLaunchModeModal = false;
     std::vector<DiskInfo> availableDisks;
@@ -280,10 +312,28 @@ struct AppState {
     HBRUSH brBgMain = nullptr, brBgPanel = nullptr, brBgInput = nullptr, brBgConsole = nullptr;
 };
 
-static AppState g_app;
-static void AppendLog(const std::wstring& line);
+AppState g_app;
 
-static std::string WStringToUTF8(const std::wstring& wstr);
+void SwitchMainPage(Page newPage) {
+    if (g_app.currentPage == newPage) return;
+    g_pagePrevious = g_app.currentPage;
+    g_pageTarget = newPage;
+    g_pageIsSliding = true;
+    g_pageSlideProgress = 0.0f;
+    g_pageSlideDelayTimer = 0.0f;
+    g_app.currentPage = newPage; // Update instantly so nav indicators highlight correctly
+    if (newPage == Page::RtxMods) {
+        g_rtxModsView = RtxModsView::GamesList;
+        g_rtxModsPreviousView = RtxModsView::GamesList;
+        g_rtxModsIsSliding = false;
+        g_rtxModsSlideProgress = 0.0f;
+        g_rtxModsSlideDelayTimer = 0.0f;
+    }
+}
+
+void AppendLog(const std::wstring& line);
+
+std::string WStringToUTF8(const std::wstring& wstr);
 
 static std::string g_changelogHistoryText = "";
 
@@ -352,7 +402,7 @@ static void UpdateChangelogCache(const LauncherUpdater::UpdateInfo& info) {
     }
 }
 
-static void CheckLauncherUpdatesAsync() {
+void CheckLauncherUpdatesAsync() {
     if (g_isCheckingLauncherUpdate.exchange(true)) return;
     AppendLog(L"[Updater] Запрос списка релизов с GitHub API (" + LauncherUpdater::REPO_OWNER + L"/" + LauncherUpdater::REPO_NAME + L")...");
     std::thread([]() {
@@ -417,7 +467,7 @@ static fs::path SettingsFilePath() {
     return fs::path(exePath).parent_path() / L"launcher_settings.txt";
 }
 
-static void SaveSettings() {
+void SaveSettings() {
     std::wofstream f(SettingsFilePath(), std::ios::trunc);
     if (!f) return;
     if (!g_app.installRootPath.empty()) {
@@ -428,6 +478,7 @@ static void SaveSettings() {
     if (!g_app.githubToken.empty()) {
         f << L"githubToken=" << g_app.githubToken << L"\n";
     }
+    f << L"hasLaunchedGame=" << (g_app.hasLaunchedGame ? 1 : 0) << L"\n";
 }
 
 static void LoadSettings() {
@@ -447,6 +498,9 @@ static void LoadSettings() {
         else if (line.rfind(L"githubToken=", 0) == 0) {
             g_app.githubToken = line.substr(12);
         }
+        else if (line.rfind(L"hasLaunchedGame=", 0) == 0) {
+            g_app.hasLaunchedGame = (_wtoi(line.substr(16).c_str()) != 0);
+        }
     }
 
     if (!g_app.installRootPath.empty() && g_app.hBtnChangeDisk) {
@@ -458,7 +512,7 @@ static void SetStatus(const std::wstring& text) {
     { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadStatsText = text; }
 }
 
-static std::string WStringToUTF8(const std::wstring& wstr) {
+std::string WStringToUTF8(const std::wstring& wstr) {
     if (wstr.empty()) return std::string();
     int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
     std::string strTo(size_needed, 0);
@@ -512,7 +566,7 @@ static GpuInfo DetectGPU() {
     return info;
 }
 
-static void AppendLog(const std::wstring& line) {
+void AppendLog(const std::wstring& line) {
     std::lock_guard<std::mutex> lock(g_app.consoleMutex);
     std::string s = WStringToUTF8(line);
     g_app.consoleLines.push_back(s);
@@ -600,7 +654,7 @@ static void ShowPage(Page page) {
 // Фоновые операции
 // ----------------------------------------------------------------------------
 
-static void RunInBackground(std::function<void()> fn) {
+void RunInBackground(std::function<void()> fn) {
     if (g_app.operationRunning.load()) {
         AppendLog(L"Ã Å¸Ã Â¾Ã Â¶Ã Â°Ã Â»Ã‘Æ’Ã Â¹Ã‘Â Ã‘â€šÃ Â° Ã Â´Ã Â¾Ã Â¶Ã Â´Ã Â¸Ã‘â€šÃ ÂµÃ‘Â Ã‘Å’ Ã Â·Ã Â°Ã Â²Ã ÂµÃ‘â‚¬Ã‘Ë†Ã ÂµÃ Â½Ã Â¸Ã‘Â  Ã‘â€šÃ ÂµÃ ÂºÃ‘Æ’Ã‘â€°Ã ÂµÃ Â¹ Ã Â¾Ã Â¿Ã ÂµÃ‘â‚¬Ã Â°Ã‘â€ Ã Â¸Ã Â¸ (или Ã Â½Ã Â°Ã Â¶Ã Â¼Ã Â¸Ã‘â€šÃ Âµ Ã‚Â«Ã Â¡Ã‘â€šÃ Â¾Ã Â¿Ã‚Â»).");
         return;
@@ -626,7 +680,7 @@ static void RunInBackground(std::function<void()> fn) {
 
 static void HideDownloadPanelFade();
 
-static void ShowDiskSelectionModal(void (*callback)() = nullptr);
+void ShowDiskSelectionModal(void (*callback)() = nullptr);
 
 static std::wstring FormatSizeStr(double mb);
 
@@ -767,7 +821,7 @@ static void DoMoveGame(std::wstring src, std::wstring dst) {
         });
 }
 
-static void OnDiskChanged() {
+void OnDiskChanged() {
     if (g_app.installRootPath != g_app.oldInstallRootPath && !g_app.oldInstallRootPath.empty()) {
         DoMoveGame(g_app.oldInstallRootPath, g_app.installRootPath);
     }
@@ -942,7 +996,7 @@ static void UpdateRtxUI() {
     InvalidateRect(g_app.hPageUpdates, nullptr, TRUE);
 }
 
-static void LoadRtxReleases() {
+void LoadRtxReleases() {
     PostMessageW(g_app.hMain, WM_COMMAND, ID_BTN_REFRESH_RTX, 1);
 }
 
@@ -1075,7 +1129,7 @@ static void DoApplyRtxVersion() {
         });
 }
 
-static void DoOpenRtxGithub() {
+void DoOpenRtxGithub() {
     RtxReleaseInfo release;
     {
         std::lock_guard<std::mutex> lock(g_app.lastCheckMutex);
@@ -1166,16 +1220,16 @@ static std::vector<DiskInfo> GetAvailableDisks() {
     return disks;
 }
 
-static void DoLaunchGame();
+void DoLaunchGame();
 
-static void ShowDiskSelectionModal(void (*callback)()) {
+void ShowDiskSelectionModal(void (*callback)()) {
     g_app.onDiskSelected = callback;
     g_app.availableDisks = GetAvailableDisks();
     g_diskModalState = DiskModalState::Opening;
     g_diskModalTimer = 0.0f;
 }
 
-static void DoLaunchGame() {
+void DoLaunchGame() {
     if (g_app.launchMode == 0) {
         ShowLaunchModeModal(DoLaunchGame);
         return;
@@ -1290,27 +1344,28 @@ static void DoLaunchGame() {
         }
         else {
             AppendLog(L"Быстрый запуск: проверка обновлений и старт...");
-            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Запуск] Проверка обновлений..."; g_app.downloadStatsText = L""; }
+            std::wstring prefix = g_autoStartGameAfterInstall ? L"[Запуск] " : L"[Установка] ";
+            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = prefix + L"Проверка обновлений..."; g_app.downloadStatsText = L""; }
             g_app.downloadProgress = 0.50f;
-            g_app.downloadProgressSmooth = 0.50f;
 
             if (!fs::exists(dstPath + L"\\bin\\win64\\dxvk.conf")) {
                 ExtractResourceZipToDir(IDR_DXVK_ZIP, dstPath + L"\\bin\\win64");
             }
 
             // Быстрая проверка обновления фиксов с GitHub
+            bool autoStart = g_autoStartGameAfterInstall;
             GameFixesUpdater::DownloadAndApplyFixes(dstPath, L"Xenthio/garrys-mod-rtx-remixed",
                 [](const std::wstring& msg) { AppendLog(msg); },
-                [](float p, const std::wstring& title, const std::wstring& stats) {
+                [autoStart](float p, const std::wstring& title, const std::wstring& stats) {
                     g_app.downloadProgress = 0.50f + p * 0.40f;
-                    { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Проверка] " + title; g_app.downloadStatsText = stats; }
+                    std::wstring pfx = autoStart ? L"[Проверка] " : L"[Установка] ";
+                    { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = pfx + title; g_app.downloadStatsText = stats; }
                 });
         }
 
         if (!g_autoStartGameAfterInstall) {
             g_app.isDownloading = false;
             g_app.downloadProgress = 0.0f;
-            g_app.downloadProgressSmooth = 0.0f;
             HideDownloadPanelFade();
             GoToWizardStep(WizardStep::Complete);
             return;
@@ -1318,7 +1373,6 @@ static void DoLaunchGame() {
 
         // Запуск игры
         g_app.downloadProgress = 1.0f;
-        g_app.downloadProgressSmooth = 1.0f;
         { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"Запуск Garry's Mod..."; g_app.downloadStatsText = L"Игра запускается"; }
 
         std::wstring exePath;
@@ -1350,6 +1404,8 @@ static void DoLaunchGame() {
         sei.nShow = SW_SHOWNORMAL;
         if (ShellExecuteExW(&sei)) {
             AppendLog(L"Игра успешно запущена.");
+            g_app.hasLaunchedGame = true;
+            SaveSettings();
             std::this_thread::sleep_for(std::chrono::milliseconds(1200));
             ::ShowWindow(g_app.hMain, SW_MINIMIZE);
         }
@@ -1361,7 +1417,6 @@ static void DoLaunchGame() {
 
         g_app.isDownloading = false;
         g_app.downloadProgress = 0.0f;
-        g_app.downloadProgressSmooth = 0.0f;
         {
             std::lock_guard<std::mutex> lock(g_app.statsMutex);
             g_app.downloadTitleText = L"";
@@ -2347,7 +2402,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             RECT r;
             GetClientRect(hwnd, &r);
             int winW = r.right - r.left;
-            if (pt.y < 32 && pt.x < winW - 96) {
+            if (pt.y < 32 && pt.x > 70 && pt.x < winW - 96) {
                 return HTCAPTION;
             }
         }
@@ -2407,7 +2462,7 @@ static LRESULT WINAPI WndProcImGui(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
             RECT r;
             GetClientRect(hWnd, &r);
             int winW = r.right - r.left;
-            if (pt.y < 32 && pt.x < winW - 96) {
+            if (pt.y < 32 && pt.x > 70 && pt.x < winW - 96) {
                 return HTCAPTION;
             }
         }
@@ -2418,10 +2473,10 @@ static LRESULT WINAPI WndProcImGui(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 }
 
 // Global ImGui fonts
-static ImFont* g_imFontTitle = nullptr;
-static ImFont* g_imFontHeading = nullptr;
-static ImFont* g_imFontRegular = nullptr;
-static ImFont* g_imFontSmall = nullptr;
+ImFont* g_imFontTitle = nullptr;
+ImFont* g_imFontHeading = nullptr;
+ImFont* g_imFontRegular = nullptr;
+ImFont* g_imFontSmall = nullptr;
 
 static void DoOpenDest() {
     std::wstring path = g_app.installRootPath;
@@ -2462,13 +2517,13 @@ static void ApplyRtxRemixStyle() {
     colors[ImGuiCol_HeaderActive] = ImVec4(0.39f, 0.62f, 0.00f, 1.00f);
 }
 
-static void PushAccentButton() {
+void PushAccentButton() {
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.00f, 0.90f, 0.46f, 1.00f));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.00f, 1.00f, 0.52f, 1.00f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.00f, 0.78f, 0.40f, 1.00f));
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.05f, 0.08f, 0.06f, 1.00f));
 }
-static void PopAccentButton() {
+void PopAccentButton() {
     ImGui::PopStyleColor(4);
 }
 
@@ -2478,12 +2533,13 @@ static void PopAccentButton() {
 enum class AnimState { Waiting, Resizing, FadingIn, Done };
 static AnimState g_animState = AnimState::Waiting;
 static float g_animTimer = 0.0f;
-static float g_uiAlpha = 1.0f;
+float g_uiAlpha = 1.0f;
 
-static float g_pageTransitionAlpha = 1.0f;
+float g_pageTransitionAlpha = 1.0f;
 static Page g_targetPage = Page::Overview;
-static bool g_isPageTransitioning = false;
-static bool g_isSmoothScrolling = false;
+bool g_isPageTransitioning = false;
+bool g_isSmoothScrolling = false;
+bool g_isSidebarAnimating = false;
 struct WindowAnim {
     bool active = false;
     float startW = 0.0f, startH = 0.0f, startX = 0.0f, startY = 0.0f;
@@ -2492,7 +2548,7 @@ struct WindowAnim {
     float duration = 0.4f;
 } g_winAnim;
 
-static float g_uiScale = 1.0f;
+float g_uiScale = 1.0f;
 
 static void CalculateUiScale(float& outW, float& outH) {
     int screenH = GetSystemMetrics(SM_CYSCREEN);
@@ -2505,9 +2561,10 @@ static void CalculateUiScale(float& outW, float& outH) {
     outH = 500.0f * scale;
 }
 
-static bool IsAnimationActive() {
+bool IsAnimationActive() {
     if (g_isSmoothScrolling) return true;
     if (g_wizardIsSliding) return true;
+    if (g_isSidebarAnimating) return true;
     if (g_winAnim.active) return true;
     if (g_isPageTransitioning) return true;
     if (g_pageTransitionAlpha > 0.0f && g_pageTransitionAlpha < 1.0f) return true;
@@ -2520,7 +2577,7 @@ static bool IsAnimationActive() {
     return false;
 }
 
-static ImVec4 GetAdaptiveProgressColor(float progress) {
+ImVec4 GetAdaptiveProgressColor(float progress) {
     float t = progress;
     if (t < 0.0f) t = 0.0f;
     if (t > 1.0f) t = 1.0f;
@@ -2543,7 +2600,7 @@ static ImVec4 GetAdaptiveProgressColor(float progress) {
 static inline float S(float v) { return v * g_uiScale; }
 static inline ImVec2 S(float x, float y) { return ImVec2(x * g_uiScale, y * g_uiScale); }
 
-static void SwitchPage(Page page) {
+void SwitchPage(Page page) {
     if (g_app.currentPage == page) return;
     g_targetPage = page;
     g_isPageTransitioning = true;
@@ -2573,7 +2630,7 @@ static void SwitchPage(Page page) {
 
 }
 
-static void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
+void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
     bool isRunning = g_app.operationRunning.load();
     if (currentStepToDraw == WizardStep::Welcome) {
         ImGui::PushFont(g_imFontHeading);
@@ -2592,94 +2649,8 @@ static void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
         ImGui::Spacing(); ImGui::Spacing();
         PushAccentButton();
         if (ImGui::Button(u8"Далее  →", ImVec2(180, 42))) {
-            GoToWizardStep(WizardStep::RtxPreset);
-        }
-        PopAccentButton();
-    }
-    else if (currentStepToDraw == WizardStep::RtxPreset) {
-        ImGui::PushFont(g_imFontHeading);
-        ImGui::Text(u8"Выберите версию графического мода:");
-        ImGui::PopFont();
-        ImGui::Spacing();
-
-        bool sel0 = (g_app.rtxSelectedIndex == 0);
-        ImVec2 cardSize(childW - 30.0f, 65.0f);
-        ImVec2 pos0 = ImGui::GetCursorPos();
-
-        ImGui::PushID(101);
-        ImDrawList* dl0 = ImGui::GetWindowDrawList();
-        ImVec2 pMin0 = ImGui::GetCursorScreenPos();
-        ImVec2 pMax0 = ImVec2(pMin0.x + cardSize.x, pMin0.y + cardSize.y);
-        bool hov0 = ImGui::IsMouseHoveringRect(pMin0, pMax0);
-
-        ImU32 bg0 = sel0 ? IM_COL32(0, 60, 32, 180) : (hov0 ? IM_COL32(36, 44, 56, 160) : IM_COL32(24, 28, 36, 120));
-        ImU32 brd0 = sel0 ? IM_COL32(0, 230, 118, 220) : IM_COL32(50, 60, 75, 90);
-        dl0->AddRectFilled(pMin0, pMax0, bg0, 10.0f);
-        dl0->AddRect(pMin0, pMax0, brd0, 10.0f, 0, sel0 ? 1.5f : 1.0f);
-
-        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0, 0, 0, 0));
-        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0, 0, 0, 0));
-        ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0, 0, 0, 0));
-        if (ImGui::Selectable("##RtxCard0", sel0, ImGuiSelectableFlags_AllowOverlap, cardSize)) {
-            g_app.rtxSelectedIndex = 0;
-        }
-        ImGui::PopStyleColor(3);
-
-        ImGui::SetCursorPos(ImVec2(pos0.x + 14.0f, pos0.y + 8.0f));
-        ImGui::PushFont(g_imFontRegular);
-        ImGui::Text(u8"● Освещение + PBR Текстуры (Рекомендуется)");
-        ImGui::PopFont();
-
-        ImGui::SetCursorPos(ImVec2(pos0.x + 14.0f, pos0.y + 32.0f));
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.70f, 0.74f, 0.82f, 1.0f));
-        ImGui::TextWrapped(u8"Полная переработка: новое трассированное освещение + PBR материалы станций.");
-        ImGui::PopStyleColor();
-
-        ImGui::SetCursorPos(ImVec2(pos0.x, pos0.y + cardSize.y + 12.0f));
-        ImGui::PopID();
-
-        bool sel1 = (g_app.rtxSelectedIndex == 1);
-        ImVec2 pos1 = ImGui::GetCursorPos();
-
-        ImGui::PushID(102);
-        ImDrawList* dl1 = ImGui::GetWindowDrawList();
-        ImVec2 pMin1 = ImGui::GetCursorScreenPos();
-        ImVec2 pMax1 = ImVec2(pMin1.x + cardSize.x, pMin1.y + cardSize.y);
-        bool hov1 = ImGui::IsMouseHoveringRect(pMin1, pMax1);
-
-        ImU32 bg1 = sel1 ? IM_COL32(0, 60, 32, 180) : (hov1 ? IM_COL32(36, 44, 56, 160) : IM_COL32(24, 28, 36, 120));
-        ImU32 brd1 = sel1 ? IM_COL32(0, 230, 118, 220) : IM_COL32(50, 60, 75, 90);
-        dl1->AddRectFilled(pMin1, pMax1, bg1, 10.0f);
-        dl1->AddRect(pMin1, pMax1, brd1, 10.0f, 0, sel1 ? 1.5f : 1.0f);
-
-        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0, 0, 0, 0));
-        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0, 0, 0, 0));
-        ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0, 0, 0, 0));
-        if (ImGui::Selectable("##RtxCard1", sel1, ImGuiSelectableFlags_AllowOverlap, cardSize)) {
-            g_app.rtxSelectedIndex = 1;
-        }
-        ImGui::PopStyleColor(3);
-
-        ImGui::SetCursorPos(ImVec2(pos1.x + 14.0f, pos1.y + 8.0f));
-        ImGui::PushFont(g_imFontRegular);
-        ImGui::Text(u8"● Только Освещение (Классический вид)");
-        ImGui::PopFont();
-
-        ImGui::SetCursorPos(ImVec2(pos1.x + 14.0f, pos1.y + 32.0f));
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.70f, 0.74f, 0.82f, 1.0f));
-        ImGui::TextWrapped(u8"Сохраняет оригинальные классические текстуры Garry's Mod, добавляя лучи RTX.");
-        ImGui::PopStyleColor();
-
-        ImGui::SetCursorPos(ImVec2(pos1.x, pos1.y + cardSize.y + 16.0f));
-        ImGui::PopID();
-
-        bool canProceed = (g_app.rtxSelectedIndex >= 0);
-        PushAccentButton();
-        if (!canProceed) ImGui::BeginDisabled();
-        if (ImGui::Button(u8"Далее  →", ImVec2(180, 42))) {
             GoToWizardStep(WizardStep::LaunchMode);
         }
-        if (!canProceed) ImGui::EndDisabled();
         PopAccentButton();
     }
     else if (currentStepToDraw == WizardStep::LaunchMode) {
@@ -2688,78 +2659,95 @@ static void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
         ImGui::PopFont();
         ImGui::Spacing();
 
-        bool m1 = (g_app.launchMode == 1);
         ImVec2 cardSize(childW - 30.0f, 65.0f);
-        ImVec2 pos1 = ImGui::GetCursorPos();
+        ImVec2 basePos = ImGui::GetCursorPos();
+        ImVec2 baseScreenPos = ImGui::GetCursorScreenPos();
+        
+        static float s_lmHlY = 0.0f;
+        static float s_lmHlAlpha = 0.0f;
+        
+        float targetY = 0.0f;
+        float targetAlpha = (g_app.launchMode > 0) ? 1.0f : 0.0f;
+        if (g_app.launchMode == 1) targetY = 0.0f;
+        else if (g_app.launchMode == 2) targetY = cardSize.y + 12.0f;
+        
+        if (g_app.launchMode > 0 && s_lmHlAlpha < 0.01f) {
+            s_lmHlY = targetY; // snap
+        }
+        
+        s_lmHlY += (targetY - s_lmHlY) * ImGui::GetIO().DeltaTime * 15.0f;
+        s_lmHlAlpha += (targetAlpha - s_lmHlAlpha) * ImGui::GetIO().DeltaTime * 15.0f;
 
-        ImGui::PushID(201);
-        ImDrawList* dlM1 = ImGui::GetWindowDrawList();
-        ImVec2 pMinM1 = ImGui::GetCursorScreenPos();
-        ImVec2 pMaxM1 = ImVec2(pMinM1.x + cardSize.x, pMinM1.y + cardSize.y);
-        bool hovM1 = ImGui::IsMouseHoveringRect(pMinM1, pMaxM1);
+        ImDrawList* dl = ImGui::GetWindowDrawList();
+        
+        // Card 1 Base
+        ImVec2 pMin1 = baseScreenPos;
+        ImVec2 pMax1 = ImVec2(pMin1.x + cardSize.x, pMin1.y + cardSize.y);
+        bool hov1 = ImGui::IsMouseHoveringRect(pMin1, pMax1);
+        ImU32 bg1 = hov1 ? IM_COL32(36, 44, 56, 160) : IM_COL32(24, 28, 36, 120);
+        dl->AddRectFilled(pMin1, pMax1, bg1, 10.0f);
+        dl->AddRect(pMin1, pMax1, IM_COL32(50, 60, 75, 90), 10.0f, 0, 1.0f);
 
-        ImU32 bgM1 = m1 ? IM_COL32(0, 60, 32, 180) : (hovM1 ? IM_COL32(36, 44, 56, 160) : IM_COL32(24, 28, 36, 120));
-        ImU32 brdM1 = m1 ? IM_COL32(0, 230, 118, 220) : IM_COL32(50, 60, 75, 90);
-        dlM1->AddRectFilled(pMinM1, pMaxM1, bgM1, 10.0f);
-        dlM1->AddRect(pMinM1, pMaxM1, brdM1, 10.0f, 0, m1 ? 1.5f : 1.0f);
+        // Card 2 Base
+        ImVec2 pMin2 = ImVec2(baseScreenPos.x, baseScreenPos.y + cardSize.y + 12.0f);
+        ImVec2 pMax2 = ImVec2(pMin2.x + cardSize.x, pMin2.y + cardSize.y);
+        bool hov2 = ImGui::IsMouseHoveringRect(pMin2, pMax2);
+        ImU32 bg2 = hov2 ? IM_COL32(36, 44, 56, 160) : IM_COL32(24, 28, 36, 120);
+        dl->AddRectFilled(pMin2, pMax2, bg2, 10.0f);
+        dl->AddRect(pMin2, pMax2, IM_COL32(50, 60, 75, 90), 10.0f, 0, 1.0f);
+
+        // Draw Sliding Highlight
+        if (s_lmHlAlpha > 0.01f) {
+            ImVec2 hMin = ImVec2(baseScreenPos.x, baseScreenPos.y + s_lmHlY);
+            ImVec2 hMax = ImVec2(hMin.x + cardSize.x, hMin.y + cardSize.y);
+            ImU32 hBg = IM_COL32(0, 60, 32, (int)(180 * s_lmHlAlpha));
+            ImU32 hBrd = IM_COL32(0, 230, 118, (int)(220 * s_lmHlAlpha));
+            dl->AddRectFilled(hMin, hMax, hBg, 10.0f);
+            dl->AddRect(hMin, hMax, hBrd, 10.0f, 0, 1.5f);
+        }
 
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0, 0, 0, 0));
-        if (ImGui::Selectable("##ModeCard1", m1, ImGuiSelectableFlags_AllowOverlap, cardSize)) {
+
+        // Card 1 Content
+        ImGui::SetCursorPos(basePos);
+        ImGui::PushID(201);
+        if (ImGui::Selectable("##ModeCard1", (g_app.launchMode == 1), ImGuiSelectableFlags_AllowOverlap, cardSize)) {
             g_app.launchMode = 1;
             SaveSettings();
         }
-        ImGui::PopStyleColor(3);
-
-        ImGui::SetCursorPos(ImVec2(pos1.x + 14.0f, pos1.y + 8.0f));
+        ImGui::SetCursorPos(ImVec2(basePos.x + 14.0f, basePos.y + 8.0f));
         ImGui::PushFont(g_imFontRegular);
         ImGui::Text(u8"● Обычный режим (По умолчанию)");
         ImGui::PopFont();
-
-        ImGui::SetCursorPos(ImVec2(pos1.x + 14.0f, pos1.y + 32.0f));
+        ImGui::SetCursorPos(ImVec2(basePos.x + 14.0f, basePos.y + 32.0f));
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.70f, 0.74f, 0.82f, 1.0f));
         ImGui::TextWrapped(u8"Стандартный запуск Garry's Mod x64 с гибридной подсистемой RTX Remix.");
         ImGui::PopStyleColor();
-
-        ImGui::SetCursorPos(ImVec2(pos1.x, pos1.y + cardSize.y + 12.0f));
         ImGui::PopID();
 
-        bool m2 = (g_app.launchMode == 2);
-        ImVec2 pos2 = ImGui::GetCursorPos();
-
+        // Card 2 Content
+        ImVec2 pos2 = ImVec2(basePos.x, basePos.y + cardSize.y + 12.0f);
+        ImGui::SetCursorPos(pos2);
         ImGui::PushID(202);
-        ImDrawList* dlM2 = ImGui::GetWindowDrawList();
-        ImVec2 pMinM2 = ImGui::GetCursorScreenPos();
-        ImVec2 pMaxM2 = ImVec2(pMinM2.x + cardSize.x, pMinM2.y + cardSize.y);
-        bool hovM2 = ImGui::IsMouseHoveringRect(pMinM2, pMaxM2);
-
-        ImU32 bgM2 = m2 ? IM_COL32(0, 60, 32, 180) : (hovM2 ? IM_COL32(36, 44, 56, 160) : IM_COL32(24, 28, 36, 120));
-        ImU32 brdM2 = m2 ? IM_COL32(0, 230, 118, 220) : IM_COL32(50, 60, 75, 90);
-        dlM2->AddRectFilled(pMinM2, pMaxM2, bgM2, 10.0f);
-        dlM2->AddRect(pMinM2, pMaxM2, brdM2, 10.0f, 0, m2 ? 1.5f : 1.0f);
-
-        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0, 0, 0, 0));
-        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0, 0, 0, 0));
-        ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0, 0, 0, 0));
-        if (ImGui::Selectable("##ModeCard2", m2, ImGuiSelectableFlags_AllowOverlap, cardSize)) {
+        if (ImGui::Selectable("##ModeCard2", (g_app.launchMode == 2), ImGuiSelectableFlags_AllowOverlap, cardSize)) {
             g_app.launchMode = 2;
             SaveSettings();
         }
-        ImGui::PopStyleColor(3);
-
         ImGui::SetCursorPos(ImVec2(pos2.x + 14.0f, pos2.y + 8.0f));
         ImGui::PushFont(g_imFontRegular);
         ImGui::Text(u8"● Режим повышенной совместимости (-high +mat_dxlevel 95)");
         ImGui::PopFont();
-
         ImGui::SetCursorPos(ImVec2(pos2.x + 14.0f, pos2.y + 32.0f));
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.70f, 0.74f, 0.82f, 1.0f));
         ImGui::TextWrapped(u8"Приоритет Windows (-high) и принудительный DirectX 9.5 (+mat_dxlevel 95).");
         ImGui::PopStyleColor();
+        ImGui::PopID();
+
+        ImGui::PopStyleColor(3);
 
         ImGui::SetCursorPos(ImVec2(pos2.x, pos2.y + cardSize.y + 16.0f));
-        ImGui::PopID();
 
         ImGui::Spacing(); ImGui::Spacing();
         bool canProceed = (g_app.launchMode > 0);
@@ -2799,32 +2787,73 @@ static void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
             }
         }
 
+        ImVec2 basePos = ImGui::GetCursorPos();
+        ImVec2 baseScreenPos = ImGui::GetCursorScreenPos();
+        ImVec2 diskCardSize(childW - 30.0f, 42.0f);
+        
+        int selectedIndex = -1;
+        float targetY = 0.0f;
+        
+        for (size_t i = 0; i < g_app.availableDisks.size(); ++i) {
+            const auto& disk = g_app.availableDisks[i];
+            bool isSelected = (g_app.installRootPath == (disk.path + L"Metrostroi RTX"));
+            if (isSelected) {
+                selectedIndex = (int)i;
+                targetY = ImGui::GetCursorPos().y - basePos.y;
+            }
+            
+            ImVec2 pMinD = ImGui::GetCursorScreenPos();
+            ImVec2 pMaxD = ImVec2(pMinD.x + diskCardSize.x, pMinD.y + diskCardSize.y);
+            bool hovD = ImGui::IsMouseHoveringRect(pMinD, pMaxD);
+            ImU32 bgD = hovD ? IM_COL32(36, 44, 56, 160) : IM_COL32(24, 28, 36, 120);
+            
+            ImDrawList* dl = ImGui::GetWindowDrawList();
+            dl->AddRectFilled(pMinD, pMaxD, bgD, 10.0f);
+            dl->AddRect(pMinD, pMaxD, IM_COL32(50, 60, 75, 90), 10.0f, 0, 1.0f);
+            
+            ImGui::Dummy(diskCardSize);
+            ImGui::Spacing();
+        }
+        
+        static float s_dsHlY = 0.0f;
+        static float s_dsHlAlpha = 0.0f;
+        float targetAlpha = (selectedIndex >= 0) ? 1.0f : 0.0f;
+        
+        if (selectedIndex >= 0 && s_dsHlAlpha < 0.01f) {
+            s_dsHlY = targetY; // snap
+        }
+        
+        s_dsHlY += (targetY - s_dsHlY) * ImGui::GetIO().DeltaTime * 15.0f;
+        s_dsHlAlpha += (targetAlpha - s_dsHlAlpha) * ImGui::GetIO().DeltaTime * 15.0f;
+        
+        if (s_dsHlAlpha > 0.01f) {
+            ImVec2 hMin = ImVec2(baseScreenPos.x, baseScreenPos.y + s_dsHlY);
+            ImVec2 hMax = ImVec2(hMin.x + diskCardSize.x, hMin.y + diskCardSize.y);
+            ImU32 hBg = IM_COL32(0, 60, 32, (int)(180 * s_dsHlAlpha));
+            ImU32 hBrd = IM_COL32(0, 230, 118, (int)(220 * s_dsHlAlpha));
+            ImDrawList* dl = ImGui::GetWindowDrawList();
+            dl->AddRectFilled(hMin, hMax, hBg, 10.0f);
+            dl->AddRect(hMin, hMax, hBrd, 10.0f, 0, 1.5f);
+        }
+        
+        ImGui::SetCursorPos(basePos);
+        
         for (size_t i = 0; i < g_app.availableDisks.size(); ++i) {
             const auto& disk = g_app.availableDisks[i];
             double freeGb = (double)disk.freeSpace / (1024.0 * 1024.0 * 1024.0);
             double totalGb = (double)disk.totalSpace / (1024.0 * 1024.0 * 1024.0);
             std::string utf8_path = WStringToUTF8(disk.path);
-
+            
             char label[256];
             snprintf(label, sizeof(label), "  Диск %s  |  Св. %.1f ГБ из %.1f ГБ %s##inst_%d",
                 utf8_path.c_str(), freeGb, totalGb, disk.isSSD ? "(SSD - Рек.)" : "(HDD)", (int)i);
-
+                
             bool isSelected = (g_app.installRootPath == (disk.path + L"Metrostroi RTX"));
-            ImVec2 diskCardSize(childW - 30.0f, 42.0f);
-            ImDrawList* dlD = ImGui::GetWindowDrawList();
-            ImVec2 pMinD = ImGui::GetCursorScreenPos();
-            ImVec2 pMaxD = ImVec2(pMinD.x + diskCardSize.x, pMinD.y + diskCardSize.y);
-            bool hovD = ImGui::IsMouseHoveringRect(pMinD, pMaxD);
-
-            ImU32 bgD = isSelected ? IM_COL32(0, 60, 32, 180) : (hovD ? IM_COL32(36, 44, 56, 160) : IM_COL32(24, 28, 36, 120));
-            ImU32 brdD = isSelected ? IM_COL32(0, 230, 118, 220) : IM_COL32(50, 60, 75, 90);
-            dlD->AddRectFilled(pMinD, pMaxD, bgD, 10.0f);
-            dlD->AddRect(pMinD, pMaxD, brdD, 10.0f, 0, isSelected ? 1.5f : 1.0f);
-
+            
             ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0, 0, 0, 0));
             ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0, 0, 0, 0));
             ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0, 0, 0, 0));
-
+            
             if (ImGui::Selectable(label, isSelected, ImGuiSelectableFlags_AllowOverlap, diskCardSize)) {
                 g_app.installRootPath = disk.path + L"Metrostroi RTX";
                 SaveSettings();
@@ -2884,6 +2913,8 @@ static void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
         PushAccentButton();
         if (ImGui::Button(u8"ИГРАТЬ СЕЙЧАС", ImVec2(210, 48))) {
             g_autoStartGameAfterInstall = true;
+            g_sidebarAnimState = SidebarAnimState::WizardOut_MenuIn;
+            g_sidebarAnimTimer = 0.0f;
             SwitchPage(Page::Overview);
             DoLaunchGame();
         }
@@ -2891,6 +2922,8 @@ static void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
 
         ImGui::SameLine(240);
         if (ImGui::Button(u8"ПОЗЖЕ", ImVec2(170, 48))) {
+            g_sidebarAnimState = SidebarAnimState::WizardOut_MenuIn;
+            g_sidebarAnimTimer = 0.0f;
             SwitchPage(Page::Overview);
         }
     }
@@ -2928,38 +2961,7 @@ static void RenderImGuiUI() {
     ImGui::PopStyleColor(1);
     ImGui::PopStyleVar(2);
 
-    // --- Custom Title Bar ---
-    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.08f, 0.08f, 0.08f, 1.0f));
-    ImGui::BeginChild("TitleBar", ImVec2(0, S(32.0f)), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-    ImGui::SetCursorPos(S(16, 7));
-    ImGui::PushFont(g_imFontSmall);
-    std::string titleStr = "RTX Launcher v" + WStringToUTF8(LauncherUpdater::CURRENT_VERSION) + " (Build " + std::to_string(LauncherUpdater::CURRENT_BUILD_NUMBER) + ")";
-    ImGui::TextDisabled("%s", titleStr.c_str());
-    ImGui::PopFont();
 
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
-
-    ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() - S(96.0f), 0));
-    if (g_app.currentPage != Page::UpdateCheck) {
-        if (ImGui::Button("-", S(48, 32))) {
-            ShowWindow(g_app.hMain, SW_MINIMIZE);
-        }
-        ImGui::SameLine(0, 0);
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
-        if (ImGui::Button("X", S(48, 32))) {
-            PostQuitMessage(0);
-        }
-        ImGui::PopStyleColor(); // hover
-    }
-    ImGui::PopStyleColor(3); // normal, hovered, active
-    ImGui::PopStyleVar();
-
-    ImGui::EndChild();
-    ImGui::PopStyleColor();
-    // -------------------------
 
     if (g_isPageTransitioning) {
         g_pageTransitionAlpha -= ImGui::GetIO().DeltaTime / 0.15f;
@@ -3070,617 +3072,306 @@ static void RenderImGuiUI() {
         return;
     }
 
-    if (g_app.currentPage == Page::Overview) {
+    // --- Sidebar & Layout ---
+    if (g_app.currentPage != Page::UpdateCheck) {
+        ImGui::BeginGroup(); // Sidebar Group
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.06f, 0.08f, 0.10f, 1.0f));
+        ImGui::BeginChild("Sidebar", ImVec2(S(190.0f), 0), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        
+        // MacOS Dots
+        ImDrawList* dl = ImGui::GetWindowDrawList();
+        
+        // Close (Red)
+        ImGui::SetCursorPos(S(10, 10));
+        if (ImGui::InvisibleButton("CloseBtn", S(14, 14))) PostQuitMessage(0);
+        bool closeHovered = ImGui::IsItemHovered();
+        ImVec2 rMinC = ImGui::GetItemRectMin();
+        ImVec2 rMaxC = ImGui::GetItemRectMax();
+        ImVec2 centerC(rMinC.x + (rMaxC.x - rMinC.x) * 0.5f, rMinC.y + (rMaxC.y - rMinC.y) * 0.5f);
+        dl->AddCircleFilled(centerC, S(6.0f), IM_COL32(255, 95, 86, 255));
+        if (closeHovered) {
+            float s = S(2.5f);
+            dl->AddLine(ImVec2(centerC.x - s, centerC.y - s), ImVec2(centerC.x + s, centerC.y + s), IM_COL32(76, 0, 0, 255), S(1.5f));
+            dl->AddLine(ImVec2(centerC.x + s, centerC.y - s), ImVec2(centerC.x - s, centerC.y + s), IM_COL32(76, 0, 0, 255), S(1.5f));
+        }
+        
+        // Minimize (Yellow)
+        ImGui::SetCursorPos(S(30, 10));
+        if (ImGui::InvisibleButton("MinBtn", S(14, 14))) ShowWindow(g_app.hMain, SW_MINIMIZE);
+        bool minHovered = ImGui::IsItemHovered();
+        ImVec2 rMinM = ImGui::GetItemRectMin();
+        ImVec2 rMaxM = ImGui::GetItemRectMax();
+        ImVec2 centerM(rMinM.x + (rMaxM.x - rMinM.x) * 0.5f, rMinM.y + (rMaxM.y - rMinM.y) * 0.5f);
+        dl->AddCircleFilled(centerM, S(6.0f), IM_COL32(255, 189, 46, 255));
+        if (minHovered) {
+            float s = S(3.0f);
+            dl->AddLine(ImVec2(centerM.x - s, centerM.y), ImVec2(centerM.x + s, centerM.y), IM_COL32(100, 60, 0, 255), S(1.5f));
+        }
 
 
-        ImGui::SetCursorPos(S(45, 65));
-        ImGui::PushFont(g_imFontTitle);
-        ImGui::Text("METROSTROI");
-        ImGui::PopFont();
+        
+        // Handle Sidebar Animation Timer
+        if (g_sidebarAnimState == SidebarAnimState::WizardOut_MenuIn || g_sidebarAnimState == SidebarAnimState::SubMenuTransition) {
+            g_sidebarAnimTimer += ImGui::GetIO().DeltaTime * 1.5f;
+            if (g_sidebarAnimTimer >= 1.0f) {
+                g_sidebarAnimTimer = 1.0f;
+                g_sidebarAnimState = SidebarAnimState::None;
+            }
+        }
 
-        ImGui::SetCursorPos(S(45, 112));
-        ImGui::PushFont(g_imFontHeading);
-        ImGui::TextColored(ImVec4(0.46f, 0.73f, 0.0f, 1.0f), "REMASTERED - RTX REMIX");
-        ImGui::PopFont();
+        // Highlight sliding animation
+        static float s_navHighlightY = 60.0f;
+        static float s_navHighlightH = 45.0f;
+        float targetY = 60.0f;
+        float targetH = 45.0f;
+        
+        if (g_app.currentPage == Page::InstallerWizard) {
+            targetY = 60.0f + static_cast<int>(g_wizardStep) * 55.0f;
+        } else if (g_app.currentPage == Page::Authors) {
+            targetY = (ImGui::GetWindowHeight() / g_uiScale) - 34.0f;
+            targetH = 22.0f;
+        } else {
+            if (g_sidebarMenu == SidebarMenu::Main) {
+                if (g_app.currentPage == Page::Overview) targetY = 60.0f;
+                else if (g_app.currentPage == Page::Settings) targetY = 60.0f + 55.0f;
+                else if (g_app.currentPage == Page::RtxMods) targetY = 60.0f + 110.0f;
+            } else if (g_sidebarMenu == SidebarMenu::RtxGames) {
+                if (g_app.currentPage == Page::RtxMods) targetY = 60.0f + 55.0f;
+                else targetY = 60.0f; // Highlight back button if they somehow are here without RtxMods active
+            }
+        }
+        
+        s_navHighlightY += (targetY - s_navHighlightY) * ImGui::GetIO().DeltaTime * 15.0f;
+        s_navHighlightH += (targetH - s_navHighlightH) * ImGui::GetIO().DeltaTime * 15.0f;
+        g_isSidebarAnimating = fabs(targetY - s_navHighlightY) > 0.01f || fabs(targetH - s_navHighlightH) > 0.01f || g_sidebarAnimState != SidebarAnimState::None;
+        
+        ImVec2 windowPos = ImGui::GetWindowPos();
+        float currentY_screen = windowPos.y + S(s_navHighlightY);
+        
+        // Compute staggered offset for highlight
+        float highlightOffsetX = 0.0f;
+        if (g_sidebarAnimState == SidebarAnimState::WizardOut_MenuIn) {
+            // Highlight box rapidly slides up to Overview during transition
+            float ease = 1.0f - powf(1.0f - g_sidebarAnimTimer, 3.0f);
+            s_navHighlightY = 60.0f * ease + s_navHighlightY * (1.0f - ease);
+        }
 
-        ImGui::SetCursorPos(S(45, 150));
+        dl->AddRectFilled(ImVec2(windowPos.x + S(16.0f) + highlightOffsetX, currentY_screen), 
+                          ImVec2(windowPos.x + S(16.0f) + S(158.0f) + highlightOffsetX, currentY_screen + S(s_navHighlightH)),
+                          IM_COL32(13, 51, 38, 255), S(8.0f));
+
+        ImGui::SetCursorPos(S(16, 60));
         ImGui::PushFont(g_imFontRegular);
-        ImGui::PushTextWrapPos(S(430.0f));
-        ImGui::TextDisabled(u8"Модификация с трассировкой лучей высокого качества");
-        ImGui::PopTextWrapPos();
-        ImGui::PopFont();
-
-        if (false && g_launcherUpdateInfo.hasUpdate) { // DISABLED HUGE BANNER
-            ImGui::SetCursorPos(ImVec2(45, 185));
-            ImVec2 cardSize(770.0f, 185.0f);
-            ImDrawList* dl = ImGui::GetWindowDrawList();
-            ImVec2 pMin = ImGui::GetCursorScreenPos();
-            ImVec2 pMax = ImVec2(pMin.x + cardSize.x, pMin.y + cardSize.y);
-
-            dl->AddRectFilled(pMin, pMax, IM_COL32(20, 24, 32, 220), 12.0f);
-            dl->AddRect(pMin, pMax, IM_COL32(0, 230, 118, 200), 12.0f, 0, 1.5f);
-
-            ImGui::SetCursorPos(ImVec2(60, 195));
-            ImGui::PushFont(g_imFontHeading);
-            std::string updateTitle;
-            if (g_launcherUpdateInfo.isMicroUpdate) {
-                updateTitle = u8"● ДОСТУПНО МИКРО-ОБНОВЛЕНИЕ БИЛДА v" + WStringToUTF8(g_launcherUpdateInfo.version) + " (Build #" + std::to_string(g_launcherUpdateInfo.releaseId) + ")";
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, S(10.0f))); // Exact spacing for precise calculation
+        auto NavButton = [](const char* label, bool active, float xOffset, bool interactive = true) {
+            ImGui::SetCursorPosX(S(16.0f) + xOffset);
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
+            
+            if (interactive) {
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0,0,0,0));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1,1,1,0.03f)); 
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1,1,1,0.06f));
             } else {
-                updateTitle = u8"● ДОСТУПНО ОБНОВЛЕНИЕ ЛАУНЧЕРА v" + WStringToUTF8(g_launcherUpdateInfo.version);
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0,0,0,0));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0,0,0,0)); 
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0,0,0,0));
             }
-            ImGui::TextColored(ImVec4(0.00f, 0.90f, 0.46f, 1.0f), "%s", updateTitle.c_str());
-            ImGui::PopFont();
-
-            ImGui::SetCursorPos(ImVec2(60, 225));
-            ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
-            ImGui::BeginChild("ChangelogScroll", ImVec2(530, 130), false);
-            ImGui::PushFont(g_imFontSmall);
-            std::string notesUtf8 = WStringToUTF8(g_launcherUpdateInfo.releaseNotes);
-            if (notesUtf8.empty()) {
-                notesUtf8 = u8"Новое стабильное обновление лаунчера доступно к установке.";
-            }
-            ImGui::TextWrapped("%s", notesUtf8.c_str());
-            ImGui::PopFont();
-            ImGui::EndChild();
-            ImGui::PopStyleColor();
-
-            ImGui::SetCursorPos(ImVec2(605, 310));
-            PushAccentButton();
-            if (ImGui::Button(u8"ОБНОВИТЬ", ImVec2(190, 42))) {
-                RunInBackground([]() {
-                    LauncherUpdater::DownloadAndApplyUpdate(g_launcherUpdateInfo.downloadUrl,
-                        [](const std::wstring& msg) { AppendLog(msg); },
-                        [](float p) {
-                            g_app.downloadProgress = p;
-                            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"Загрузка обновления..."; }
-                        },
-                        g_app.githubToken);
-                });
-            }
-            PopAccentButton();
-        }
-        else if (!g_app.gpuInfo.compatibilityNotice.empty()) {
-            ImGui::SetCursorPos(S(45, 195));
-            ImVec2 cardSize = S(380.0f, 95.0f);
-            ImDrawList* dl = ImGui::GetWindowDrawList();
-            ImVec2 pMin = ImGui::GetCursorScreenPos();
-            ImVec2 pMax = ImVec2(pMin.x + cardSize.x, pMin.y + cardSize.y);
-
-            dl->AddRectFilled(pMin, pMax, IM_COL32(40, 26, 12, 220), 10.0f);
-            dl->AddRect(pMin, pMax, IM_COL32(255, 160, 0, 220), 10.0f, 0, 1.0f);
-
-            ImGui::SetCursorPos(S(55, 203));
-            ImGui::PushFont(g_imFontRegular);
-            ImGui::PushTextWrapPos(S(415.0f));
-            ImGui::TextColored(ImVec4(1.0f, 0.78f, 0.25f, 1.0f), "⚠️ %s", g_app.gpuInfo.compatibilityNotice.c_str());
-            ImGui::PopTextWrapPos();
-            ImGui::PopFont();
-        }
-
-        // --- МИНИ-ЛЕНТА НОВОСТЕЙ (СПРАВА) ---
-        if (true) { // Показываем ленту всегда
-            ImGui::SetCursorPos(S(460, 65));
-            ImVec2 newsSize = S(355.0f, 290.0f);
-            ImDrawList* dl = ImGui::GetWindowDrawList();
-            ImVec2 pMinNews = ImGui::GetCursorScreenPos();
-            ImVec2 pMaxNews = ImVec2(pMinNews.x + newsSize.x, pMinNews.y + newsSize.y);
-
-            dl->AddRectFilled(pMinNews, pMaxNews, IM_COL32(20, 24, 32, 180), 8.0f);
-            dl->AddRect(pMinNews, pMaxNews, IM_COL32(255, 255, 255, 15), 8.0f, 0, 1.0f);
-
-            ImGui::SetCursorPos(S(480, 80));
-            ImGui::PushFont(g_imFontHeading);
-            ImGui::TextColored(ImVec4(0.85f, 0.85f, 0.85f, 1.0f), u8"ПОСЛЕДНИЕ ИЗМЕНЕНИЯ");
-            ImGui::PopFont();
-
-            ImGui::SetCursorPos(S(480, 110));
-            ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
-            ImGui::BeginChild("NewsFeedScroll", ImVec2(newsSize.x - S(30), newsSize.y - S(60)), false, ImGuiWindowFlags_NoScrollWithMouse);
             
-            static float targetScrollY_Welcome = 0.0f;
-            static float currentScrollY_Welcome = 0.0f;
-
-            float actualScrollY = ImGui::GetScrollY();
-            float wheel = ImGui::GetIO().MouseWheel;
-            if (wheel == 0.0f && std::abs(actualScrollY - currentScrollY_Welcome) > 2.0f) {
-                targetScrollY_Welcome = actualScrollY;
-                currentScrollY_Welcome = actualScrollY;
-            }
-
-            if (ImGui::IsWindowHovered() && wheel != 0.0f) {
-                targetScrollY_Welcome -= wheel * 100.0f;
-            }
-
-            float maxScroll = ImGui::GetScrollMaxY();
-            if (targetScrollY_Welcome < 0.0f) targetScrollY_Welcome = 0.0f;
-            if (targetScrollY_Welcome > maxScroll) targetScrollY_Welcome = maxScroll;
-
-            if (std::abs(targetScrollY_Welcome - currentScrollY_Welcome) > 0.5f) {
-                g_isSmoothScrolling = true;
-            }
-
-            float lerpT = std::min(10.0f * ImGui::GetIO().DeltaTime, 0.5f);
-            currentScrollY_Welcome += (targetScrollY_Welcome - currentScrollY_Welcome) * lerpT;
-            ImGui::SetScrollY(currentScrollY_Welcome);
-
-            ImGui::PushFont(g_imFontSmall);
-            std::string notesUtf8 = g_changelogHistoryText;
-            if (notesUtf8.empty()) {
-                notesUtf8 = u8"Нет новых записей или загрузка...";
-            }
-            ImGui::TextWrapped("%s", notesUtf8.c_str());
-            ImGui::PopFont();
-            ImGui::EndChild();
-            ImGui::PopStyleColor();
-        }
-
-        if (g_launcherUpdateInfo.hasUpdate) {
-            ImGui::SetCursorPos(S(45, 360));
-            ImGui::PushFont(g_imFontSmall);
-            ImGui::TextColored(ImVec4(0.00f, 0.90f, 0.46f, 1.0f), u8"Доступно обновление");
-            ImGui::SameLine();
-            ImGui::SetCursorPosY(S(358));
-            if (ImGui::Button(u8"Скачать", S(80, 20))) {
-                g_app.isDownloading = true;
-                RunInBackground([]() {
-                    LauncherUpdater::DownloadAndApplyUpdate(g_launcherUpdateInfo.downloadUrl,
-                        [](const std::wstring& msg) { AppendLog(msg); },
-                        [](float p) {
-                            g_app.downloadProgress = p;
-                            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"Загрузка обновления..."; }
-                        },
-                        g_app.githubToken);
-                });
-            }
-            ImGui::PopFont();
-        }
-
-        ImGui::SetCursorPos(S(45, 385));
-        PushAccentButton();
-        if (isRunning) ImGui::BeginDisabled();
-        if (ImGui::Button(u8"Запуск", S(190, 50))) DoLaunchGame();
-        if (isRunning) ImGui::EndDisabled();
-        PopAccentButton();
-
-        ImGui::SetCursorPos(S(250, 385));
-        if (isRunning) ImGui::BeginDisabled();
-        if (ImGui::Button(u8"Настройки", S(170, 50))) SwitchPage(Page::Settings);
-        if (isRunning) ImGui::EndDisabled();
-
-        // Фоновая автоматическая проверка обновлений каждые 5 часов (18000 секунд)
-        static float g_fiveHourTimer = 0.0f;
-        g_fiveHourTimer += ImGui::GetIO().DeltaTime;
-        if (g_fiveHourTimer >= 18000.0f) {
-            g_fiveHourTimer = 0.0f;
-            CheckLauncherUpdatesAsync();
-        }
-
-        ImGui::SetCursorPos(S(440, 385));
-        if (ImGui::Button(u8"Обновления", S(170, 50))) SwitchPage(Page::Updates);
-
-        ImGui::SetCursorPos(S(630, 385));
-        if (isRunning) ImGui::BeginDisabled();
-        if (ImGui::Button(u8"Моды RTX", S(170, 50))) SwitchPage(Page::RtxMods);
-        if (isRunning) ImGui::EndDisabled();
-
-        ImGui::SetCursorPos(S(860 - 90, 500 - 35));
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.1f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1, 1, 1, 0.2f));
-        if (ImGui::Button(u8"Авторы", S(80, 25))) SwitchPage(Page::Authors);
-        ImGui::PopStyleColor(4);
-
-        // --- Полоса прогресса и информации при запуске / скачивании ---
-        if (isRunning || g_app.isDownloading) {
-            std::wstring titleText, statsText;
-            {
-                std::lock_guard<std::mutex> lock(g_app.statsMutex);
-                titleText = g_app.downloadTitleText;
-                statsText = g_app.downloadStatsText;
-            }
-            if (titleText.empty()) titleText = L"Подготовка...";
-
-            std::string uTitle = WStringToUTF8(titleText);
-            std::string uStats = WStringToUTF8(statsText);
-
-            ImVec4 textColor = g_app.isFirstLaunchMode ? ImVec4(0.0f, 0.82f, 1.0f, 1.0f) : ImVec4(0.46f, 0.73f, 0.0f, 1.0f);
-            ImU32 barColor = g_app.isFirstLaunchMode ? IM_COL32(0, 195, 255, 255) : IM_COL32(118, 185, 0, 255);
-
-            ImGui::SetCursorPos(S(45, 446));
-            ImGui::PushFont(g_imFontSmall);
-            if (!uStats.empty()) {
-                ImGui::TextColored(textColor, "%s — %s", uTitle.c_str(), uStats.c_str());
-            }
-            else {
-                int pct = (int)(g_app.downloadProgressSmooth * 100.0f);
-                if (pct > 0 && pct <= 100) {
-                    ImGui::TextColored(textColor, "%s (%d%%)", uTitle.c_str(), pct);
-                }
-                else {
-                    ImGui::TextColored(textColor, "%s", uTitle.c_str());
-                }
-            }
-            ImGui::PopFont();
-
-            // Полоска прогресса
-            ImVec2 barPos = S(45, 468);
-            float barWidth = S(770.0f);
-            float barHeight = S(8.0f);
-            ImGui::SetCursorPos(barPos);
-
-            ImDrawList* drawList = ImGui::GetWindowDrawList();
-            ImVec2 p0 = ImGui::GetCursorScreenPos();
-            ImVec2 p1 = ImVec2(p0.x + barWidth, p0.y + barHeight);
-
-            // Трек
-            drawList->AddRectFilled(p0, p1, IM_COL32(40, 42, 54, 255), 4.0f);
-
-            // Заполнение
-            float fillProgress = g_app.downloadProgressSmooth;
-            if (fillProgress < 0.05f) fillProgress = 0.05f;
-            if (fillProgress > 1.0f) fillProgress = 1.0f;
-
-            float fillW = barWidth * fillProgress;
-            ImVec2 p2 = ImVec2(p0.x + fillW, p1.y);
-            drawList->AddRectFilled(p0, p2, barColor, 4.0f);
-        }
-    }
-    else if (g_app.currentPage == Page::Updates) {
-        ImGui::SetCursorPos(S(40, 44));
-        ImGui::PushFont(g_imFontTitle);
-        ImGui::Text(u8"ОБНОВЛЕНИЯ И ЧЕЙНДЖЛОГ");
-        ImGui::PopFont();
-
-        ImGui::SetCursorPos(S(40, 90));
-        if (ImGui::Button(u8"Назад", S(90, 32))) SwitchPage(Page::Overview);
-
-        ImGui::SameLine(S(140.0f));
-        if (ImGui::Button(u8"Проверить обновления", S(180, 32))) {
-            CheckLauncherUpdatesAsync();
-        }
-
-        ImGui::SetCursorPos(S(40, 132));
-        ImGui::BeginChild("UpdatesMainChild", S(780, 345), true);
-
-        ImGui::PushFont(g_imFontHeading);
-        ImGui::TextColored(ImVec4(0.0f, 0.90f, 0.46f, 1.0f), u8"● ТЕКУЩАЯ СБОРКА: Build %d (Версия v%s)",
-            LauncherUpdater::CURRENT_BUILD_NUMBER, WStringToUTF8(LauncherUpdater::CURRENT_VERSION).c_str());
-        ImGui::PopFont();
-
-        ImGui::Spacing();
-        ImGui::Separator();
-        ImGui::Spacing();
-
-        if (g_launcherUpdateInfo.hasUpdate) {
-            std::string updateHeader = u8"Доступно новое обновление: v" + WStringToUTF8(g_launcherUpdateInfo.version);
-            if (g_launcherUpdateInfo.buildNumber > 0) {
-                updateHeader += u8" (Сборка #" + std::to_string(g_launcherUpdateInfo.buildNumber) + ")";
-            }
-            ImGui::PushFont(g_imFontHeading);
-            ImGui::TextColored(ImVec4(1.0f, 0.78f, 0.25f, 1.0f), "⭐ %s", updateHeader.c_str());
-            ImGui::PopFont();
-        } else {
-            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), u8"У вас установлена самая свежая версия лаунчера.");
-        }
-
-        ImGui::Spacing();
-        ImGui::TextDisabled(u8"ОПИСАНИЕ ИЗМЕНЕНИЙ (CHANGELOG С GITHUB):");
-
-        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.08f, 0.09f, 0.12f, 1.0f));
-        ImGui::PushFont(g_imFontSmall);
-        std::string pageNotes = WStringToUTF8(g_launcherUpdateInfo.releaseNotes);
-        if (pageNotes.empty()) {
-            if (g_isCheckingLauncherUpdate.load()) {
-                pageNotes = u8"Загрузка списка изменений с GitHub...";
+            if (active) {
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.00f, 0.90f, 0.46f, 1.0f));
             } else {
-                pageNotes = u8"Для данной сборки нет дополнительного текста описания в релизе GitHub.";
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
             }
-        }
-        
-        ImVec2 textSize = ImGui::CalcTextSize(pageNotes.c_str(), nullptr, false, S(740.0f));
-        float childHeight = textSize.y + S(16.0f);
-        if (childHeight > S(150.0f)) childHeight = S(150.0f);
-        if (childHeight < S(36.0f)) childHeight = S(36.0f);
-
-        ImGui::BeginChild("ChangelogPageScroll", ImVec2(S(760.0f), childHeight), true, ImGuiWindowFlags_NoScrollWithMouse);
-        
-        static float targetScrollY = 0.0f;
-        static float currentScrollY = 0.0f;
-
-        float actualScrollY = ImGui::GetScrollY();
-        float wheel = ImGui::GetIO().MouseWheel;
-        if (wheel == 0.0f && std::abs(actualScrollY - currentScrollY) > 2.0f) {
-            targetScrollY = actualScrollY;
-            currentScrollY = actualScrollY;
-        }
-
-        if (ImGui::IsWindowHovered() && wheel != 0.0f) {
-            targetScrollY -= wheel * 100.0f;
-        }
-
-        float maxScroll = ImGui::GetScrollMaxY();
-        if (targetScrollY < 0.0f) targetScrollY = 0.0f;
-        if (targetScrollY > maxScroll) targetScrollY = maxScroll;
-
-        if (std::abs(targetScrollY - currentScrollY) > 0.5f) {
-            g_isSmoothScrolling = true;
-        }
-
-        float lerpT = std::min(10.0f * ImGui::GetIO().DeltaTime, 0.5f);
-        currentScrollY += (targetScrollY - currentScrollY) * lerpT;
-        ImGui::SetScrollY(currentScrollY);
-
-        ImGui::TextWrapped("%s", pageNotes.c_str());
-        ImGui::EndChild();
-        ImGui::PopFont();
-        ImGui::PopStyleColor();
-
-        ImGui::Spacing();
-        if (g_launcherUpdateInfo.hasUpdate) {
-            PushAccentButton();
-            if (ImGui::Button(u8"СКАЧАТЬ И УСТАНОВИТЬ ОБНОВЛЕНИЕ", S(320, 40))) {
-                g_app.isDownloading = true;
-                RunInBackground([]() {
-                    LauncherUpdater::DownloadAndApplyUpdate(g_launcherUpdateInfo.downloadUrl,
-                        [](const std::wstring& msg) { AppendLog(msg); },
-                        [](float p) {
-                            g_app.downloadProgress = p;
-                            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"Загрузка обновления..."; }
-                        },
-                        g_app.githubToken);
-                });
-            }
-            PopAccentButton();
-
-            if (g_app.isDownloading.load()) {
-                ImGui::Spacing();
-                std::wstring stats;
-                { std::lock_guard<std::mutex> lock(g_app.statsMutex); stats = g_app.downloadTitleText; }
-                ImGui::TextColored(ImVec4(1.0f, 0.78f, 0.25f, 1.0f), "%s %.0f%%", WStringToUTF8(stats).c_str(), g_app.downloadProgress * 100.0f);
-                ImGui::PushStyleColor(ImGuiCol_PlotHistogram, GetAdaptiveProgressColor(g_app.downloadProgress));
-                ImGui::ProgressBar(g_app.downloadProgress, S(760, 15), "");
-                ImGui::PopStyleColor();
-            }
-        }
-
-        ImGui::EndChild();
-    }
-    else if (g_app.currentPage == Page::RtxMods) {
-        ImGui::SetCursorPos(S(40, 44));
-        ImGui::PushFont(g_imFontTitle);
-        ImGui::Text(u8"МОДЫ RTX");
-        ImGui::PopFont();
-
-        ImGui::SetCursorPos(S(40, 90));
-        if (ImGui::Button(u8"Назад", S(90, 32))) SwitchPage(Page::Overview);
-
-        ImGui::SameLine(S(140));
-        if (ImGui::Button(u8"Проверить обновления", S(180, 32))) LoadRtxReleases();
-
-        ImGui::SetCursorPos(S(40, 132));
-        
-        auto drawRTXModeCard = [](const char* id, const char* title, const char* subtitle, bool selected, ImU32 imgColor, bool isBeta, const char* desc) {
-            ImVec2 size = S(360, 320);
-            ImVec2 p = ImGui::GetCursorScreenPos();
-            
-            bool clicked = ImGui::InvisibleButton(id, size);
-            bool hovered = ImGui::IsItemHovered();
-            bool active = ImGui::IsItemActive();
-            
-            ImDrawList* drawList = ImGui::GetWindowDrawList();
-            
-            float rounding = 12.0f;
-            ImU32 bgColor = IM_COL32(28, 30, 36, 255);
-            if (hovered) bgColor = IM_COL32(35, 38, 45, 255);
-            if (active) bgColor = IM_COL32(20, 22, 26, 255);
-            
-            drawList->AddRectFilled(p, ImVec2(p.x + size.x, p.y + size.y), bgColor, rounding);
-            
-            float imgHeight = size.y * 0.55f;
-            drawList->AddRectFilled(p, ImVec2(p.x + size.x, p.y + imgHeight), imgColor, rounding, ImDrawFlags_RoundCornersTop);
-            
-            drawList->AddRectFilledMultiColor(p, ImVec2(p.x + size.x, p.y + imgHeight), IM_COL32(0,0,0,0), IM_COL32(0,0,0,0), IM_COL32(0,0,0,180), IM_COL32(0,0,0,180));
-            
-            if (selected) {
-                drawList->AddRect(p, ImVec2(p.x + size.x, p.y + size.y), IM_COL32(255, 200, 0, 255), rounding, 0, 2.0f);
-            } else if (hovered) {
-                drawList->AddRect(p, ImVec2(p.x + size.x, p.y + size.y), IM_COL32(100, 100, 100, 150), rounding, 0, 1.0f);
-            }
-
-            ImVec2 textP = ImVec2(p.x + 20.0f, p.y + imgHeight + 20.0f);
-            ImGui::PushFont(g_imFontHeading);
-            drawList->AddText(textP, IM_COL32(255, 255, 255, 255), title);
-            
-            float subtitleWidth = ImGui::CalcTextSize(subtitle).x;
-            ImVec2 badgeP = ImVec2(p.x + size.x - 20.0f - subtitleWidth, p.y + imgHeight + 20.0f);
-            ImU32 badgeCol = isBeta ? IM_COL32(255, 100, 0, 255) : IM_COL32(0, 200, 100, 255);
-            drawList->AddText(badgeP, badgeCol, subtitle);
-            ImGui::PopFont();
-            
-            ImVec2 descP = ImVec2(p.x + 20.0f, p.y + imgHeight + 60.0f);
-            drawList->AddText(ImGui::GetFont(), ImGui::GetFontSize(), descP, IM_COL32(200, 200, 200, 255), desc, NULL, size.x - 40.0f);
-            
-            return clicked;
+            bool clicked = ImGui::Button(label, ImVec2(S(158), S(45)));
+            ImGui::PopStyleColor(4);
+            ImGui::PopStyleVar(1);
+            return clicked && interactive;
         };
 
-        if (drawRTXModeCard("Mode0", u8"Полное освещение", u8"Бета", g_app.rtxSelectedIndex == 0, IM_COL32(180, 80, 20, 255), true, u8"Оригинальные материалы игры остаются без изменений.\nДобавляется только трассировка лучей.")) {
-            g_app.rtxSelectedIndex = 0;
-        }
+        auto GetStaggeredOffset = [](int index, bool isWizard, bool isSubMenuTransition, bool isEntering) {
+            if (g_sidebarAnimState != SidebarAnimState::WizardOut_MenuIn && g_sidebarAnimState != SidebarAnimState::SubMenuTransition) return 0.0f;
+            
+            float delay = index * 0.1f;
+            float t = g_sidebarAnimTimer - delay;
+            if (t < 0.0f) t = 0.0f;
+            float duration = 0.4f;
+            t = t / duration;
+            if (t > 1.0f) t = 1.0f;
+            float ease = 1.0f - powf(1.0f - t, 3.0f);
+            
+            if (isWizard) return -S(190.0f) * ease; // slide out left
+            if (isSubMenuTransition) {
+                bool isGoingBack = (g_sidebarMenu == SidebarMenu::Main);
+                if (isGoingBack) {
+                    if (isEntering) return -S(190.0f) * (1.0f - ease);
+                    else return S(190.0f) * ease;
+                } else {
+                    if (isEntering) return S(190.0f) * (1.0f - ease);
+                    else return -S(190.0f) * ease;
+                }
+            }
+            
+            return S(190.0f) * (1.0f - ease);  // slide in from right
+        };
 
-        ImGui::SameLine(S(40 + 360 + 30));
+        bool drawWizard = (g_app.currentPage == Page::InstallerWizard || g_sidebarAnimState == SidebarAnimState::WizardOut_MenuIn);
+        bool drawMenu = (g_app.currentPage != Page::InstallerWizard || g_sidebarAnimState == SidebarAnimState::WizardOut_MenuIn);
 
-        if (drawRTXModeCard("Mode1", u8"Освещение + текстуры", u8"Скоро", g_app.rtxSelectedIndex == 1, IM_COL32(20, 80, 180, 255), false, u8"Замена оригинальных текстур на PBR материалы.\nНаходится в стадии активной разработки.")) {
-            g_app.rtxSelectedIndex = 1;
-        }
-    }
-    else if (g_app.currentPage == Page::Settings) {
-        ImGui::SetCursorPos(S(40, 44));
-        ImGui::PushFont(g_imFontTitle);
-        ImGui::Text(u8"НАСТРОЙКИ");
-        ImGui::PopFont();
+        ImVec2 startCursorPos = ImGui::GetCursorPos();
 
-        ImGui::SetCursorPos(S(40, 90));
-        if (ImGui::Button(u8"Назад", S(90, 32))) SwitchPage(Page::Overview);
-
-        ImGui::SetCursorPos(S(40, 132));
-        ImGui::BeginChild("SettingsChild", S(780, 330), true);
-
-        // Левая колонка
-        ImGui::BeginGroup();
-        ImGui::TextDisabled(u8"РАСПОЛОЖЕНИЕ ИГРЫ:");
-        std::string pathUtf8 = WStringToUTF8(g_app.installRootPath);
-        if (pathUtf8.empty()) pathUtf8 = u8"Не выбрано";
-        ImGui::TextColored(ImVec4(0.85f, 0.85f, 0.85f, 1.0f), "%s", pathUtf8.c_str());
-
-        ImGui::Spacing();
-        if (ImGui::Button(u8"Сменить диск", S(300, 36))) {
-            ShowDiskSelectionModal(OnDiskChanged);
-        }
-
-        ImGui::Spacing(); ImGui::Spacing();
-        ImGui::TextDisabled(u8"РЕЖИМ ЗАПУСКА:");
-        if (ImGui::Button(g_app.launchMode == 2 ? u8"Режим: Совместимость" : u8"Режим: Обычный", S(300, 36))) {
-            g_app.launchMode = (g_app.launchMode == 2) ? 1 : 2;
-            SaveSettings();
-        }
-
-        ImGui::Spacing(); ImGui::Spacing();
-        ImGui::TextDisabled(u8"ВИДЕОКАРТА:");
-        std::string gpuName = g_app.gpuInfo.name.empty() ? u8"Не определена" : g_app.gpuInfo.name;
-        ImGui::TextColored(g_app.gpuInfo.isAmdOrIntel ? ImVec4(1.0f, 0.75f, 0.25f, 1.0f) : ImVec4(0.0f, 0.90f, 0.46f, 1.0f), "%s", gpuName.c_str());
-        if (g_app.gpuInfo.isAmdOrIntel) {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.75f, 0.25f, 0.9f));
-            ImGui::TextWrapped(u8"(Совместимость с AMD/Intel не гарантируется)");
-            ImGui::PopStyleColor();
-        } else if (g_app.gpuInfo.isNvidiaRtx) {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.90f, 0.46f, 0.9f));
-            ImGui::TextWrapped(u8"(Полная аппаратная поддержка NVIDIA RTX)");
-            ImGui::PopStyleColor();
-        }
-        ImGui::EndGroup();
-
-        // Правая колонка
-        ImGui::SameLine(S(360.0f));
-        ImGui::BeginGroup();
-        ImGui::TextDisabled(u8"ВОССТАНОВЛЕНИЕ:");
-        if (ImGui::Button(g_app.optRepair ? u8"Удалять лишние файлы: Вкл" : u8"Удалять лишние файлы: Выкл", S(310, 36))) {
-            g_app.optRepair = !g_app.optRepair;
-            SaveSettings();
-        }
-
-        ImGui::Spacing(); ImGui::Spacing();
-        ImGui::TextDisabled(u8"РЕПОЗИТОРИЙ И ФИКСЫ:");
-        if (ImGui::Button(u8"Открыть RTX GitHub", S(310, 36))) DoOpenRtxGithub();
-        ImGui::EndGroup();
-
-        ImGui::EndChild();
-    }
-    else if (g_app.currentPage == Page::InstallerWizard) {
-        if (g_wizardIsSliding) {
-            g_wizardSlideProgress += ImGui::GetIO().DeltaTime / 0.20f;
-            if (g_wizardSlideProgress >= 1.0f) {
-                g_wizardSlideProgress = 1.0f;
-                g_wizardStep = g_wizardTargetStep;
-                g_wizardIsSliding = false;
+        if (drawWizard) {
+            ImGui::SetCursorPos(startCursorPos);
+            const char* steps[] = { u8"Приветствие", u8"Запуск", u8"Папка с игрой", u8"Установка", u8"Готово" };
+            for (int i = 0; i < 5; ++i) {
+                float offset = GetStaggeredOffset(i, true, false, false);
+                if (g_app.currentPage != Page::InstallerWizard && g_sidebarAnimState == SidebarAnimState::None) continue; // safety
+                ImGui::PushID(i + 100);
+                NavButton(steps[i], static_cast<int>(g_wizardStep) == i, offset, false);
+                ImGui::PopID();
             }
         }
 
-        ImGui::SetCursorPos(ImVec2(45, 42));
-        ImGui::PushFont(g_imFontTitle);
-        ImGui::Text(u8"МАСТЕР УСТАНОВКИ METROSTROI RTX");
-        ImGui::PopFont();
+        if (drawMenu) {
+            auto DrawMainMenu = [&](bool isEntering) {
+                ImGui::SetCursorPos(startCursorPos);
+                ImGui::PushID(200);
+                if (NavButton(u8"Главная", g_app.currentPage == Page::Overview, GetStaggeredOffset(0, false, g_sidebarAnimState == SidebarAnimState::SubMenuTransition, isEntering))) SwitchMainPage(Page::Overview);
+                if (NavButton(u8"Настройки", g_app.currentPage == Page::Settings, GetStaggeredOffset(1, false, g_sidebarAnimState == SidebarAnimState::SubMenuTransition, isEntering))) SwitchMainPage(Page::Settings);
+                if (NavButton(u8"Моды", g_app.currentPage == Page::RtxMods && g_sidebarAnimState == SidebarAnimState::None, GetStaggeredOffset(2, false, g_sidebarAnimState == SidebarAnimState::SubMenuTransition, isEntering))) {
+                    g_sidebarMenuPrevious = g_sidebarMenu;
+                    g_sidebarMenu = SidebarMenu::RtxGames;
+                    g_sidebarAnimState = SidebarAnimState::SubMenuTransition;
+                    g_sidebarAnimTimer = 0.0f;
+                }
+                ImGui::PopID();
+            };
+            
+            auto DrawRtxGamesMenu = [&](bool isEntering) {
+                ImGui::SetCursorPos(startCursorPos);
+                ImGui::PushID(300);
+                if (NavButton(u8"← Назад", false, GetStaggeredOffset(0, false, true, isEntering))) {
+                    g_sidebarMenuPrevious = g_sidebarMenu;
+                    g_sidebarMenu = SidebarMenu::Main;
+                    g_sidebarAnimState = SidebarAnimState::SubMenuTransition;
+                    g_sidebarAnimTimer = 0.0f;
+                    SwitchMainPage(Page::Overview);
+                }
+                if (NavButton(u8"Metrostroi RTX", g_app.currentPage == Page::RtxMods, GetStaggeredOffset(1, false, true, isEntering))) {
+                    SwitchMainPage(Page::RtxMods);
+                }
+                ImGui::PopID();
+            };
 
-        ImGui::SetCursorPos(ImVec2(45, 82));
+            if (g_sidebarAnimState == SidebarAnimState::SubMenuTransition) {
+                if (g_sidebarMenu == SidebarMenu::Main) {
+                    DrawRtxGamesMenu(false); // Sliding out
+                    DrawMainMenu(true);      // Sliding in
+                } else {
+                    DrawMainMenu(false);     // Sliding out
+                    DrawRtxGamesMenu(true);  // Sliding in
+                }
+            } else {
+                if (g_sidebarMenu == SidebarMenu::Main) DrawMainMenu(true);
+                else if (g_sidebarMenu == SidebarMenu::RtxGames) DrawRtxGamesMenu(true);
+            }
+        }
+        
+        ImGui::PopStyleVar(); // Pop ItemSpacing
+        
+        ImGui::SetCursorPos(ImVec2(S(16.0f), ImGui::GetWindowHeight() - S(30.0f)));
         ImGui::PushFont(g_imFontSmall);
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 1.0f));
-        const char* stepTitles[] = {
-            u8"Шаг 1 из 4: О модификации",
-            u8"Шаг 2 из 4: Выбор графического мода RTX",
-            u8"Шаг 3 из 4: Режим запуска",
-            u8"Шаг 4 из 4: Выбор накопителя для установки",
-            u8"Установка компонентов...",
-            u8"Установка завершена!"
-        };
-        WizardStep activeStepForTitle = g_wizardIsSliding && (g_wizardSlideProgress >= 0.5f) ? g_wizardTargetStep : g_wizardStep;
-        ImGui::Text("%s", stepTitles[(int)activeStepForTitle]);
+        std::string bottomStr = "v" + WStringToUTF8(LauncherUpdater::CURRENT_VERSION) + " (Build " + std::to_string(LauncherUpdater::CURRENT_BUILD_NUMBER) + ")";
+        
+        ImVec2 textSize = ImGui::CalcTextSize(bottomStr.c_str());
+        ImVec2 curPos = ImGui::GetCursorPos();
+        
+        ImGui::InvisibleButton("VersionBtn", textSize);
+        bool isHovered = ImGui::IsItemHovered() && g_app.currentPage != Page::InstallerWizard;
+        if (ImGui::IsItemClicked() && g_app.currentPage != Page::InstallerWizard) {
+            SwitchMainPage(Page::Authors);
+        }
+        
+        ImGui::SetCursorPos(curPos);
+        if (g_app.currentPage == Page::Authors) {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.90f, 0.46f, 1.0f));
+        } else if (isHovered) {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.6f));
+        } else {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.3f));
+        }
+        ImGui::Text("%s", bottomStr.c_str());
         ImGui::PopStyleColor();
         ImGui::PopFont();
+        
+        ImGui::PopFont();
+        ImGui::EndChild();
+        ImGui::PopStyleColor();
+        ImGui::EndGroup(); // End Sidebar
+        
+        ImGui::SameLine(0, 0);
+        
+        ImGui::BeginGroup(); // Main Content Area
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.04f, 0.05f, 0.06f, 1.0f));
+        
+        auto RenderPage = [&](Page p) {
+            if (p == Page::Overview) RenderUI_Overview();
+            else if (p == Page::Updates) RenderUI_Updates();
+            else if (p == Page::Settings) RenderUI_Settings();
+            else if (p == Page::RtxMods) RenderUI_RtxMods();
+            else if (p == Page::Authors) RenderUI_Authors();
+            else if (p == Page::InstallerWizard) RenderUI_Wizard();
+        };
 
-        float childW = ImGui::GetWindowWidth() - 90.0f;
-        ImGui::SetCursorPos(ImVec2(45, 115));
-        ImGui::BeginChild("InstallerWizardChild", ImVec2(childW, 350), true);
-
-        if (!g_wizardIsSliding) {
-            RenderSingleWizardStep(g_wizardStep, childW);
-        } else {
-            float p = g_wizardSlideProgress;
-            if (p < 0.5f) {
-                float normP = p * 2.0f;
-                float alpha = 1.0f - (normP * normP);
-                float offsetX = -30.0f * normP;
-
-                ImGui::SetCursorPos(ImVec2(15.0f + offsetX, 15.0f));
-                ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-                RenderSingleWizardStep(g_wizardStep, childW);
-                ImGui::PopStyleVar();
+        if (g_pageIsSliding && g_app.currentPage != Page::InstallerWizard && g_pagePrevious != Page::InstallerWizard) {
+            if (g_pageSlideDelayTimer < 0.05f) {
+                g_pageSlideDelayTimer += ImGui::GetIO().DeltaTime;
             } else {
-                float normP = (p - 0.5f) * 2.0f;
-                float easeNormP = 1.0f - (1.0f - normP) * (1.0f - normP);
-                float alpha = easeNormP;
-                float offsetX = 30.0f * (1.0f - easeNormP);
-
-                ImGui::SetCursorPos(ImVec2(15.0f + offsetX, 15.0f));
-                ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-                RenderSingleWizardStep(g_wizardTargetStep, childW);
-                ImGui::PopStyleVar();
+                g_pageSlideProgress += ImGui::GetIO().DeltaTime / 0.20f;
             }
+            
+            if (g_pageSlideProgress >= 1.0f) {
+                g_pageSlideProgress = 1.0f;
+                g_pageIsSliding = false;
+            }
+            
+            float p = g_pageSlideProgress;
+            float easeP = 1.0f - powf(1.0f - p, 3.0f);
+            
+            float contentW = ImGui::GetContentRegionAvail().x;
+            float contentH = ImGui::GetContentRegionAvail().y;
+            float slideDist = contentH;
+            
+            bool slideDown = static_cast<int>(g_pageTarget) > static_cast<int>(g_pagePrevious);
+            float oldOffsetY = slideDown ? (-slideDist * easeP) : (slideDist * easeP);
+            float newOffsetY = slideDown ? (slideDist * (1.0f - easeP)) : (-slideDist * (1.0f - easeP));
+
+            ImGui::BeginChild("SlideClipBox", ImVec2(contentW, contentH), false, ImGuiWindowFlags_NoScrollbar);
+            
+            // Old Page
+            ImGui::SetCursorPos(ImVec2(0, oldOffsetY));
+            ImGui::BeginChild("ContentAreaOld", ImVec2(contentW, contentH), false, ImGuiWindowFlags_NoScrollbar);
+            RenderPage(g_pagePrevious);
+            ImGui::EndChild();
+            
+            // New Page
+            ImGui::SetCursorPos(ImVec2(0, newOffsetY));
+            ImGui::BeginChild("ContentAreaNew", ImVec2(contentW, contentH), false, ImGuiWindowFlags_NoScrollbar);
+            RenderPage(g_pageTarget);
+            ImGui::EndChild();
+            
+            ImGui::EndChild(); // SlideClipBox
+        } else {
+            ImGui::BeginChild("ContentArea", ImVec2(0, 0), false, ImGuiWindowFlags_NoScrollbar);
+            RenderPage(g_app.currentPage);
+            ImGui::EndChild(); // ContentArea
         }
-
-        ImGui::EndChild();
-    }
-    else if (g_app.currentPage == Page::Authors) {
-        ImGui::SetCursorPos(S(40, 44));
-        ImGui::PushFont(g_imFontTitle);
-        ImGui::Text(u8"АВТОРЫ И БЛАГОДАРНОСТИ");
-        ImGui::PopFont();
-
-        ImGui::SetCursorPos(S(40, 90));
-        if (ImGui::Button(u8"Назад", S(90, 32))) SwitchPage(Page::Overview);
-
-        ImGui::SetCursorPos(S(40, 132));
-        ImGui::BeginChild("AuthorsChild", S(780, 330), true);
-
-        ImGui::PushFont(g_imFontHeading);
-        ImGui::TextColored(ImVec4(0.46f, 0.73f, 0.0f, 1.0f), u8"RTX Launcher & Logic");
-        ImGui::PopFont();
-        ImGui::Text(u8"• Antigravity (Google DeepMind AI) — Разработка архитектуры, дизайна и кода лаунчера");
-        ImGui::Text(u8"• RTX Project — Идея, координация проекта и тестирование");
         
-        ImGui::Spacing(); ImGui::Spacing();
-        ImGui::PushFont(g_imFontHeading);
-        ImGui::TextColored(ImVec4(0.46f, 0.73f, 0.0f, 1.0f), u8"RTX Remix Technology");
-        ImGui::PopFont();
-        ImGui::Text(u8"• NVIDIA — Создание платформы RTX Remix");
-        
-        ImGui::Spacing(); ImGui::Spacing();
-        ImGui::PushFont(g_imFontHeading);
-        ImGui::TextColored(ImVec4(0.46f, 0.73f, 0.0f, 1.0f), u8"Garry's Mod RTX Remix Assets");
-        ImGui::PopFont();
-        ImGui::Text(u8"• Xenthio — Создатель оригинального лаунчера, бинарных фиксов и ассетов для Garry's Mod");
-        ImGui::Text(u8"• sambow23 — Создатель пропатченной версии RTX Remix");
-        ImGui::Text(u8"• Сообщество моддеров — Дополнительные патчи и исправления для стабильной игры");
-        ImGui::Spacing(); ImGui::Spacing();
-        ImGui::PushFont(g_imFontHeading);
-        ImGui::TextColored(ImVec4(0.46f, 0.73f, 0.0f, 1.0f), u8"Open-Source Библиотеки");
-        ImGui::PopFont();
-        ImGui::Text(u8"• Omar Cornut — Разработка библиотеки Dear ImGui");
-
-        ImGui::EndChild();
+        ImGui::PopStyleColor(); // ContentArea Bg
+        ImGui::EndGroup(); // ContentArea Group
     }
-
+    
     ImGui::PopStyleVar(); // g_uiAlpha
-    ImGui::End();
+    ImGui::End(); // RTX Launcher main window
 
 
     // --- Custom Animated Modal ---
@@ -4219,3 +3910,5 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     return 0;
 }
+
+

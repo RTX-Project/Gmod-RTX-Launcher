@@ -43,6 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="UI_Overview.cpp" />
+    <ClCompile Include="UI_Updates.cpp" />
+    <ClCompile Include="UI_Settings.cpp" />
+    <ClCompile Include="UI_RtxMods.cpp" />
+    <ClCompile Include="UI_Wizard.cpp" />
+    <ClCompile Include="UI_Authors.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />

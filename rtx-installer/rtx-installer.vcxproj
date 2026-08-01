@@ -18,6 +18,9 @@
     <ClInclude Include="..\rtx-launcher\imgui\backends\imgui_impl_dx11.h" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="rtx-installer.rc" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="main_installer.cpp" />
     <ClCompile Include="..\rtx-launcher\imgui\imgui.cpp" />
     <ClCompile Include="..\rtx-launcher\imgui\imgui_draw.cpp" />

@@ -179,7 +179,8 @@ static void LaunchInstalledAppAndExit(HWND hWnd) {
 }
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow) {
-    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, hInstance, NULL, NULL, NULL, NULL, L"RTXInstallerClass", NULL };
+    HICON hIcon = LoadIconW(hInstance, MAKEINTRESOURCE(101));
+    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, hInstance, hIcon, NULL, NULL, NULL, L"RTXInstallerClass", hIcon };
     RegisterClassExW(&wc);
 
     int windowWidth = 660;
@@ -209,9 +210,10 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 
     // Загрузка стандартного системного шрифта с поддержкой кириллицы
     ImFontConfig font_config;
-    font_config.OversampleH = 2;
-    font_config.OversampleV = 2;
-    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18.0f, &font_config, io.Fonts->GetGlyphRangesCyrillic());
+    font_config.OversampleH = 4;
+    font_config.OversampleV = 4;
+    font_config.PixelSnapH = true;
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 19.0f, &font_config, io.Fonts->GetGlyphRangesCyrillic());
 
     // Тёмный графический стиль
     ImGuiStyle& style = ImGui::GetStyle();
@@ -267,23 +269,54 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 
         ImGui::Begin("RTXInstallerWindow", nullptr, windowFlags);
 
-        // --- Верхний заголовок программы ---
-        ImGui::SetCursorPos(ImVec2(24, 16));
-        ImGui::TextColored(ImVec4(0.00f, 0.85f, 0.44f, 1.0f), "● GMOD RTX REMIX LAUNCHER");
-        ImGui::SameLine(ImGui::GetWindowWidth() - 75);
+        ImDrawList* dl = ImGui::GetWindowDrawList();
+        ImVec2 winPos = ImGui::GetWindowPos();
+        dl->AddRectFilledMultiColor(winPos, ImVec2(winPos.x + windowWidth, winPos.y + windowHeight), 
+            IM_COL32(12, 28, 24, 255), IM_COL32(12, 28, 24, 255),
+            IM_COL32(8, 12, 16, 255), IM_COL32(8, 12, 16, 255));
+
+        // MacOS-style window controls
+        float btnRadius = 6.0f;
+        float spacing = 20.0f;
         
-        if (ImGui::Button("_", ImVec2(24, 24))) ShowWindow(hWnd, SW_MINIMIZE);
-        ImGui::SameLine(ImGui::GetWindowWidth() - 45);
-        if (ImGui::Button("X", ImVec2(24, 24))) PostQuitMessage(0);
+        ImVec2 closePos(winPos.x + 20, winPos.y + 20);
+        bool closeHov = ImGui::IsMouseHoveringRect(ImVec2(closePos.x - btnRadius, closePos.y - btnRadius), ImVec2(closePos.x + btnRadius, closePos.y + btnRadius));
+        dl->AddCircleFilled(closePos, btnRadius, closeHov ? IM_COL32(255, 95, 86, 255) : IM_COL32(255, 95, 86, 200));
+        if (closeHov) {
+            dl->AddLine(ImVec2(closePos.x - 3, closePos.y - 3), ImVec2(closePos.x + 3, closePos.y + 3), IM_COL32(50, 0, 0, 255), 1.5f);
+            dl->AddLine(ImVec2(closePos.x + 3, closePos.y - 3), ImVec2(closePos.x - 3, closePos.y + 3), IM_COL32(50, 0, 0, 255), 1.5f);
+        }
+        ImGui::SetCursorPos(ImVec2(closePos.x - btnRadius - winPos.x, closePos.y - btnRadius - winPos.y));
+        if (ImGui::InvisibleButton("CloseBtn", ImVec2(btnRadius * 2, btnRadius * 2))) PostQuitMessage(0);
+
+        ImVec2 minPos(winPos.x + 20 + spacing, winPos.y + 20);
+        bool minHov = ImGui::IsMouseHoveringRect(ImVec2(minPos.x - btnRadius, minPos.y - btnRadius), ImVec2(minPos.x + btnRadius, minPos.y + btnRadius));
+        dl->AddCircleFilled(minPos, btnRadius, minHov ? IM_COL32(255, 189, 46, 255) : IM_COL32(255, 189, 46, 200));
+        if (minHov) {
+            dl->AddLine(ImVec2(minPos.x - 3, minPos.y), ImVec2(minPos.x + 3, minPos.y), IM_COL32(50, 50, 0, 255), 1.5f);
+        }
+        ImGui::SetCursorPos(ImVec2(minPos.x - btnRadius - winPos.x, minPos.y - btnRadius - winPos.y));
+        if (ImGui::InvisibleButton("MinBtn", ImVec2(btnRadius * 2, btnRadius * 2))) ShowWindow(hWnd, SW_MINIMIZE);
+
+        // --- Верхний заголовок программы ---
+        ImGui::SetCursorPos(ImVec2(70, 12));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.9f));
+        ImGui::Text("GMOD RTX REMIX LAUNCHER");
+        ImGui::PopStyleColor();
 
         ImGui::SetCursorPos(ImVec2(24, 45));
         ImGui::TextDisabled("УСТАНОВКА И НАСТРОЙКА");
-        ImGui::Separator();
 
         // --- Главная карточка содержимого ---
-        ImGui::SetCursorPos(ImVec2(24, 85));
-        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.09f, 0.11f, 0.14f, 0.90f));
-        ImGui::BeginChild("InstallerContentCard", ImVec2(612, 280), true);
+        ImVec2 cardPos = ImVec2(24, 85);
+        ImVec2 cardSize = ImVec2(612, 280);
+        ImVec2 cardScreenPos = ImVec2(winPos.x + cardPos.x, winPos.y + cardPos.y);
+        
+        dl->AddRectFilled(cardScreenPos, ImVec2(cardScreenPos.x + cardSize.x, cardScreenPos.y + cardSize.y), IM_COL32(24, 28, 36, 120), 12.0f);
+        dl->AddRect(cardScreenPos, ImVec2(cardScreenPos.x + cardSize.x, cardScreenPos.y + cardSize.y), IM_COL32(50, 60, 75, 90), 12.0f, 0, 1.0f);
+
+        ImGui::SetCursorPos(cardPos);
+        ImGui::BeginChild("InstallerContentCard", cardSize, false, ImGuiWindowFlags_NoScrollbar);
 
         ImGui::SetCursorPos(ImVec2(20, 20));
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "Автоматическая установка лаунчера");
@@ -330,37 +363,64 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
             if (fillPct < 0.0f) fillPct = 0.0f;
             if (fillPct > 1.0f) fillPct = 1.0f;
 
-            ImDrawList* drawList = ImGui::GetWindowDrawList();
             ImVec2 p0 = ImGui::GetCursorScreenPos();
             ImVec2 p1 = ImVec2(p0.x + 572.0f, p0.y + 12.0f);
-            drawList->AddRectFilled(p0, p1, IM_COL32(30, 35, 45, 255), 6.0f);
+            dl->AddRectFilled(p0, p1, IM_COL32(30, 40, 50, 255), 6.0f);
             if (fillPct > 0.01f) {
                 ImVec2 p2 = ImVec2(p0.x + 572.0f * fillPct, p1.y);
-                drawList->AddRectFilled(p0, p2, IM_COL32(0, 218, 110, 255), 6.0f);
+                
+                float t = fillPct;
+                float r, g, b;
+                if (t < 0.5f) {
+                    float localT = t * 2.0f;
+                    r = 0.92f;
+                    g = 0.25f + 0.55f * localT;
+                    b = 0.20f;
+                } else {
+                    float localT = (t - 0.5f) * 2.0f;
+                    r = 0.92f - 0.62f * localT;
+                    g = 0.80f + 0.05f * localT;
+                    b = 0.20f + 0.19f * localT;
+                }
+                ImU32 fillCol = ImGui::ColorConvertFloat4ToU32(ImVec4(r, g, b, 1.0f));
+                
+                dl->AddRectFilled(p0, p2, fillCol, 6.0f);
             }
         }
 
         // --- Кнопка действия ---
         ImGui::SetCursorPos(ImVec2(20, 215));
+        
+        auto DrawActionButton = [](const char* label, float width, bool disabled) {
+            ImVec2 p = ImGui::GetCursorScreenPos();
+            bool hovered = ImGui::IsMouseHoveringRect(p, ImVec2(p.x + width, p.y + 44.0f));
+            bool active = hovered && ImGui::IsMouseDown(0);
+            ImU32 col = disabled ? IM_COL32(80, 80, 80, 255) : (active ? IM_COL32(0, 200, 100, 255) : (hovered ? IM_COL32(0, 255, 150, 255) : IM_COL32(0, 255, 128, 255)));
+            ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + width, p.y + 44.0f), col, 8.0f);
+            
+            ImVec2 textSize = ImGui::CalcTextSize(label);
+            ImGui::GetWindowDrawList()->AddText(ImVec2(p.x + width / 2.0f - textSize.x / 2.0f, p.y + 22.0f - textSize.y / 2.0f), 
+                disabled ? IM_COL32(200, 200, 200, 255) : IM_COL32(10, 15, 12, 255), label);
+                
+            return ImGui::InvisibleButton(label, ImVec2(width, 44.0f)) && !disabled;
+        };
+        
         if (g_installState == InstallState::Idle || g_installState == InstallState::Error) {
-            if (ImGui::Button("НАЧАТЬ УСТАНОВКУ", ImVec2(220, 44))) {
+            if (DrawActionButton("НАЧАТЬ УСТАНОВКУ", 220, false)) {
                 StartInstallationAsync();
             }
         }
         else if (g_installState == InstallState::Downloading || g_installState == InstallState::CreatingShortcut) {
-            ImGui::BeginDisabled();
-            ImGui::Button("УСТАНОВКА...", ImVec2(220, 44));
-            ImGui::EndDisabled();
+            DrawActionButton("УСТАНОВКА...", 220, true);
         }
         else if (g_installState == InstallState::Complete) {
             std::string btnText = "ЗАПУСТИТЬ ЛАУНЧЕР (" + std::to_string((int)ceil(g_autoLaunchTimer)) + " сек)";
-            if (ImGui::Button(btnText.c_str(), ImVec2(260, 44))) {
+            if (DrawActionButton(btnText.c_str(), 280, false)) {
                 LaunchInstalledAppAndExit(hWnd);
             }
         }
 
         ImGui::EndChild();
-        ImGui::PopStyleColor();
 
         ImGui::End();
 
@@ -451,7 +511,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         // Поддержка перетаскивания окна за область верхней панели
         POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
         ScreenToClient(hWnd, &pt);
-        if (pt.y >= 0 && pt.y <= 45 && pt.x < 580) {
+        if (pt.y >= 0 && pt.y <= 45 && pt.x > 70) {
             return HTCAPTION;
         }
         break;
