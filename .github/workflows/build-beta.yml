@@ -24,7 +24,9 @@ jobs:
     - name: Build Solution
       run: |
         msbuild rtx-launcher\rtx-launcher.vcxproj /p:Configuration=Release /p:Platform=x64
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         msbuild rtx-installer\rtx-installer.vcxproj /p:Configuration=Release /p:Platform=x64
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         
     - name: Debug Output Dir
       run: |
