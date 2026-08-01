@@ -1,6 +1,8 @@
 #include "UI_Settings.h"
 #include "Globals.h"
+#include "Theme.h"
 #include "imgui.h"
+#include "LauncherUpdater.h"
 
 extern void SaveSettings();
 extern void ShowDiskSelectionModal(void (*onDiskSelected)());
@@ -183,6 +185,7 @@ void RenderUI_Settings() {
         
         DrawToggle("BetaTgl", ImVec2(pos.x + size.x - S(50), pos.y + S(14)), g_app.receiveBetaUpdates, [&]() { 
             g_app.receiveBetaUpdates = !g_app.receiveBetaUpdates; 
+            LauncherUpdater::INCLUDE_PRERELEASES = g_app.receiveBetaUpdates;
             SaveSettings(); 
             CheckLauncherUpdatesAsync(); 
         });
