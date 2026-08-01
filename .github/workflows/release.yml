@@ -21,12 +21,7 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Build Solution
-      run: msbuild rtx-launcher.sln /p:Configuration=Release /p:Platform=x64
-      
-    - name: Prepare Release Assets
-      run: |
-        cd x64/Release
-        Rename-Item -Path rtx-launcher.exe -NewName system_data.bin
+      run: msbuild rtx-launcher.slnx /p:Configuration=Release /p:Platform=x64
       
     - name: Release to GitHub
       uses: softprops/action-gh-release@v2
