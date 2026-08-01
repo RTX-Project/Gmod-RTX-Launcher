@@ -37,7 +37,7 @@ void RenderUI_Settings() {
     ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0,0,0,0));
     ImGui::BeginChild("SettingsChild", ImVec2(mainCardSize.x - S(60), mainCardSize.y - S(95)), false, ImGuiWindowFlags_NoScrollbar);
 
-    float rowH = S(115);
+    float rowH = S(100);
     float spacing = S(16);
     float colW = (mainCardSize.x - S(60) - spacing) / 2.0f;
     
@@ -189,9 +189,9 @@ void RenderUI_Settings() {
     });
 
     // ----------------------------------------------------
-    // Row 4: GPU Information
+    // Row 3, Col 2: GPU Information
     // ----------------------------------------------------
-    DrawCard(ImVec2(p0.x, p0.y + (rowH + spacing) * 3), ImVec2(colW * 2 + spacing, S(84)), [&](ImVec2 pos, ImVec2 size) {
+    DrawCard(ImVec2(p0.x + colW + spacing, p0.y + (rowH + spacing) * 2), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
         ImGui::PushFont(g_imFontRegular);
         ImGui::TextColored(ImVec4(1, 1, 1, 1), u8"Видеокарта");
@@ -199,12 +199,12 @@ void RenderUI_Settings() {
         
         std::string gpuName = g_app.gpuInfo.name.empty() ? u8"Не определена" : g_app.gpuInfo.name;
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
-        ImGui::PushFont(g_imFontHeading);
+        ImGui::PushFont(g_imFontRegular);
         ImGui::TextColored(g_app.gpuInfo.isAmdOrIntel ? ImVec4(1.0f, 0.75f, 0.25f, 1.0f) : ImVec4(0.0f, 0.90f, 0.46f, 1.0f), "%s", gpuName.c_str());
         ImVec2 gpuSize = ImGui::CalcTextSize(gpuName.c_str());
         ImGui::PopFont();
 
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(30) + gpuSize.x, pos.y + S(40) + (gpuSize.y - ImGui::GetFontSize()) * 0.5f));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(65)));
         ImGui::PushFont(g_imFontSmall);
         if (g_app.gpuInfo.isAmdOrIntel) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.75f, 0.25f, 0.9f));
