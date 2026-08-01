@@ -27,6 +27,15 @@ void RenderUI_Overview() {
             
         dl->AddRect(mainCardPos, ImVec2(mainCardPos.x + mainCardSize.x, mainCardPos.y + mainCardSize.y), IM_COL32(20, 45, 50, 100), 12.0f, 0, 1.0f);
         
+        // --- BUTTON CHECK UPDATES ---
+        ImGui::SetCursorScreenPos(ImVec2(mainCardPos.x + mainCardSize.x - S(190), mainCardPos.y + S(15)));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.15f, 0.2f, 0.8f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.15f, 0.2f, 0.25f, 1.0f));
+        if (ImGui::Button(u8"Проверить обновления", ImVec2(S(175), S(28)))) {
+            CheckLauncherUpdatesAsync();
+        }
+        ImGui::PopStyleColor(2);
+        
         float startY = mainCardPos.y + mainCardSize.y / 2.0f - S(65.0f);
         
         ImGui::PushFont(g_imFontTitle);
