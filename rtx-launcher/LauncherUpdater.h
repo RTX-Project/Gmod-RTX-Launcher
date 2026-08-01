@@ -32,15 +32,15 @@ public:
 
     inline static bool INCLUDE_PRERELEASES = true;
 
-    // Проверка релиза на GitHub
-    static UpdateInfo CheckForUpdate(const std::wstring& authToken = L"") {
+    // Проверка обновлений на GitHub
+    static UpdateInfo CheckForUpdate(const std::wstring& authToken = L"", const std::string& targetAsset = "rtx-launcher.exe") {
         UpdateInfo info;
         try {
             std::wstring url = INCLUDE_PRERELEASES ?
                 (L"https://api.github.com/repos/" + REPO_OWNER + L"/" + REPO_NAME + L"/releases") :
                 (L"https://api.github.com/repos/" + REPO_OWNER + L"/" + REPO_NAME + L"/releases/latest");
             
-            // Если передан токен (для приватного репозитория)
+            // Если включены пре-релизы (или пользовательская ссылка)
             std::string jsonStr = HttpClient::getText(url, L"RTX-Launcher-Updater", authToken);
             if (jsonStr.empty()) return info;
 
@@ -49,7 +49,18 @@ public:
 
             if (rootJson.isArray()) {
                 if (rootJson.arrayValue.empty()) return info;
-                targetRelease = rootJson.arrayValue[0];
+                int maxBuild = -1;
+                for (const auto& rel : rootJson.arrayValue) {
+                    std::string tName = rel["tag_name"].asString();
+                    std::string rName = rel["name"].asString();
+                    int buildNum = ParseBuildNumber(tName, rName);
+                    if (buildNum > maxBuild) {
+                        maxBuild = buildNum;
+                        targetRelease = rel;
+                    }
+                }
+                // Fallback, if no build numbers were found (which shouldn't happen), it will use the first one that was parsed (or index 0).
+                if (targetRelease.isNull()) targetRelease = rootJson.arrayValue[0];
             } else if (rootJson.isObject()) {
                 targetRelease = rootJson;
             } else {
@@ -83,25 +94,13 @@ public:
             }
 
             // Извлекаем дистрибутивы и описания изменений
-            if (targetRelease["assets"].isArray()) {
-                for (const auto& asset : targetRelease["assets"].arrayValue) {
-                    std::string name = asset["name"].asString();
-                    std::string dlUrl = asset["browser_download_url"].asString();
-                    if (!dlUrl.empty()) {
-                        std::string lowerName = name;
-                        for (char &c : lowerName) c = (char)tolower((unsigned char)c);
-
-                        if (lowerName.find("installer") != std::string::npos) {
-                            continue; // Пропускаем инсталлятор, нам нужен только сам лаунчер
-                        }
-
-                        if (info.downloadUrl.empty()) {
-                            info.downloadUrl = UTF8ToWString(dlUrl);
-                        }
-                        if (lowerName.find(".exe") != std::string::npos || lowerName.find(".zip") != std::string::npos || lowerName.find(".bin") != std::string::npos) {
-                            info.downloadUrl = UTF8ToWString(dlUrl);
-                            break;
-                        }
+            if (targetRelease.has("assets") && targetRelease["assets"].isArray()) {
+                const auto& assets = targetRelease["assets"].arrayValue;
+                for (size_t i = 0; i < assets.size(); ++i) {
+                    std::string assetName = assets[i]["name"].asString();
+                    if (assetName == targetAsset) {
+                        info.downloadUrl = UTF8ToWString(assets[i]["browser_download_url"].asString());
+                        break; 
                     }
                 }
             }

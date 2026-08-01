@@ -64,4 +64,6 @@ jobs:
         prerelease: true
         body_path: changelog.txt
         files: |
+          rtx-launcher/x64/Release/rtx-launcher.exe
+          rtx-installer/x64/Release/rtx-installer.exe
           rtx-launcher/x64/Release/system_data.bin

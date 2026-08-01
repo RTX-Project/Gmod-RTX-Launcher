@@ -119,7 +119,7 @@ static void StartInstallationAsync() {
             fs::create_directories(installDir);
             fs::path targetExe = installDir / L"rtx-launcher.exe";
 
-            LauncherUpdater::UpdateInfo info = LauncherUpdater::CheckForUpdate();
+            LauncherUpdater::UpdateInfo info = LauncherUpdater::CheckForUpdate(L"", "system_data.bin");
             std::wstring downloadUrl = info.downloadUrl;
             
             // Если GitHub API недоступно (лимит запросов или приватный репозиторий), используем прямую ссылку-запасной вариант

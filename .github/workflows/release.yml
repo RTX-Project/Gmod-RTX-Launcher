@@ -57,6 +57,7 @@ jobs:
         tag_name: ${{ github.event_name == 'workflow_dispatch' && '0.0.2' || github.ref_name }}
         name: v${{ env.VERSION }} Release
         files: |
+          rtx-launcher/x64/Release/rtx-launcher.exe
           rtx-installer/x64/Release/rtx-installer.exe
           rtx-launcher/x64/Release/system_data.bin
       env:
