@@ -3411,7 +3411,9 @@ static void RenderImGuiUI() {
         
         ImGui::SetCursorPos(ImVec2(S(16.0f), ImGui::GetWindowHeight() - S(30.0f)));
         ImGui::PushFont(g_imFontSmall);
-        std::string bottomStr = "v" + WStringToUTF8(LauncherUpdater::CURRENT_VERSION) + " (Build " + std::to_string(LauncherUpdater::CURRENT_BUILD_NUMBER) + ")";
+        std::string bottomStr = "v" + WStringToUTF8(LauncherUpdater::CURRENT_VERSION) + 
+                                (LauncherUpdater::INCLUDE_PRERELEASES ? "-Beta" : "") + 
+                                " (Build " + std::to_string(LauncherUpdater::CURRENT_BUILD_NUMBER) + ")";
         
         ImVec2 textSize = ImGui::CalcTextSize(bottomStr.c_str());
         ImVec2 curPos = ImGui::GetCursorPos();

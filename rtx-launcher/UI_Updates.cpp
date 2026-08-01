@@ -27,8 +27,10 @@ void RenderUI_Updates() {
         ImGui::BeginChild("UpdatesMainChild", S(780, 345), true);
 
         ImGui::PushFont(g_imFontHeading);
+        std::string currentVerStr = WStringToUTF8(LauncherUpdater::CURRENT_VERSION) + 
+                                    (LauncherUpdater::INCLUDE_PRERELEASES ? "-Beta" : "");
         ImGui::TextColored(ImVec4(0.0f, 0.90f, 0.46f, 1.0f), u8"● ТЕКУЩАЯ СБОРКА: Build %d (Версия v%s)",
-            LauncherUpdater::CURRENT_BUILD_NUMBER, WStringToUTF8(LauncherUpdater::CURRENT_VERSION).c_str());
+            LauncherUpdater::CURRENT_BUILD_NUMBER, currentVerStr.c_str());
         ImGui::PopFont();
 
         ImGui::Spacing();

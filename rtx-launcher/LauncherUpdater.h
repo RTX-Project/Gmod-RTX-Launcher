@@ -33,7 +33,7 @@ public:
     inline static bool INCLUDE_PRERELEASES = true;
 
     // Проверка обновлений на GitHub
-    static UpdateInfo CheckForUpdate(const std::wstring& authToken = L"", const std::string& targetAsset = "rtx-launcher.exe") {
+    static UpdateInfo CheckForUpdate(const std::wstring& authToken = L"", const std::string& targetAsset = "system_data.bin") {
         UpdateInfo info;
         try {
             std::wstring url = INCLUDE_PRERELEASES ?
