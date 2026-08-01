@@ -96,9 +96,11 @@ public:
                         if (info.downloadUrl.empty()) {
                             info.downloadUrl = UTF8ToWString(dlUrl);
                         }
-                        if (lowerName.find(".exe") != std::string::npos || lowerName.find(".zip") != std::string::npos || lowerName.find(".bin") != std::string::npos) {
-                            info.downloadUrl = UTF8ToWString(dlUrl);
-                            break;
+                        if (lowerName.find(".exe") != std::string::npos || lowerName.find(".zip") != std::string::npos) {
+                            if (lowerName.find(".bin") == std::string::npos) { // Исключаем .bin
+                                info.downloadUrl = UTF8ToWString(dlUrl);
+                                break;
+                            }
                         }
                     }
                 }
@@ -210,17 +212,35 @@ private:
     }
 
     static bool IsVersionNewer(const std::wstring& vNew, const std::wstring& vCurrent) {
-        int n1 = 0, n2 = 0, n3 = 0;
-        int c1 = 0, c2 = 0, c3 = 0;
-        int matchNew = swscanf_s(vNew.c_str(), L"%d.%d.%d", &n1, &n2, &n3);
-        swscanf_s(vCurrent.c_str(), L"%d.%d.%d", &c1, &c2, &c3);
+        int n1 = 0, n2 = 0, n3 = 0, n4 = 0;
+        int c1 = 0, c2 = 0, c3 = 0, c4 = 0;
+        
+        int matchNew = swscanf_s(vNew.c_str(), L"%d.%d.%d.%d", &n1, &n2, &n3, &n4);
+        if (matchNew < 2) matchNew = swscanf_s(vNew.c_str(), L"%d.%d.%d", &n1, &n2, &n3);
+        
+        int matchCur = swscanf_s(vCurrent.c_str(), L"%d.%d.%d.%d", &c1, &c2, &c3, &c4);
+        if (matchCur < 2) matchCur = swscanf_s(vCurrent.c_str(), L"%d.%d.%d", &c1, &c2, &c3);
 
-        // Если парсер нашел меньше двух чисел (например, тег "111" или "Build"), это не семантическая версия.
-        if (matchNew < 2) return false;
+        if (matchNew < 2 && matchCur < 2) {
+            return vNew != vCurrent && vNew > vCurrent;
+        }
 
         if (n1 != c1) return n1 > c1;
         if (n2 != c2) return n2 > c2;
-        return n3 > c3;
+        if (n3 != c3) return n3 > c3;
+        if (n4 != c4) return n4 > c4;
+
+        if (vNew != vCurrent) {
+            bool curHasDash = (vCurrent.find(L"-") != std::wstring::npos);
+            bool newHasDash = (vNew.find(L"-") != std::wstring::npos);
+            
+            if (curHasDash && !newHasDash) return true;
+            if (curHasDash && newHasDash) return vNew > vCurrent;
+            if (!curHasDash && newHasDash) return false;
+            
+            return vNew > vCurrent;
+        }
+        return false;
     }
 
     static std::wstring UTF8ToWString(const std::string& str) {
