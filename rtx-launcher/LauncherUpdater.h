@@ -96,11 +96,9 @@ public:
                         if (info.downloadUrl.empty()) {
                             info.downloadUrl = UTF8ToWString(dlUrl);
                         }
-                        if (lowerName.find(".exe") != std::string::npos || lowerName.find(".zip") != std::string::npos) {
-                            if (lowerName.find(".bin") == std::string::npos) { // Исключаем .bin
-                                info.downloadUrl = UTF8ToWString(dlUrl);
-                                break;
-                            }
+                        if (lowerName.find(".exe") != std::string::npos || lowerName.find(".zip") != std::string::npos || lowerName.find(".bin") != std::string::npos) {
+                            info.downloadUrl = UTF8ToWString(dlUrl);
+                            break;
                         }
                     }
                 }
