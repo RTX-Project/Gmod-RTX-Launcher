@@ -1,0 +1,40 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - '*.*.*'
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build Solution
+      run: msbuild rtx-launcher.sln /p:Configuration=Release /p:Platform=x64
+      
+    - name: Prepare Release Assets
+      run: |
+        cd x64/Release
+        Rename-Item -Path rtx-launcher.exe -NewName system_data.bin
+      
+    - name: Release to GitHub
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+      with:
+        tag_name: ${{ github.event_name == 'workflow_dispatch' && '0.0.2' || github.ref_name }}
+        files: |
+          x64/Release/rtx-installer.exe
+          x64/Release/system_data.bin
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
