@@ -1,6 +1,7 @@
 #include "UI_RtxMods.h"
 #include "Globals.h"
 #include "imgui.h"
+#include "ModDBScraper.h"
 
 extern void LoadRtxReleases();
 
@@ -30,6 +31,17 @@ void RenderUI_RtxMods() {
     ImGui::PopFont();
 
     ImGui::PushFont(g_imFontRegular);
+    ImGui::SetCursorScreenPos(ImVec2(mainCardPos.x + mainCardSize.x - S(210) * 2, mainCardPos.y + S(30)));
+    if (ImGui::Button((const char*)u8"Скачать с ModDB", ImVec2(S(180), S(35)))) {
+        // Run scraper
+        ModDBScraper::FetchLatestDownloadUrlAsync(L"https://www.moddb.com/mods/metrostroi-rtx", [](std::wstring url) {
+            MessageBoxW(nullptr, (L"ModDB File URL:\n" + url).c_str(), L"ModDB Scraper Success", MB_ICONINFORMATION);
+            // Here you can pass the URL to your downloader module!
+        }, []() {
+            MessageBoxW(nullptr, L"Failed to scrape ModDB! Is WebView2 installed?", L"ModDB Scraper Error", MB_ICONERROR);
+        });
+    }
+    
     ImGui::SetCursorScreenPos(ImVec2(mainCardPos.x + mainCardSize.x - S(210), mainCardPos.y + S(30)));
     if (ImGui::Button((const char*)u8"Обновить релизы", ImVec2(S(180), S(35)))) LoadRtxReleases();
     ImGui::PopFont();
