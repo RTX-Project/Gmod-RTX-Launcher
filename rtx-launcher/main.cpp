@@ -1387,13 +1387,20 @@ void DoLaunchGame() {
                 fs::create_directories(targetModPath, ec);
             }
 
-            std::wstring versionsPath = targetModPath + L"\\versions.txt";
-            std::wstring currentVersionStr = L"";
+            std::wstring versionsPath = dstPath + L"\\versions.txt";
+            std::map<std::wstring, std::wstring> versionsMap;
             if (fs::exists(versionsPath)) {
                 std::wifstream vf(versionsPath);
-                std::getline(vf, currentVersionStr);
+                std::wstring line;
+                while (std::getline(vf, line)) {
+                    size_t pos = line.find(L"=");
+                    if (pos != std::wstring::npos) {
+                        versionsMap[line.substr(0, pos)] = line.substr(pos + 1);
+                    }
+                }
                 vf.close();
             }
+            std::wstring currentVersionStr = versionsMap[modFolderName];
 
             AppendLog(L"Проверка актуальности мода " + modFolderName + L"...");
             { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[ModDB] Проверка версии " + modFolderName + L"..."; g_app.downloadStatsText = L"Получение ссылки..."; }
@@ -1422,7 +1429,7 @@ void DoLaunchGame() {
                 
                 try {
                     HttpClient::downloadFile(downloadUrl, zipPath, L"RTX-Launcher", 
-                        [startTime](uint64_t downloaded, uint64_t totalSize) -> bool {
+                        [startTime, modFolderName](uint64_t downloaded, uint64_t totalSize) -> bool {
                             if (g_app.stopRequested) return false;
                             while (g_app.pauseRequested && !g_app.stopRequested) {
                                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -1470,8 +1477,11 @@ void DoLaunchGame() {
                     fs::remove(zipPath);
                     
                     // Обновляем versions.txt
+                    versionsMap[modFolderName] = downloadUrl;
                     std::wofstream vf(versionsPath, std::ios::trunc);
-                    vf << downloadUrl;
+                    for (const auto& pair : versionsMap) {
+                        vf << pair.first << L"=" << pair.second << L"\n";
+                    }
                     vf.close();
                     
                     AppendLog(L"Мод успешно скачан и установлен!");
