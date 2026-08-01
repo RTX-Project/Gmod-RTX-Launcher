@@ -129,7 +129,7 @@ static void StartInstallationAsync() {
 
             {
                 std::lock_guard<std::mutex> lock(g_statusMutex);
-                g_statusText = L"Загрузка rtx-launcher.exe с GitHub...";
+                g_statusText = L"Скачиваем лаунчер...";
             }
 
             HttpClient::downloadFile(downloadUrl, targetExe.wstring(), L"RTXLauncherInstaller/1.0",
