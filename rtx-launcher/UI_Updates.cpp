@@ -106,6 +106,7 @@ void RenderUI_Updates() {
                 g_app.isDownloading = true;
                 RunInBackground([]() {
                     LauncherUpdater::DownloadAndApplyUpdate(g_launcherUpdateInfo.downloadUrl,
+                        g_launcherUpdateInfo.releaseNotes,
                         [](const std::wstring& msg) { AppendLog(msg); },
                         [](float p) {
                             g_app.downloadProgress = p;

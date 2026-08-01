@@ -58,6 +58,8 @@ struct AppState {
 
     // ImGui state
     bool receiveBetaUpdates = false;
+    bool showChangelog = false;
+    std::wstring changelogText;
 
     std::vector<std::string> consoleLines;
     std::mutex consoleMutex;

@@ -3010,6 +3010,7 @@ static void RenderImGuiUI() {
             
             RunInBackground([]() {
                 LauncherUpdater::DownloadAndApplyUpdate(g_launcherUpdateInfo.downloadUrl,
+                    g_launcherUpdateInfo.releaseNotes,
                     [](const std::wstring& msg) { AppendLog(msg); },
                     [](float p) {
                         g_app.downloadProgress = p;
@@ -3642,6 +3643,32 @@ static void RenderImGuiUI() {
         ImGui::End();
         ImGui::PopStyleVar(2);
     }
+
+    // --- Changelog Modal ---
+    if (g_app.showChangelog) {
+        ImGui::OpenPopup(u8"Список изменений");
+        g_app.showChangelog = false;
+    }
+    
+    ImGui::SetNextWindowSizeConstraints(ImVec2(S(400), S(200)), ImVec2(S(800), S(600)));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(S(20), S(20)));
+    ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, S(10));
+    if (ImGui::BeginPopupModal(u8"Список изменений", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings)) {
+        ImGui::PushFont(g_imFontRegular);
+        ImGui::TextWrapped("%s", WStringToUTF8(g_app.changelogText).c_str());
+        ImGui::PopFont();
+        
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+        
+        if (ImGui::Button(u8"Закрыть", ImVec2(S(120), S(35)))) {
+            ImGui::CloseCurrentPopup();
+            g_app.changelogText.clear();
+        }
+        ImGui::EndPopup();
+    }
+    ImGui::PopStyleVar(2);
 }
 
 bool CreateDeviceD3D(HWND hWnd) {
@@ -3697,7 +3724,30 @@ void CleanupRenderTarget() {
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
     (void)hPrevInstance;
-    (void)lpCmdLine;
+    
+    std::wstring cmdLine(lpCmdLine);
+    if (cmdLine.find(L"--updated") != std::wstring::npos) {
+        wchar_t exePathBuf[MAX_PATH];
+        GetModuleFileNameW(nullptr, exePathBuf, MAX_PATH);
+        std::wstring changelogPath = std::wstring(exePathBuf);
+        size_t lastSlash = changelogPath.find_last_of(L"\\/");
+        if (lastSlash != std::wstring::npos) {
+            changelogPath = changelogPath.substr(0, lastSlash + 1) + L"changelog_temp.txt";
+        }
+        FILE* f = _wfopen(changelogPath.c_str(), L"rb");
+        if (f) {
+            fseek(f, 0, SEEK_END);
+            long sz = ftell(f);
+            fseek(f, 0, SEEK_SET);
+            std::string utf8Notes(sz, '\0');
+            fread(&utf8Notes[0], 1, sz, f);
+            fclose(f);
+            g_app.changelogText = UTF8ToWString(utf8Notes);
+            g_app.showChangelog = true;
+            _wremove(changelogPath.c_str());
+        }
+    }
+
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
     (void)CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 

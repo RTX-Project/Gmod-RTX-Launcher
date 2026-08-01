@@ -123,6 +123,7 @@ public:
 
     // Автоматическое скачивание и бесшовная замена текущего .exe файла
     static bool DownloadAndApplyUpdate(const std::wstring& downloadUrl,
+                                        const std::wstring& releaseNotes,
                                         std::function<void(const std::wstring&)> logCb,
                                         std::function<void(float)> progressCb,
                                         const std::wstring& authToken = L"") {
@@ -150,11 +151,24 @@ public:
                     return true;
                 }, authToken);
 
-            logCb(L"[Updater] Обновление успешно загружено во временный файл.");
-            logCb(L"[Updater] Перезапуск лаунчера для применения изменений...");
+            logCb(L"[Updater] Распаковка нового билда...");
+            logCb(L"[Updater] Готовим скрипт для перезапуска лаунчера...");
 
-            // Формируем командную строку перезапуска батником
-            std::wstring cmdScript = L"/c timeout /t 1 /nobreak & move /y \"" + tempExePath + L"\" \"" + currentExePath + L"\" & start \"\" \"" + currentExePath + L"\"";
+            // Сохраняем чейнджлог во временный файл
+            std::wstring changelogPath = std::wstring(exePathBuf);
+            size_t lastSlash = changelogPath.find_last_of(L"\\/");
+            if (lastSlash != std::wstring::npos) {
+                changelogPath = changelogPath.substr(0, lastSlash + 1) + L"changelog_temp.txt";
+            }
+            FILE* fChangelog = _wfopen(changelogPath.c_str(), L"wb");
+            if (fChangelog) {
+                std::string utf8Notes = WStringToUTF8(releaseNotes);
+                fwrite(utf8Notes.c_str(), 1, utf8Notes.size(), fChangelog);
+                fclose(fChangelog);
+            }
+
+            // Формируем командный скрипт
+            std::wstring cmdScript = L"/c timeout /t 1 /nobreak & move /y \"" + tempExePath + L"\" \"" + currentExePath + L"\" & start \"\" \"" + currentExePath + L"\" --updated";
 
             SHELLEXECUTEINFOW sei = {};
             sei.cbSize = sizeof(sei);

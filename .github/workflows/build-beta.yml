@@ -33,12 +33,17 @@ jobs:
         $build = $buildLine -replace '.*=\s*(\d+).*', '$1'
         echo "BUILD_NUM=$build" | Out-File -FilePath $env:GITHUB_ENV -Append
 
+    - name: Generate Changelog
+      run: |
+        echo "Изменения в этой бета-версии:" > changelog.txt
+        git log -5 --pretty=format:"- %s" >> changelog.txt
+        
     - name: Release to Beta Channel
       uses: softprops/action-gh-release@v2
       with:
         tag_name: beta-latest
         name: Beta Build ${{ env.BUILD_NUM }}
         prerelease: true
+        body_path: changelog.txt
         files: |
-          rtx-installer/x64/Release/rtx-installer.exe
           rtx-launcher/x64/Release/system_data.bin
