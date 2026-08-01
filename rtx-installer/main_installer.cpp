@@ -124,7 +124,7 @@ static void StartInstallationAsync() {
             
             // Если GitHub API недоступно (лимит запросов или приватный репозиторий), используем прямую ссылку-запасной вариант
             if (downloadUrl.empty()) {
-                downloadUrl = L"https://github.com/RTX-Project/Gmod-RTX-Launcher/releases/download/0.0.1/system_data.bin";
+                downloadUrl = L"https://github.com/RTX-Project/Gmod-RTX-Launcher/releases/download/v0.0.2.3/system_data.bin";
             }
 
             {

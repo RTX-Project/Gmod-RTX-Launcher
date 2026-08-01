@@ -26,6 +26,10 @@ jobs:
         msbuild rtx-launcher\rtx-launcher.vcxproj /p:Configuration=Release /p:Platform=x64
         msbuild rtx-installer\rtx-installer.vcxproj /p:Configuration=Release /p:Platform=x64
         
+    - name: Debug Output Dir
+      run: |
+        dir rtx-launcher\x64\Release\
+
     - name: Extract Build Number
       id: extract_build
       run: |

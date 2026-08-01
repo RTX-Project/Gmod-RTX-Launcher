@@ -226,6 +226,9 @@ struct AppState {
     GpuInfo gpuInfo;
 
     // ImGui state
+    bool receiveBetaUpdates = false;
+    bool showChangelog = false;
+    std::wstring changelogText;
 
     std::vector<std::string> consoleLines;
     std::mutex consoleMutex;
@@ -3734,7 +3737,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         if (lastSlash != std::wstring::npos) {
             changelogPath = changelogPath.substr(0, lastSlash + 1) + L"changelog_temp.txt";
         }
-        FILE* f = _wfopen(changelogPath.c_str(), L"rb");
+        FILE* f = nullptr;
+        _wfopen_s(&f, changelogPath.c_str(), L"rb");
         if (f) {
             fseek(f, 0, SEEK_END);
             long sz = ftell(f);

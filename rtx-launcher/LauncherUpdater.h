@@ -9,6 +9,8 @@
 #include "HttpClient.h"
 #include "JsonValue.h"
 
+extern std::string WStringToUTF8(const std::wstring& wstr);
+
 class LauncherUpdater {
 public:
     inline static const std::wstring CURRENT_VERSION = L"0.0.2.3";
@@ -160,7 +162,8 @@ public:
             if (lastSlash != std::wstring::npos) {
                 changelogPath = changelogPath.substr(0, lastSlash + 1) + L"changelog_temp.txt";
             }
-            FILE* fChangelog = _wfopen(changelogPath.c_str(), L"wb");
+            FILE* fChangelog = nullptr;
+            _wfopen_s(&fChangelog, changelogPath.c_str(), L"wb");
             if (fChangelog) {
                 std::string utf8Notes = WStringToUTF8(releaseNotes);
                 fwrite(utf8Notes.c_str(), 1, utf8Notes.size(), fChangelog);
