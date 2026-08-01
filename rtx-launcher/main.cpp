@@ -64,6 +64,9 @@
 #include "GameFixesUpdater.h"
 #include "Resource.h"
 #include "ArchiveExtract.h"
+#include "ModDBScraper.h"
+#include "ZipExtract.h"
+#include <future>
 
 #include "LauncherUpdater.h"
 
@@ -1370,6 +1373,96 @@ void DoLaunchGame() {
                     std::wstring pfx = autoStart ? L"[Проверка] " : L"[Установка] ";
                     { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = pfx + title; g_app.downloadStatsText = stats; }
                 });
+        }
+
+        // ----------------------------------------------------------------
+        // Загрузка мода с ModDB перед запуском игры
+        // ----------------------------------------------------------------
+        if (g_app.rtxSelectedIndex == 0) { // Если выбран мод Metrostroi RTX
+            std::wstring markerPath = dstPath + L"\\metrostroi_rtx_installed.marker";
+            if (!fs::exists(markerPath)) {
+                AppendLog(L"Запуск загрузки Metrostroi RTX с ModDB...");
+                { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[ModDB] Подключение к ModDB..."; g_app.downloadStatsText = L"Получение ссылки..."; }
+                
+                std::promise<std::wstring> urlPromise;
+                ModDBScraper::FetchLatestDownloadUrlAsync(L"https://www.moddb.com/mods/metrostroi-rtx", 
+                    [&urlPromise](std::wstring url) { urlPromise.set_value(url); },
+                    [&urlPromise]() { urlPromise.set_value(L""); }
+                );
+                
+                std::wstring downloadUrl = urlPromise.get_future().get();
+                if (downloadUrl.empty()) {
+                    AppendLog(L"Ошибка: не удалось получить ссылку с ModDB.");
+                    g_app.isDownloading = false;
+                    return;
+                }
+                
+                AppendLog(L"Ссылка получена: " + downloadUrl);
+                std::wstring zipPath = dstPath + L"\\moddb_temp.zip";
+                
+                auto startTime = std::chrono::steady_clock::now();
+                
+                try {
+                    HttpClient::downloadFile(downloadUrl, zipPath, L"RTX-Launcher", 
+                        [startTime](uint64_t downloaded, uint64_t totalSize) -> bool {
+                            if (g_app.stopRequested) return false;
+                            while (g_app.pauseRequested && !g_app.stopRequested) {
+                                std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                            }
+                            
+                            float p = totalSize > 0 ? (float)downloaded / (float)totalSize : 0.0f;
+                            g_app.downloadProgress = 0.5f + p * 0.48f; 
+                            
+                            auto now = std::chrono::steady_clock::now();
+                            auto elapsedSec = std::chrono::duration_cast<std::chrono::seconds>(now - startTime).count();
+                            
+                            std::wstring stats;
+                            if (elapsedSec > 0) {
+                                double speed = (double)downloaded / (1024.0 * 1024.0 * elapsedSec); // MB/s
+                                uint64_t remainingBytes = totalSize > downloaded ? totalSize - downloaded : 0;
+                                double speedBytes = (double)downloaded / (double)elapsedSec;
+                                double etaSec = speedBytes > 0 ? (double)remainingBytes / speedBytes : 0;
+                                
+                                int etaMin = (int)etaSec / 60;
+                                int etaS = (int)etaSec % 60;
+                                
+                                wchar_t buf[256];
+                                swprintf(buf, 256, L"%.1f МБ / %.1f МБ | Скорость: %.1f МБ/с | Осталось: %d мин %d сек",
+                                    (double)downloaded / (1024.0*1024.0), (double)totalSize / (1024.0*1024.0),
+                                    speed, etaMin, etaS);
+                                stats = buf;
+                            } else {
+                                stats = L"Подключение...";
+                            }
+                            
+                            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[ModDB] Скачивание Metrostroi RTX..."; g_app.downloadStatsText = stats; }
+                            
+                            return true;
+                        });
+                        
+                    if (g_app.stopRequested) {
+                        fs::remove(zipPath);
+                        g_app.isDownloading = false;
+                        return;
+                    }
+                    
+                    { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[ModDB] Распаковка архива..."; g_app.downloadStatsText = L"Это может занять несколько минут..."; }
+                    AppendLog(L"Распаковка " + zipPath + L"...");
+                    ZipExtract::extractAll(zipPath, dstPath);
+                    fs::remove(zipPath);
+                    
+                    // Create marker
+                    std::wofstream mf(markerPath);
+                    mf << L"installed=1";
+                    mf.close();
+                    
+                    AppendLog(L"Мод успешно скачан и установлен!");
+                } catch (const std::exception& e) {
+                    AppendLog(L"Ошибка скачивания/распаковки ModDB: " + UTF8ToWString(e.what()));
+                    g_app.isDownloading = false;
+                    return;
+                }
+            }
         }
 
         if (!g_autoStartGameAfterInstall) {
