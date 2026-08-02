@@ -85,7 +85,10 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                     
                                     // If we hit a mirror link or actual file download
                                     if (url.find(L"/downloads/mirror/") != std::wstring::npos ||
-                                        url.find(L".zip") != std::wstring::npos) {
+                                        url.find(L".zip") != std::wstring::npos ||
+                                        url.find(L".rar") != std::wstring::npos ||
+                                        url.find(L".7z") != std::wstring::npos ||
+                                        url.find(L"media.moddb.com") != std::wstring::npos) {
                                         
                                         args->put_Cancel(TRUE); // Cancel navigation to prevent actual download in webview
                                         if (!state->finished) {
@@ -129,7 +132,7 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                         L"  if (window.moddbNavigating) return;"
                                         L"  if (document.title.indexOf('Just a moment') != -1 || document.title.indexOf('Cloudflare') != -1 || document.getElementById('challenge-form')) return;"
                                         L"  var log = function(msg) { window.chrome.webview.postMessage(msg); };"
-                                        L"  var nav = function(el) { window.moddbNavigating = true; log('Navigating to ' + el.href); if (el.href) window.location.href = el.href; else el.click(); };"
+                                        L"  var nav = function(el) { window.moddbNavigating = true; log('Clicking link: ' + el.href); el.click(); };"
                                         L"  var path = window.location.pathname;"
                                         L"  var url = window.location.href;"
                                         L"  if (path.indexOf('/downloads') == -1 && url.indexOf('moddb.com') != -1) {"
