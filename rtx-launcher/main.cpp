@@ -1417,33 +1417,7 @@ void DoLaunchGame() {
             { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Проверка] " + modFolderName + L"..."; g_app.downloadStatsText = L"Получение ссылки..."; }
             
             std::wstring downloadUrl;
-            bool isBetaMode = g_app.receiveBetaUpdates;
-            
-            if (isBetaMode) {
-                AppendLog(L"Поиск бета-версии на GitHub...");
-                try {
-                    std::wstring url = L"https://api.github.com/repos/RTX-Project/Gmod-RTX-Launcher/releases/tags/beta-latest";
-                    std::string jsonStr = HttpClient::getText(url, L"RTX-Launcher", g_app.githubToken);
-                    if (!jsonStr.empty()) {
-                        JsonValue rootJson = JsonValue::parse(jsonStr);
-                        if (rootJson.has("assets") && rootJson["assets"].isArray()) {
-                            const auto& assets = rootJson["assets"].arrayValue;
-                            for (size_t i = 0; i < assets.size(); ++i) {
-                                std::string assetName = assets[i]["name"].asString();
-                                // Ищем файл мода (игнорируем установщик и данные лаунчера)
-                                if (assetName != "rtx-installer.exe" && assetName != "system_data.bin") {
-                                    downloadUrl = UTF8ToWString(assets[i]["browser_download_url"].asString());
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                } catch(...) {}
-                
-                if (downloadUrl.empty()) {
-                    AppendLog(L"Бета-версия мода не найдена на GitHub, поиск стабильной версии на ModDB...");
-                }
-            }
+            // Мод всегда скачивается с ModDB (GitHub не используется из-за большого веса мода)
             
             if (downloadUrl.empty()) {
                 std::wstring moddbProjectUrl;
