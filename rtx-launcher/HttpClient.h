@@ -190,6 +190,10 @@ public:
                     if (newUrl.rfind(L"http://", 0) != 0 && newUrl.rfind(L"https://", 0) != 0) {
                         newUrl = (u.https ? L"https://" : L"http://") + u.host + newUrl;
                     }
+                    std::ofstream log(L"moddb_debug.txt", std::ios::app);
+                    char utf8[1024];
+                    WideCharToMultiByte(CP_UTF8, 0, newUrl.c_str(), -1, utf8, 1024, NULL, NULL);
+                    log << "[HttpClient] Redirecting to: " << utf8 << std::endl;
                     currentUrl = newUrl;
                     continue;
                 }
@@ -197,8 +201,12 @@ public:
 
             if (statusCode != 200 && statusCode != 206) {
                 WinHttpCloseHandle(hRequest); WinHttpCloseHandle(hConnect); WinHttpCloseHandle(hSession);
+                std::ofstream log(L"moddb_debug.txt", std::ios::app);
+                log << "[HttpClient] Error HTTP " << statusCode << std::endl;
                 throw std::runtime_error("Ошибка HTTP скачивания: " + std::to_string(statusCode));
             }
+            std::ofstream log(L"moddb_debug.txt", std::ios::app);
+            log << "[HttpClient] Starting download. Status: " << statusCode << std::endl;
 
             // Общий размер (если сервер его сообщил).
             uint64_t totalSize = 0;
