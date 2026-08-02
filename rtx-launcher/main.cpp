@@ -1405,9 +1405,15 @@ void DoLaunchGame() {
             AppendLog(L"Проверка актуальности мода " + modFolderName + L"...");
             { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[ModDB] Проверка версии " + modFolderName + L"..."; g_app.downloadStatsText = L"Получение ссылки..."; }
             
+            std::wstring moddbProjectUrl;
+            if (g_app.rtxSelectedIndex == 0) {
+                moddbProjectUrl = L"https://www.moddb.com/mods/metrostroi-rtx"; // Light (только свет)
+            } else {
+                moddbProjectUrl = L"PLACEHOLDER_MODDB_URL_HERE"; // Full (с улучшенными текстурами - пока заблокировано)
+            }
+            
             std::promise<std::wstring> urlPromise;
-            // У ModDB разные ссылки для Light и Full? Для примера используем один и тот же проект
-            ModDBScraper::FetchLatestDownloadUrlAsync(L"PLACEHOLDER_MODDB_URL_HERE", 
+            ModDBScraper::FetchLatestDownloadUrlAsync(moddbProjectUrl, 
                 [&urlPromise](std::wstring url) { urlPromise.set_value(url); },
                 [&urlPromise]() { urlPromise.set_value(L""); }
             );
