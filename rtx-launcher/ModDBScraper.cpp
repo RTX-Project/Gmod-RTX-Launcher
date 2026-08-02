@@ -3,6 +3,7 @@
 #include <WebView2.h>
 #include <thread>
 #include <iostream>
+#include <fstream>
 
 using namespace Microsoft::WRL;
 
