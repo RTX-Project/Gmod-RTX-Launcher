@@ -111,11 +111,17 @@ void RenderUI_RtxMods() {
     ImGui::BeginChild("ModsChild", ImVec2(mainCardSize.x - S(60), mainCardSize.y - S(110)), false, ImGuiWindowFlags_NoScrollbar);
     
     if (drawCard("Mode0", u8"Оригинал + Освещение", u8"Бета", g_app.rtxSelectedIndex == 0, IM_COL32(180, 80, 20, 255), true, u8"Оригинальные материалы с улучшенным освещением.\nВозможны графические баги.", false)) {
-        g_app.rtxSelectedIndex = 0;
+        if (g_app.rtxSelectedIndex != 0) {
+            g_app.rtxSelectedIndex = 0;
+            SaveSettings();
+        }
     }
     ImGui::SameLine(S(255));
     if (drawCard("Mode1", u8"Улучшенные текстуры", u8"Metrostroi_full", g_app.rtxSelectedIndex == 1, IM_COL32(20, 80, 180, 255), false, u8"Замена оригинальных текстур на PBR материалы.\nВключает освещение.", false)) {
-        g_app.rtxSelectedIndex = 1;
+        if (g_app.rtxSelectedIndex != 1) {
+            g_app.rtxSelectedIndex = 1;
+            SaveSettings();
+        }
     }
     
     ImGui::EndChild();
