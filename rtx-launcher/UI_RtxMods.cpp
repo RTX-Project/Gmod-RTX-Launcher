@@ -117,12 +117,8 @@ void RenderUI_RtxMods() {
         }
     }
     ImGui::SameLine(S(255));
-    if (drawCard("Mode1", u8"Улучшенные текстуры", u8"Metrostroi_full", g_app.rtxSelectedIndex == 1, IM_COL32(20, 80, 180, 255), false, u8"Замена оригинальных текстур на PBR материалы.\nВключает освещение.", false)) {
-        if (g_app.rtxSelectedIndex != 1) {
-            g_app.rtxSelectedIndex = 1;
-            SaveSettings();
-        }
-    }
+    if (g_app.rtxSelectedIndex == 1) g_app.rtxSelectedIndex = 0; // Prevent staying on blocked mode
+    drawCard("Mode1", u8"Улучшенные текстуры", u8"СКОРО", false, IM_COL32(20, 80, 180, 255), false, u8"Замена оригинальных текстур на PBR материалы.\nВключает освещение.\n\n(Временно недоступно)", true);
     
     ImGui::EndChild();
     ImGui::PopStyleColor();
