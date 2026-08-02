@@ -1446,11 +1446,8 @@ void DoLaunchGame() {
             
             if (downloadUrl.empty()) {
                 AppendLog(L"Ошибка: не удалось получить ссылку для скачивания мода.");
-                g_app.isDownloading = false;
-                return;
-            }
-
-            if (downloadUrl == currentVersionStr) {
+                // Не прерываем запуск игры, даже если мод не найден
+            } else if (downloadUrl == currentVersionStr) {
                 AppendLog(L"Установлена актуальная версия мода. Пропуск скачивания.");
             } else {
                 AppendLog(L"Найдена новая версия: " + downloadUrl);
