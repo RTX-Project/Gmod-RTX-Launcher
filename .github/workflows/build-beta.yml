@@ -28,8 +28,12 @@ jobs:
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add rtx-launcher/LauncherUpdater.h
         git commit -m "Bump build number [skip ci]" || echo "No changes"
-        git pull --rebase origin main || echo "Pull failed"
-        git push origin HEAD:main || echo "Push failed"
+        for ($i=0; $i -lt 5; $i++) {
+            git pull --rebase origin main
+            git push origin HEAD:main
+            if ($LASTEXITCODE -eq 0) { break }
+            Start-Sleep -Seconds 2
+        }
 
     - name: Build Solution
       run: |
