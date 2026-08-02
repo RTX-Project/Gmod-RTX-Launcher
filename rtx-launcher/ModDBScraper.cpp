@@ -144,7 +144,7 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                         L"      if (!modDownloadsUrl.endsWith('/')) modDownloadsUrl += '/';"
                                         L"      for (var i = 0; i < links.length; i++) {"
                                         L"        var h = links[i].href;"
-                                        L"        if (h.startsWith(modDownloadsUrl) && h.indexOf('?') == -1 && h.indexOf('/page/') == -1 && !h.endsWith('/top') && !h.endsWith('/recently') && !h.endsWith('/latest')) {"
+                                        L"        if (h.startsWith(modDownloadsUrl) && h.indexOf('?') == -1 && h.indexOf('/page/') == -1 && h.indexOf('/add/') == -1 && !h.endsWith('/add') && !h.endsWith('/top') && !h.endsWith('/recently') && !h.endsWith('/latest')) {"
                                         L"          window.moddbNavigating = true; log('Found file link: ' + h); window.location.href = h; found = true; break;"
                                         L"        }"
                                         L"      }"
