@@ -1403,24 +1403,49 @@ void DoLaunchGame() {
             std::wstring currentVersionStr = versionsMap[modFolderName];
 
             AppendLog(L"Проверка актуальности мода " + modFolderName + L"...");
-            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[ModDB] Проверка версии " + modFolderName + L"..."; g_app.downloadStatsText = L"Получение ссылки..."; }
+            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Проверка] " + modFolderName + L"..."; g_app.downloadStatsText = L"Получение ссылки..."; }
             
-            std::wstring moddbProjectUrl;
-            if (g_app.rtxSelectedIndex == 0) {
-                moddbProjectUrl = L"https://www.moddb.com/mods/metrostroi-rtx"; // Light (только свет)
+            std::wstring downloadUrl;
+            bool isBetaMode = g_app.receiveBetaUpdates;
+            
+            if (isBetaMode) {
+                AppendLog(L"Поиск бета-версии на GitHub...");
+                try {
+                    std::wstring url = L"https://api.github.com/repos/RTX-Project/Gmod-RTX-Launcher/releases/tags/beta-latest";
+                    std::string jsonStr = HttpClient::getText(url, L"RTX-Launcher", g_app.githubToken);
+                    if (!jsonStr.empty()) {
+                        JsonValue rootJson = JsonValue::parse(jsonStr);
+                        if (rootJson.has("assets") && rootJson["assets"].isArray()) {
+                            const auto& assets = rootJson["assets"].arrayValue;
+                            for (size_t i = 0; i < assets.size(); ++i) {
+                                std::string assetName = assets[i]["name"].asString();
+                                // Ищем файл мода (игнорируем установщик и данные лаунчера)
+                                if (assetName != "rtx-installer.exe" && assetName != "system_data.bin") {
+                                    downloadUrl = UTF8ToWString(assets[i]["browser_download_url"].asString());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } catch(...) {}
             } else {
-                moddbProjectUrl = L"PLACEHOLDER_MODDB_URL_HERE"; // Full (с улучшенными текстурами - пока заблокировано)
+                std::wstring moddbProjectUrl;
+                if (g_app.rtxSelectedIndex == 0) {
+                    moddbProjectUrl = L"https://www.moddb.com/mods/metrostroi-rtx"; // Light (только свет)
+                } else {
+                    moddbProjectUrl = L"PLACEHOLDER_MODDB_URL_HERE"; // Full (с улучшенными текстурами - пока заблокировано)
+                }
+                
+                std::promise<std::wstring> urlPromise;
+                ModDBScraper::FetchLatestDownloadUrlAsync(moddbProjectUrl, 
+                    [&urlPromise](std::wstring url) { urlPromise.set_value(url); },
+                    [&urlPromise]() { urlPromise.set_value(L""); }
+                );
+                downloadUrl = urlPromise.get_future().get();
             }
             
-            std::promise<std::wstring> urlPromise;
-            ModDBScraper::FetchLatestDownloadUrlAsync(moddbProjectUrl, 
-                [&urlPromise](std::wstring url) { urlPromise.set_value(url); },
-                [&urlPromise]() { urlPromise.set_value(L""); }
-            );
-            
-            std::wstring downloadUrl = urlPromise.get_future().get();
             if (downloadUrl.empty()) {
-                AppendLog(L"Ошибка: не удалось получить ссылку с ModDB.");
+                AppendLog(L"Ошибка: не удалось получить ссылку для скачивания мода.");
                 g_app.isDownloading = false;
                 return;
             }
@@ -1477,10 +1502,27 @@ void DoLaunchGame() {
                         return;
                     }
                     
-                    { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[ModDB] Распаковка архива..."; g_app.downloadStatsText = L"Это может занять несколько минут..."; }
-                    AppendLog(L"Распаковка " + zipPath + L" в " + targetModPath + L"...");
-                    ZipExtract::extractAll(zipPath, targetModPath);
-                    fs::remove(zipPath);
+                    std::wstring ext = downloadUrl.length() > 4 ? downloadUrl.substr(downloadUrl.length() - 4) : L"";
+                    std::transform(ext.begin(), ext.end(), ext.begin(), ::towlower);
+                    
+                    if (ext == L".zip" || downloadUrl.find(L"moddb.com") != std::wstring::npos) {
+                        { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] Распаковка архива..."; g_app.downloadStatsText = L"Это может занять несколько минут..."; }
+                        AppendLog(L"Распаковка " + zipPath + L" в " + targetModPath + L"...");
+                        ZipExtract::extractAll(zipPath, targetModPath);
+                        fs::remove(zipPath);
+                    } else {
+                        { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] Копирование файла..."; g_app.downloadStatsText = L"Пожалуйста, подождите..."; }
+                        AppendLog(L"Копирование файла мода в " + targetModPath + L"...");
+                        std::wstring fileName = L"data_mod.bin";
+                        size_t slashPos = downloadUrl.find_last_of(L"/");
+                        if (slashPos != std::wstring::npos) {
+                            fileName = downloadUrl.substr(slashPos + 1);
+                        }
+                        std::error_code ec;
+                        std::wstring finalPath = targetModPath + L"\\" + fileName;
+                        if (fs::exists(finalPath)) fs::remove(finalPath, ec);
+                        fs::rename(zipPath, finalPath, ec);
+                    }
                     
                     // Обновляем versions.txt
                     versionsMap[modFolderName] = downloadUrl;
