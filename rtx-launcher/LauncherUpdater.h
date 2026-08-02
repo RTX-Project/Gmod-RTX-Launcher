@@ -170,13 +170,25 @@ public:
             }
 
             // Формируем командный скрипт
-            std::wstring cmdScript = L"/c timeout /t 1 /nobreak & move /y \"" + tempExePath + L"\" \"" + currentExePath + L"\" & start \"\" \"" + currentExePath + L"\" --updated";
+            std::wstring batPath = std::wstring(tempDirBuf) + L"rtx_updater.bat";
+            FILE* fBat = nullptr;
+            _wfopen_s(&fBat, batPath.c_str(), L"wb");
+            if (fBat) {
+                std::string batContent = "@echo off\r\n"
+                    ":retry\r\n"
+                    "timeout /t 1 /nobreak >nul\r\n"
+                    "move /y \"" + WStringToUTF8(tempExePath) + "\" \"" + WStringToUTF8(currentExePath) + "\"\r\n"
+                    "if errorlevel 1 goto retry\r\n"
+                    "start \"\" \"" + WStringToUTF8(currentExePath) + "\" --updated\r\n"
+                    "del \"%~f0\"\r\n";
+                fwrite(batContent.c_str(), 1, batContent.size(), fBat);
+                fclose(fBat);
+            }
 
             SHELLEXECUTEINFOW sei = {};
             sei.cbSize = sizeof(sei);
             sei.lpVerb = L"open";
-            sei.lpFile = L"cmd.exe";
-            sei.lpParameters = cmdScript.c_str();
+            sei.lpFile = batPath.c_str();
             sei.nShow = SW_HIDE;
             if (ShellExecuteExW(&sei)) {
                 ExitProcess(0);
