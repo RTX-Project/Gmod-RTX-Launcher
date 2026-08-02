@@ -134,7 +134,12 @@ void RenderUI_Overview() {
         }
             
         if (s_transition < 0.99f) {
-            const char* btnText = isInstalled ? (const char*)u8"► Запустить" : (const char*)u8"Установить";
+            const char* btnText;
+            if (g_launcherUpdateInfo.hasUpdate) {
+                btnText = (const char*)u8"Обновить лаунчер";
+            } else {
+                btnText = isInstalled ? (const char*)u8"► Запустить" : (const char*)u8"Установить";
+            }
             ImGui::PushFont(g_imFontHeading);
             ImVec2 textSz = ImGui::CalcTextSize(btnText);
             ImGui::SetCursorScreenPos(ImVec2(btnPos.x + btnW/2.0f - textSz.x/2.0f, btnPos.y + btnH/2.0f - textSz.y/2.0f));
@@ -154,7 +159,19 @@ void RenderUI_Overview() {
         ImGui::SetCursorScreenPos(btnPos);
         if (ImGui::InvisibleButton("PlayBtn", ImVec2(btnW, btnH))) {
             if (!isDownloading) {
-                if (!isInstalled) {
+                if (g_launcherUpdateInfo.hasUpdate) {
+                    g_app.isDownloading = true;
+                    RunInBackground([]() {
+                        LauncherUpdater::DownloadAndApplyUpdate(g_launcherUpdateInfo.downloadUrl,
+                            g_launcherUpdateInfo.releaseNotes,
+                            [](const std::wstring& msg) { AppendLog(msg); },
+                            [](float p) {
+                                g_app.downloadProgress = p;
+                                { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"Загрузка обновления..."; }
+                            },
+                            g_app.githubToken);
+                    });
+                } else if (!isInstalled) {
                     GoToWizardStep(WizardStep::Welcome);
                     SwitchPage(Page::InstallerWizard);
                 } else {

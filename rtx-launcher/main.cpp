@@ -1407,7 +1407,7 @@ void DoLaunchGame() {
             
             std::promise<std::wstring> urlPromise;
             // У ModDB разные ссылки для Light и Full? Для примера используем один и тот же проект
-            ModDBScraper::FetchLatestDownloadUrlAsync(L"https://www.moddb.com/mods/metrostroi-rtx", 
+            ModDBScraper::FetchLatestDownloadUrlAsync(L"PLACEHOLDER_MODDB_URL_HERE", 
                 [&urlPromise](std::wstring url) { urlPromise.set_value(url); },
                 [&urlPromise]() { urlPromise.set_value(L""); }
             );
