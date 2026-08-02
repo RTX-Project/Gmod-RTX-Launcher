@@ -100,6 +100,30 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                     return S_OK;
                                 }).Get(), &token);
 
+                            // Intercept any actual file downloads
+                            ComPtr<ICoreWebView2_4> webview4;
+                            if (SUCCEEDED(state->webView->QueryInterface(IID_PPV_ARGS(&webview4)))) {
+                                webview4->add_DownloadStarting(Callback<ICoreWebView2DownloadStartingEventHandler>(
+                                    [state](ICoreWebView2* sender, ICoreWebView2DownloadStartingEventArgs* args) -> HRESULT {
+                                        args->put_Cancel(TRUE); // Cancel the Edge download dialog
+                                        ComPtr<ICoreWebView2DownloadOperation> download;
+                                        if (SUCCEEDED(args->get_DownloadOperation(&download))) {
+                                            LPWSTR uriStr = nullptr;
+                                            download->get_Uri(&uriStr);
+                                            if (uriStr) {
+                                                std::wstring url = uriStr;
+                                                CoTaskMemFree(uriStr);
+                                                if (!state->finished) {
+                                                    state->finished = true;
+                                                    state->onSuccess(url);
+                                                    PostMessage(state->hwnd, WM_CLOSE, 0, 0);
+                                                }
+                                            }
+                                        }
+                                        return S_OK;
+                                    }).Get(), &token);
+                            }
+
                             state->webView->add_WebMessageReceived(Callback<ICoreWebView2WebMessageReceivedEventHandler>(
                                 [](ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args) -> HRESULT {
                                     LPWSTR msgStr = nullptr;
