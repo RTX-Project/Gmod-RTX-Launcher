@@ -127,10 +127,10 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                         L"      }"
                                         L"    }"
                                         L"  } else if (path.indexOf('/downloads/') != -1 && path.indexOf('/start/') == -1) {"
-                                        L"    var el = document.querySelector('a.button-download') || document.querySelector('a#downloadmirror') || document.querySelector('a[href*=\"/downloads/start/\"]');"
+                                        L"    var el = document.querySelector('a#downloadmirrorstoggle') || document.querySelector('a.button-download') || document.querySelector('a[href*=\"/downloads/start/\"]');"
                                         L"    if (el) nav(el);"
                                         L"  } else if (path.indexOf('/start/') != -1) {"
-                                        L"    var el = document.querySelector('a[href*=\"/downloads/mirror/\"]') || document.querySelector('a.button-download');"
+                                        L"    var el = document.querySelector('p > a[href*=\"/downloads/mirror/\"]') || document.querySelector('a[href*=\"/downloads/mirror/\"]') || document.querySelector('a.button-download');"
                                         L"    if (el) nav(el);"
                                         L"  }"
                                         L"}, 1000);";
