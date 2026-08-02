@@ -1402,9 +1402,15 @@ void DoLaunchGame() {
             }
             std::wstring currentVersionStr = versionsMap[modFolderName];
             
-            std::wstring targetModPath = dstPath + L"\\rtx-remix\\mods\\" + modFolderName;
-            if (!fs::exists(targetModPath)) {
-                currentVersionStr = L""; // Форсируем скачивание, если папка была удалена
+            bool isModDirEmpty = true;
+            if (fs::exists(targetModPath)) {
+                for (const auto& entry : fs::directory_iterator(targetModPath)) {
+                    isModDirEmpty = false;
+                    break;
+                }
+            }
+            if (isModDirEmpty) {
+                currentVersionStr = L""; // Форсируем скачивание, если папка пуста или удалена
             }
 
             AppendLog(L"Проверка актуальности мода " + modFolderName + L"...");
