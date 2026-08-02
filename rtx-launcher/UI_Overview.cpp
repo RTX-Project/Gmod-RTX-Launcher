@@ -107,7 +107,9 @@ void RenderUI_Overview() {
         ImU32 colNormal = btnActive ? IM_COL32(0, 200, 100, 255) : (btnHovered ? IM_COL32(0, 255, 150, 255) : IM_COL32(0, 255, 128, 255));
         
         // If there's an error, flash it red
-        if (!g_app.downloadErrorText.empty()) {
+        std::string errCheck = WStringToUTF8(g_app.downloadStatsText);
+        bool isError = (errCheck.find("Ошибка") != std::string::npos) || (errCheck.find("error") != std::string::npos);
+        if (isError && !g_app.isDownloading) {
             colNormal = btnActive ? IM_COL32(200, 50, 50, 255) : (btnHovered ? IM_COL32(255, 50, 50, 255) : IM_COL32(220, 40, 40, 255));
         }
         
@@ -119,7 +121,7 @@ void RenderUI_Overview() {
         if (s_transition > 0.01f) {
             extern ImVec4 GetAdaptiveProgressColor(float);
             ImVec4 adaptCol = GetAdaptiveProgressColor(g_app.downloadProgressSmooth);
-            if (!g_app.downloadErrorText.empty()) adaptCol = ImVec4(1.0f, 0.2f, 0.2f, 1.0f); // Red progress bar on error
+            if (isError) adaptCol = ImVec4(1.0f, 0.2f, 0.2f, 1.0f); // Red progress bar on error
             adaptCol.w *= s_transition; // Fade out the progress fill
             ImU32 fillCol = ImGui::ColorConvertFloat4ToU32(adaptCol);
             
