@@ -1439,7 +1439,13 @@ void DoLaunchGame() {
                         }
                     }
                 } catch(...) {}
-            } else {
+                
+                if (downloadUrl.empty()) {
+                    AppendLog(L"Бета-версия мода не найдена на GitHub, поиск стабильной версии на ModDB...");
+                }
+            }
+            
+            if (downloadUrl.empty()) {
                 std::wstring moddbProjectUrl;
                 if (g_app.rtxSelectedIndex == 0) {
                     moddbProjectUrl = L"https://www.moddb.com/mods/metrostroi-rtx"; // Light (только свет)
