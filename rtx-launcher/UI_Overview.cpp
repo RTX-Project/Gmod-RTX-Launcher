@@ -75,6 +75,8 @@ void RenderUI_Overview() {
         float dt = ImGui::GetIO().DeltaTime * 10.0f;
         if (dt > 1.0f) dt = 1.0f;
         s_transition += (targetTransition - s_transition) * dt;
+        if (s_transition < 0.0f) s_transition = 0.0f;
+        if (s_transition > 1.0f) s_transition = 1.0f;
         
         float btnW = S(160.0f) + (S(360.0f) - S(160.0f)) * s_transition;
         float btnH = S(45.0f) + (S(12.0f) - S(45.0f)) * s_transition;
@@ -116,7 +118,9 @@ void RenderUI_Overview() {
             
             float fillW = btnW * g_app.downloadProgressSmooth;
             if (fillW > 0.0f) {
-                dl->AddRectFilled(btnPos, ImVec2(btnPos.x + fillW, btnPos.y + btnH), fillCol, rounding);
+                dl->PushClipRect(btnPos, ImVec2(btnPos.x + fillW, btnPos.y + btnH), true);
+                dl->AddRectFilled(btnPos, ImVec2(btnPos.x + btnW, btnPos.y + btnH), fillCol, rounding);
+                dl->PopClipRect();
             }
         }
             

@@ -108,14 +108,15 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                         L"setInterval(function() {"
                                         L"  if (window.moddbNavigating) return;"
                                         L"  if (document.title.indexOf('Just a moment') != -1 || document.title.indexOf('Cloudflare') != -1 || document.getElementById('challenge-form')) return;"
+                                        L"  var nav = function(el) { window.moddbNavigating = true; if (el.href) window.location.href = el.href; else el.click(); };"
                                         L"  var path = window.location.pathname;"
                                         L"  var url = window.location.href;"
                                         L"  if (path.indexOf('/downloads') == -1 && url.indexOf('moddb.com') != -1) {"
                                         L"    var el = document.querySelector('a[href$=\"/downloads\"], a[href$=\"/downloads/\"]');"
-                                        L"    if (el) { window.moddbNavigating = true; el.click(); } else { window.moddbNavigating = true; window.location.href = url.split('?')[0] + '/downloads'; }"
+                                        L"    if (el) nav(el); else { window.moddbNavigating = true; window.location.href = url.split('?')[0] + '/downloads'; }"
                                         L"  } else if (path.endsWith('/downloads') || path.endsWith('/downloads/')) {"
                                         L"    var el = document.querySelector('.table.downloads .row a.image') || document.querySelector('.row-content a') || document.querySelector('a[href*=\"/downloads/metrostroi\"]');"
-                                        L"    if (el) { window.moddbNavigating = true; el.click(); }"
+                                        L"    if (el) nav(el);"
                                         L"    else {"
                                         L"      var links = document.querySelectorAll('a[href*=\"/downloads/\"]');"
                                         L"      for (var i = 0; i < links.length; i++) {"
@@ -127,10 +128,10 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                         L"    }"
                                         L"  } else if (path.indexOf('/downloads/') != -1 && path.indexOf('/start/') == -1) {"
                                         L"    var el = document.querySelector('a.button-download') || document.querySelector('a#downloadmirror') || document.querySelector('a[href*=\"/downloads/start/\"]');"
-                                        L"    if (el) { window.moddbNavigating = true; el.click(); }"
+                                        L"    if (el) nav(el);"
                                         L"  } else if (path.indexOf('/start/') != -1) {"
                                         L"    var el = document.querySelector('a[href*=\"/downloads/mirror/\"]') || document.querySelector('a.button-download');"
-                                        L"    if (el) { window.moddbNavigating = true; el.click(); }"
+                                        L"    if (el) nav(el);"
                                         L"  }"
                                         L"}, 1000);";
                                     sender->ExecuteScript(script.c_str(), nullptr);
@@ -151,7 +152,7 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
         }
 
         // Timeout timer
-        SetTimer(state->hwnd, 1, 25000, nullptr); // 25 seconds timeout
+        UINT_PTR timerId = SetTimer(nullptr, 0, 25000, nullptr); // 25 seconds timeout
 
         // Message loop for this thread
         MSG msg;
@@ -159,8 +160,8 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
             TranslateMessage(&msg);
             DispatchMessage(&msg);
             
-            if (msg.message == WM_TIMER && msg.wParam == 1) {
-                KillTimer(state->hwnd, 1);
+            if (msg.message == WM_TIMER && msg.wParam == timerId) {
+                KillTimer(nullptr, timerId);
                 if (!state->finished) {
                     state->finished = true;
                     state->onError();
