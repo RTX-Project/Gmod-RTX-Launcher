@@ -105,6 +105,8 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                             if (SUCCEEDED(state->webView->QueryInterface(IID_PPV_ARGS(&webview4)))) {
                                 webview4->add_DownloadStarting(Callback<ICoreWebView2DownloadStartingEventHandler>(
                                     [state](ICoreWebView2* sender, ICoreWebView2DownloadStartingEventArgs* args) -> HRESULT {
+                                        std::ofstream log(L"moddb_debug.txt", std::ios::app);
+                                        log << "[ModDB Scraper] DownloadStarting intercepted!" << std::endl;
                                         args->put_Cancel(TRUE); // Cancel the Edge download dialog
                                         ComPtr<ICoreWebView2DownloadOperation> download;
                                         if (SUCCEEDED(args->get_DownloadOperation(&download))) {
@@ -122,6 +124,9 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                         }
                                         return S_OK;
                                     }).Get(), &token);
+                            } else {
+                                std::ofstream log(L"moddb_debug.txt", std::ios::app);
+                                log << "[ModDB Scraper] WARNING: ICoreWebView2_4 not supported by this WebView2 runtime! Cannot intercept DownloadStarting!" << std::endl;
                             }
 
                             state->webView->add_WebMessageReceived(Callback<ICoreWebView2WebMessageReceivedEventHandler>(
@@ -157,7 +162,7 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                         L"  if (document.title.indexOf('Just a moment') != -1 || document.title.indexOf('Cloudflare') != -1 || document.getElementById('challenge-form')) return;"
                                         L"  var log = function(msg) { window.chrome.webview.postMessage(msg); };"
                                         L"  window.open = function(url) { window.location.href = url; return window; };"
-                                        L"  var nav = function(el) { window.moddbNavigating = true; log('Clicking link: ' + el.href); el.removeAttribute('target'); el.click(); };"
+                                        L"  var nav = function(el) { window.moddbNavigating = true; log('Navigating to ' + el.href); window.location.href = el.href; };"
                                         L"  var path = window.location.pathname;"
                                         L"  var url = window.location.href;"
                                         L"  if (path.indexOf('/downloads') == -1 && url.indexOf('moddb.com') != -1) {"
@@ -216,6 +221,8 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                 KillTimer(nullptr, timerId);
                 if (!state->finished) {
                     state->finished = true;
+                    std::ofstream log(L"moddb_debug.txt", std::ios::app);
+                    log << "[ModDB Scraper] TIMEOUT! 25 seconds elapsed. Cancelling." << std::endl;
                     state->onError();
                     PostMessage(state->hwnd, WM_CLOSE, 0, 0);
                 }
