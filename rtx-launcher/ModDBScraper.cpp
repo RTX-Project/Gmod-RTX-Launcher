@@ -139,11 +139,8 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                         
                                         if (utf8Str.find("NAVIGATE_TO:") == 0) {
                                             std::wstring newUrlStr = msgStr + 12; // skip "NAVIGATE_TO:"
-                                            std::ofstream log(L"moddb_debug.txt", std::ios::app);
-                                            char utf8[2048];
-                                            WideCharToMultiByte(CP_UTF8, 0, newUrlStr.c_str(), -1, utf8, sizeof(utf8), NULL, NULL);
-                                            log << "[ModDB C++] Forcing navigation to: " << utf8 << std::endl;
-                                            state->webView->Navigate(newUrlStr.c_str());
+                                            std::wstring* urlPtr = new std::wstring(newUrlStr);
+                                            PostMessage(nullptr, WM_APP + 1, (WPARAM)urlPtr, 0); // Post to thread message queue
                                         } else {
                                             std::ofstream log(L"moddb_debug.txt", std::ios::app);
                                             log << "[ModDB JS] " << utf8Str << std::endl;
@@ -227,6 +224,22 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
             TranslateMessage(&msg);
             DispatchMessage(&msg);
             
+            if (msg.message == WM_APP + 1) {
+                std::wstring* urlPtr = (std::wstring*)msg.wParam;
+                std::wstring url = *urlPtr;
+                delete urlPtr;
+
+                std::ofstream log(L"moddb_debug.txt", std::ios::app);
+                char utf8[2048];
+                WideCharToMultiByte(CP_UTF8, 0, url.c_str(), -1, utf8, sizeof(utf8), NULL, NULL);
+                log << "[ModDB C++] Forcing navigation to: " << utf8 << std::endl;
+                
+                HRESULT hrNav = state->webView->Navigate(url.c_str());
+                if (FAILED(hrNav)) {
+                    log << "[ModDB C++] Navigate failed with HRESULT " << std::hex << hrNav << std::endl;
+                }
+            }
+
             if (msg.message == WM_TIMER && msg.wParam == timerId) {
                 KillTimer(nullptr, timerId);
                 if (!state->finished) {
