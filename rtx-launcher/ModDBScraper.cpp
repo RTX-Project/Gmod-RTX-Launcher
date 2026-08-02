@@ -96,6 +96,20 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                     return S_OK;
                                 }).Get(), &token);
 
+                            state->webView->add_WebMessageReceived(Callback<ICoreWebView2WebMessageReceivedEventHandler>(
+                                [](ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args) -> HRESULT {
+                                    LPWSTR msgStr = nullptr;
+                                    if (SUCCEEDED(args->TryGetWebMessageAsString(&msgStr)) && msgStr) {
+                                        std::ofstream log(L"moddb_debug.txt", std::ios::app);
+                                        log << "[ModDB JS] ";
+                                        char utf8[1024];
+                                        WideCharToMultiByte(CP_UTF8, 0, msgStr, -1, utf8, 1024, NULL, NULL);
+                                        log << utf8 << std::endl;
+                                        CoTaskMemFree(msgStr);
+                                    }
+                                    return S_OK;
+                                }).Get(), &token);
+
                             // Inject JS on navigation complete
                             state->webView->add_NavigationCompleted(Callback<ICoreWebView2NavigationCompletedEventHandler>(
                                 [state](ICoreWebView2* sender, ICoreWebView2NavigationCompletedEventArgs* args) -> HRESULT {
@@ -104,16 +118,22 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                     std::wstring currentUrl = uriStr ? uriStr : L"";
                                     if (uriStr) CoTaskMemFree(uriStr);
 
+                                    std::ofstream log(L"moddb_debug.txt", std::ios::app);
+                                    char utf8[1024];
+                                    WideCharToMultiByte(CP_UTF8, 0, currentUrl.c_str(), -1, utf8, 1024, NULL, NULL);
+                                    log << "[ModDB Nav] " << utf8 << std::endl;
+
                                     std::wstring script = 
                                         L"setInterval(function() {"
                                         L"  if (window.moddbNavigating) return;"
                                         L"  if (document.title.indexOf('Just a moment') != -1 || document.title.indexOf('Cloudflare') != -1 || document.getElementById('challenge-form')) return;"
-                                        L"  var nav = function(el) { window.moddbNavigating = true; if (el.href) window.location.href = el.href; else el.click(); };"
+                                        L"  var log = function(msg) { window.chrome.webview.postMessage(msg); };"
+                                        L"  var nav = function(el) { window.moddbNavigating = true; log('Navigating to ' + el.href); if (el.href) window.location.href = el.href; else el.click(); };"
                                         L"  var path = window.location.pathname;"
                                         L"  var url = window.location.href;"
                                         L"  if (path.indexOf('/downloads') == -1 && url.indexOf('moddb.com') != -1) {"
                                         L"    var el = document.querySelector('a[href$=\"/downloads\"], a[href$=\"/downloads/\"]');"
-                                        L"    if (el) nav(el); else { window.moddbNavigating = true; window.location.href = url.split('?')[0] + '/downloads'; }"
+                                        L"    if (el) nav(el); else { window.moddbNavigating = true; log('Manual nav to downloads'); window.location.href = url.split('?')[0] + '/downloads'; }"
                                         L"  } else if (path.endsWith('/downloads') || path.endsWith('/downloads/')) {"
                                         L"    var el = document.querySelector('.table.downloads .row a.image') || document.querySelector('.row-content a') || document.querySelector('a[href*=\"/downloads/metrostroi\"]');"
                                         L"    if (el) nav(el);"
@@ -122,16 +142,16 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                         L"      for (var i = 0; i < links.length; i++) {"
                                         L"        var h = links[i].href;"
                                         L"        if (h.indexOf('?') == -1 && !h.endsWith('/downloads') && !h.endsWith('/downloads/')) {"
-                                        L"          window.moddbNavigating = true; window.location.href = h; break;"
+                                        L"          window.moddbNavigating = true; log('Found list nav: ' + h); window.location.href = h; break;"
                                         L"        }"
                                         L"      }"
                                         L"    }"
                                         L"  } else if (path.indexOf('/downloads/') != -1 && path.indexOf('/start/') == -1) {"
                                         L"    var el = document.querySelector('a#downloadmirrorstoggle') || document.querySelector('a.button-download') || document.querySelector('a[href*=\"/downloads/start/\"]');"
-                                        L"    if (el) nav(el);"
+                                        L"    if (el) nav(el); else log('Could not find file download button on ' + url);"
                                         L"  } else if (path.indexOf('/start/') != -1) {"
                                         L"    var el = document.querySelector('p > a[href*=\"/downloads/mirror/\"]') || document.querySelector('a[href*=\"/downloads/mirror/\"]') || document.querySelector('a.button-download');"
-                                        L"    if (el) nav(el);"
+                                        L"    if (el) nav(el); else log('Could not find mirror button on ' + url);"
                                         L"  }"
                                         L"}, 1000);";
                                     sender->ExecuteScript(script.c_str(), nullptr);
