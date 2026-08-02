@@ -53,7 +53,11 @@ void RenderUI_Overview() {
         ImVec4 statusColor = ImVec4(0.00f, 0.90f, 0.46f, 1.0f);
         
         if (isRunning || g_app.isDownloading) {
-            wStatus = g_app.isFirstLaunchMode ? L"Установка..." : L"Подготовка к запуску...";
+            if (g_launcherUpdateInfo.hasUpdate && g_app.isDownloading) {
+                wStatus = L"Обновление лаунчера...";
+            } else {
+                wStatus = g_app.isFirstLaunchMode ? L"Установка..." : L"Подготовка к запуску...";
+            }
             statusColor = ImVec4(1.0f, 0.7f, 0.0f, 1.0f);
         } else if (isInstalled) {
             wStatus = L"Готов к запуску";
