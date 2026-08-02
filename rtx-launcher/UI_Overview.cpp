@@ -87,10 +87,18 @@ void RenderUI_Overview() {
         float rounding = (btnH / 2.0f > 8.0f) ? 8.0f : (btnH / 2.0f);
         
         auto LerpColor = [](ImU32 a, ImU32 b, float t) -> ImU32 {
+            if (t < 0.0f) t = 0.0f;
+            if (t > 1.0f) t = 1.0f;
             int r = (int)(((a >> 0) & 0xFF) + (((b >> 0) & 0xFF) - ((a >> 0) & 0xFF)) * t);
             int g = (int)(((a >> 8) & 0xFF) + (((b >> 8) & 0xFF) - ((a >> 8) & 0xFF)) * t);
             int b_ = (int)(((a >> 16) & 0xFF) + (((b >> 16) & 0xFF) - ((a >> 16) & 0xFF)) * t);
             int a_ = (int)(((a >> 24) & 0xFF) + (((b >> 24) & 0xFF) - ((a >> 24) & 0xFF)) * t);
+            
+            if (r < 0) r = 0; if (r > 255) r = 255;
+            if (g < 0) g = 0; if (g > 255) g = 255;
+            if (b_ < 0) b_ = 0; if (b_ > 255) b_ = 255;
+            if (a_ < 0) a_ = 0; if (a_ > 255) a_ = 255;
+            
             return IM_COL32(r, g, b_, a_);
         };
         

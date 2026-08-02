@@ -83,7 +83,7 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                     if (uriStr) CoTaskMemFree(uriStr);
                                     
                                     // If we hit a mirror link or actual file download
-                                    if (url.find(L"moddb.com/downloads/mirror/") != std::wstring::npos ||
+                                    if (url.find(L"/downloads/mirror/") != std::wstring::npos ||
                                         url.find(L".zip") != std::wstring::npos) {
                                         
                                         args->put_Cancel(TRUE); // Cancel navigation to prevent actual download in webview
@@ -106,24 +106,31 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
 
                                     std::wstring script = 
                                         L"setInterval(function() {"
+                                        L"  if (window.moddbNavigating) return;"
+                                        L"  if (document.title.indexOf('Just a moment') != -1 || document.title.indexOf('Cloudflare') != -1 || document.getElementById('challenge-form')) return;"
+                                        L"  var path = window.location.pathname;"
                                         L"  var url = window.location.href;"
-                                        L"  if (url.indexOf('/downloads') == -1 && url.indexOf('moddb.com') != -1) {"
-                                        L"    window.location.href = url.split('?')[0] + '/downloads';"
-                                        L"  } else if (url.endsWith('/downloads') || url.endsWith('/downloads/')) {"
-                                        L"    var links = document.querySelectorAll('a[href*=\"/downloads/\"]');"
-                                        L"    for (var i = 0; i < links.length; i++) {"
-                                        L"      var h = links[i].href;"
-                                        L"      if (h.indexOf('?') == -1 && !h.endsWith('/downloads') && !h.endsWith('/downloads/')) {"
-                                        L"        window.location.href = h; break;"
+                                        L"  if (path.indexOf('/downloads') == -1 && url.indexOf('moddb.com') != -1) {"
+                                        L"    var el = document.querySelector('a[href$=\"/downloads\"], a[href$=\"/downloads/\"]');"
+                                        L"    if (el) { window.moddbNavigating = true; el.click(); } else { window.moddbNavigating = true; window.location.href = url.split('?')[0] + '/downloads'; }"
+                                        L"  } else if (path.endsWith('/downloads') || path.endsWith('/downloads/')) {"
+                                        L"    var el = document.querySelector('.table.downloads .row a.image') || document.querySelector('.row-content a') || document.querySelector('a[href*=\"/downloads/metrostroi\"]');"
+                                        L"    if (el) { window.moddbNavigating = true; el.click(); }"
+                                        L"    else {"
+                                        L"      var links = document.querySelectorAll('a[href*=\"/downloads/\"]');"
+                                        L"      for (var i = 0; i < links.length; i++) {"
+                                        L"        var h = links[i].href;"
+                                        L"        if (h.indexOf('?') == -1 && !h.endsWith('/downloads') && !h.endsWith('/downloads/')) {"
+                                        L"          window.moddbNavigating = true; window.location.href = h; break;"
+                                        L"        }"
                                         L"      }"
                                         L"    }"
-                                        L"  } else if (url.indexOf('/downloads/') != -1 && url.indexOf('/start/') == -1) {"
-                                        L"    var links = document.querySelectorAll('a[href*=\"/downloads/start/\"]');"
-                                        L"    if (links.length > 0) { window.location.href = links[0].href; }"
-                                        L"    else { var el = document.querySelector('a.button-download'); if(el) window.location.href = el.href; }"
-                                        L"  } else if (url.indexOf('/start/') != -1) {"
-                                        L"    var el = document.querySelector('a[href*=\"/downloads/mirror/\"]');"
-                                        L"    if (el) window.location.href = el.href;"
+                                        L"  } else if (path.indexOf('/downloads/') != -1 && path.indexOf('/start/') == -1) {"
+                                        L"    var el = document.querySelector('a.button-download') || document.querySelector('a#downloadmirror') || document.querySelector('a[href*=\"/downloads/start/\"]');"
+                                        L"    if (el) { window.moddbNavigating = true; el.click(); }"
+                                        L"  } else if (path.indexOf('/start/') != -1) {"
+                                        L"    var el = document.querySelector('a[href*=\"/downloads/mirror/\"]') || document.querySelector('a.button-download');"
+                                        L"    if (el) { window.moddbNavigating = true; el.click(); }"
                                         L"  }"
                                         L"}, 1000);";
                                     sender->ExecuteScript(script.c_str(), nullptr);
