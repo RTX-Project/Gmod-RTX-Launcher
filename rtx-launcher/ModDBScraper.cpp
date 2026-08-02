@@ -130,14 +130,22 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                             }
 
                             state->webView->add_WebMessageReceived(Callback<ICoreWebView2WebMessageReceivedEventHandler>(
-                                [](ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args) -> HRESULT {
+                                [state](ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args) -> HRESULT {
                                     LPWSTR msgStr = nullptr;
-                                    if (SUCCEEDED(args->TryGetWebMessageAsString(&msgStr)) && msgStr) {
-                                        std::ofstream log(L"moddb_debug.txt", std::ios::app);
-                                        log << "[ModDB JS] ";
-                                        char utf8[1024];
-                                        WideCharToMultiByte(CP_UTF8, 0, msgStr, -1, utf8, 1024, NULL, NULL);
-                                        log << utf8 << std::endl;
+                                    if (SUCCEEDED(args->TryGetWebMessageAsString(&msgStr))) {
+                                        std::string utf8Str = WStringToUTF8(msgStr);
+                                        
+                                        if (utf8Str.find("NAVIGATE_TO:") == 0) {
+                                            std::wstring newUrlStr = msgStr + 12; // skip "NAVIGATE_TO:"
+                                            std::ofstream log(L"moddb_debug.txt", std::ios::app);
+                                            char utf8[1024];
+                                            WideCharToMultiByte(CP_UTF8, 0, newUrlStr.c_str(), -1, utf8, 1024, NULL, NULL);
+                                            log << "[ModDB C++] Forcing navigation to: " << utf8 << std::endl;
+                                            state->webView->Navigate(newUrlStr.c_str());
+                                        } else {
+                                            std::ofstream log(L"moddb_debug.txt", std::ios::app);
+                                            log << "[ModDB JS] " << utf8Str << std::endl;
+                                        }
                                         CoTaskMemFree(msgStr);
                                     }
                                     return S_OK;
@@ -161,12 +169,12 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                         L"  if (window.moddbNavigating) return;"
                                         L"  if (document.title.indexOf('Just a moment') != -1 || document.title.indexOf('Cloudflare') != -1 || document.getElementById('challenge-form')) return;"
                                         L"  var log = function(msg) { window.chrome.webview.postMessage(msg); };"
-                                        L"  window.open = function(url) { window.location.href = url; return window; };"
-                                        L"  var nav = function(el) { window.moddbNavigating = true; log('Navigating to ' + el.href); window.location.href = el.href; };"
+                                        L"  window.open = function(url) { window.chrome.webview.postMessage('NAVIGATE_TO:' + url); return window; };"
+                                        L"  var nav = function(el) { window.moddbNavigating = true; window.chrome.webview.postMessage('NAVIGATE_TO:' + el.href); };"
                                         L"  var path = window.location.pathname;"
                                         L"  var url = window.location.href;"
                                         L"  if (path.indexOf('/downloads') == -1 && url.indexOf('moddb.com') != -1) {"
-                                        L"    window.moddbNavigating = true; log('Manual nav to mod downloads'); window.location.href = url.split('?')[0] + '/downloads';"
+                                        L"    window.moddbNavigating = true; log('Manual nav to mod downloads'); window.chrome.webview.postMessage('NAVIGATE_TO:' + url.split('?')[0] + '/downloads');"
                                         L"  } else if (path.endsWith('/downloads') || path.endsWith('/downloads/')) {"
                                         L"    var el = document.querySelector('.table.downloads .row a.image, .row-content a.image, #downloads a.image');"
                                         L"    if (el) nav(el);"
@@ -178,7 +186,7 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                         L"      for (var i = 0; i < links.length; i++) {"
                                         L"        var h = links[i].href;"
                                         L"        if (h.startsWith(modDownloadsUrl) && h.indexOf('?') == -1 && h.indexOf('/page/') == -1 && h.indexOf('/add/') == -1 && !h.endsWith('/add') && !h.endsWith('/top') && !h.endsWith('/recently') && !h.endsWith('/latest')) {"
-                                        L"          window.moddbNavigating = true; log('Found file link: ' + h); window.location.href = h; found = true; break;"
+                                        L"          window.moddbNavigating = true; log('Found file link: ' + h); window.chrome.webview.postMessage('NAVIGATE_TO:' + h); found = true; break;"
                                         L"        }"
                                         L"      }"
                                         L"      if (!found) log('Could not find ANY download file links for this mod on the page!');"
@@ -209,7 +217,7 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
         }
 
         // Timeout timer
-        UINT_PTR timerId = SetTimer(nullptr, 0, 25000, nullptr); // 25 seconds timeout
+        UINT_PTR timerId = SetTimer(nullptr, 0, 45000, nullptr); // 45 seconds timeout
 
         // Message loop for this thread
         MSG msg;
@@ -222,7 +230,7 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                 if (!state->finished) {
                     state->finished = true;
                     std::ofstream log(L"moddb_debug.txt", std::ios::app);
-                    log << "[ModDB Scraper] TIMEOUT! 25 seconds elapsed. Cancelling." << std::endl;
+                    log << "[ModDB Scraper] TIMEOUT! 45 seconds elapsed. Cancelling." << std::endl;
                     state->onError();
                     PostMessage(state->hwnd, WM_CLOSE, 0, 0);
                 }
