@@ -133,13 +133,15 @@ void ModDBScraper::FetchLatestDownloadUrlAsync(const std::wstring& moddbUrl, std
                                 [state](ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args) -> HRESULT {
                                     LPWSTR msgStr = nullptr;
                                     if (SUCCEEDED(args->TryGetWebMessageAsString(&msgStr))) {
-                                        std::string utf8Str = WStringToUTF8(msgStr);
+                                        char utf8_msg[2048] = { 0 };
+                                        WideCharToMultiByte(CP_UTF8, 0, msgStr, -1, utf8_msg, sizeof(utf8_msg), NULL, NULL);
+                                        std::string utf8Str = utf8_msg;
                                         
                                         if (utf8Str.find("NAVIGATE_TO:") == 0) {
                                             std::wstring newUrlStr = msgStr + 12; // skip "NAVIGATE_TO:"
                                             std::ofstream log(L"moddb_debug.txt", std::ios::app);
-                                            char utf8[1024];
-                                            WideCharToMultiByte(CP_UTF8, 0, newUrlStr.c_str(), -1, utf8, 1024, NULL, NULL);
+                                            char utf8[2048];
+                                            WideCharToMultiByte(CP_UTF8, 0, newUrlStr.c_str(), -1, utf8, sizeof(utf8), NULL, NULL);
                                             log << "[ModDB C++] Forcing navigation to: " << utf8 << std::endl;
                                             state->webView->Navigate(newUrlStr.c_str());
                                         } else {
