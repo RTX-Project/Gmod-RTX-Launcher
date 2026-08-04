@@ -48,13 +48,13 @@ public:
     std::vector<std::wstring> filesToSync = { L"dxvk.conf", L"gmod.exe", L"hl2.exe", L"installed_packages.json",
                                                L"rtx.conf", L"steam_appid.txt", L"user.conf" };
 
-    // ÐžÑ‚Ð½Ð¾ÑÐ¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ðµ под-пути (от ÐºÐ¾Ñ€Ð½Ñ Ð¸ÑÑ‚Ð¾Ñ‡Ð½Ð¸ÐºÐ°), которые Ð¸ÑÐºÐ»ÑŽÑ‡Ð°ÑŽÑ‚ÑÑ из
-    // ÑÐ¸Ð½Ñ…Ñ€Ð¾Ð½Ð¸Ð·Ð°Ñ†Ð¸Ð¸ (ÐºÑÑˆ, загрузки, ÑÐºÑ€Ð¸Ð½ÑˆÐ¾Ñ‚Ñ‹ и т.п. - раздувают копию и не
+    // ÐžÑ‚Ð½Ð¾Ñ Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ðµ под-пути (от ÐºÐ¾Ñ€Ð½Ñ  Ð¸Ñ Ñ‚Ð¾Ñ‡Ð½Ð¸ÐºÐ°), которые Ð¸Ñ ÐºÐ»ÑŽÑ‡Ð°ÑŽÑ‚Ñ Ñ  из
+    // Ñ Ð¸Ð½Ñ…Ñ€Ð¾Ð½Ð¸Ð·Ð°Ñ†Ð¸Ð¸ (ÐºÑ Ñˆ, загрузки, Ñ ÐºÑ€Ð¸Ð½ÑˆÐ¾Ñ‚Ñ‹ и т.п. - раздувают копию и не
     // нужны для модификации).
     std::vector<std::wstring> excludeRelativePrefixes = {
-        L"garrysmod\\cache", L"garrysmod\\download", L"garrysmod\\downloadlists",
+        L"garrysmod\\addons", L"garrysmod\\cache", L"garrysmod\\download", L"garrysmod\\downloadlists",
         L"garrysmod\\screenshots", L"garrysmod\\demos", L"garrysmod\\dupes",
-        L"rtx-remix" // Защищаем папку rtx-remix от Ð¿ÐµÑ€ÐµÐ·Ð°Ð¿Ð¸ÑÐ¸/ÑƒÐ´Ð°Ð»ÐµÐ½Ð¸Ñ
+        L"rtx-remix" // Защищаем папку rtx-remix от перезаписи/удаления
     };
 
     bool verifyHash = false;
