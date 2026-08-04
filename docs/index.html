@@ -15,14 +15,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <!-- Animated Background Particles -->
-    <canvas id="particles-canvas"></canvas>
     <!-- Navigation -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
@@ -34,8 +32,8 @@
                             stroke-linejoin="round" />
                         <defs>
                             <linearGradient id="logo-grad" x1="0" y1="0" x2="32" y2="32">
-                                <stop stop-color="#00ff88" />
-                                <stop offset="1" stop-color="#00d4ff" />
+                                <stop stop-color="#39e886" />
+                                <stop offset="1" stop-color="#38bdf8" />
                             </linearGradient>
                         </defs>
                     </svg>
@@ -50,14 +48,13 @@
             </div>
             <div class="nav-actions">
                 <a href="https://github.com/RTX-Project/Gmod-RTX-Launcher" class="btn btn-outline btn-sm" target="_blank" rel="noopener">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                     </svg>
                     GitHub
                 </a>
                 <a href="https://github.com/RTX-Project/Gmod-RTX-Launcher/releases/latest/download/rtx-installer.exe" class="btn btn-primary btn-sm" data-download>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                         <polyline points="7 10 12 15 17 10" />
@@ -73,27 +70,26 @@
             </button>
         </div>
     </nav>
+
     <!-- Hero Section -->
     <section class="hero" id="hero">
-        <div class="hero-glow"></div>
-        <div class="hero-grid"></div>
         <div class="hero-content">
-            <div class="hero-badge" data-animate="fade-up">
-                <span class="badge-dot"></span>
-                Открытый исходный код • Бесплатно
+            <div class="hero-eyebrow" data-animate="fade-up">
+                <span class="eyebrow-dot"></span>
+                Открытый исходный код · Бесплатно
             </div>
             <h1 class="hero-title" data-animate="fade-up" data-delay="100">
                 Garry's Mod<br>
                 с <span class="gradient-text">Ray Tracing</span>
             </h1>
             <p class="hero-subtitle" data-animate="fade-up" data-delay="200">
-                RTX Launcher позволяет запускать GMod с NVIDIA RTX Remix,
+                RTX Launcher запускает GMod с NVIDIA RTX Remix —
                 добавляя трассировку лучей в реальном времени.
-                Играй на серверах с потрясающей графикой.
+                Играй на серверах с невероятной графикой.
             </p>
             <div class="hero-buttons" data-animate="fade-up" data-delay="300">
                 <a href="https://github.com/RTX-Project/Gmod-RTX-Launcher/releases/latest/download/rtx-installer.exe" class="btn btn-primary btn-lg" data-download>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                         <polyline points="7 10 12 15 17 10" />
@@ -101,92 +97,88 @@
                     </svg>
                     Скачать бесплатно
                 </a>
-                <a href="https://github.com/RTX-Project/Gmod-RTX-Launcher" class="btn btn-ghost btn-lg" target="_blank" rel="noopener">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                <a href="https://github.com/RTX-Project/Gmod-RTX-Launcher" class="btn btn-outline btn-lg" target="_blank" rel="noopener">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                     </svg>
                     Смотреть на GitHub
                 </a>
             </div>
             <div class="hero-stats" data-animate="fade-up" data-delay="400">
                 <div class="stat">
-                    <span class="stat-number" data-count="100">0</span><span class="stat-suffix">+</span>
+                    <span><span class="stat-number" data-count="100">0</span><span class="stat-suffix">+</span></span>
                     <span class="stat-label">Загрузок</span>
                 </div>
-                <div class="stat-divider"></div>
                 <div class="stat">
-                    <span class="stat-number">1</span><span class="stat-suffix"> клик</span>
+                    <span><span class="stat-number">1</span><span class="stat-suffix"> клик</span></span>
                     <span class="stat-label">Установка модов</span>
                 </div>
-                <div class="stat-divider"></div>
                 <div class="stat">
-                    <span class="stat-number" data-count="100">0</span><span class="stat-suffix">%</span>
+                    <span><span class="stat-number" data-count="100">0</span><span class="stat-suffix">%</span></span>
                     <span class="stat-label">Бесплатно</span>
                 </div>
             </div>
         </div>
+
+        <!-- Launcher Mockup -->
         <div class="hero-visual" data-animate="fade-up" data-delay="500">
-            <div class="hero-mockup">
-                <div class="mockup-header">
-                    <div class="mockup-dots">
-                        <span></span><span></span><span></span>
+            <div class="hero-mockup-wrap">
+                <div class="hero-mockup">
+                    <div class="mockup-header">
+                        <div class="mockup-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <span class="mockup-title">RTX Launcher v2.6.4</span>
                     </div>
-                    <span class="mockup-title">RTX Launcher v2.0</span>
-                </div>
-                <div class="mockup-body">
-                    <div class="mockup-sidebar">
-                        <div class="mockup-nav-item active">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                            </svg>
-                            Главная
-                        </div>
-                        <div class="mockup-nav-item">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <circle cx="12" cy="12" r="3" />
-                                <path
-                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                            </svg>
-                            Настройки
-                        </div>
-                        <div class="mockup-nav-item">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path
-                                    d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                            </svg>
-                            Моды
-                        </div>
-                    </div>
-                    <div class="mockup-main">
-                        <div class="mockup-card glow-card">
-                            <div class="mockup-card-icon">🎮</div>
-                            <div class="mockup-card-title">Garry's Mod + RTX</div>
-                            <div class="mockup-card-subtitle">Готов к запуску</div>
-                            <div class="mockup-progress">
-                                <div class="mockup-progress-bar"></div>
+                    <div class="mockup-body">
+                        <div class="mockup-sidebar">
+                            <div class="mockup-nav-item active">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                </svg>
+                                Главная
                             </div>
-                            <button class="mockup-btn">▶ Запустить</button>
+                            <div class="mockup-nav-item">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3" />
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                                </svg>
+                                Настройки
+                            </div>
+                            <div class="mockup-nav-item">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                                </svg>
+                                Моды
+                            </div>
                         </div>
-                        <div class="mockup-info-grid">
-                            <div class="mockup-info-card">
-                                <span class="info-label">RTX Remix</span>
-                                <span class="info-value status-on">Включён</span>
+                        <div class="mockup-main">
+                            <div class="mockup-card glow-card">
+                                <div class="mockup-card-icon">🎮</div>
+                                <div class="mockup-card-title">Garry's Mod + RTX</div>
+                                <div class="mockup-card-subtitle">Готов к запуску</div>
+                                <div class="mockup-progress">
+                                    <div class="mockup-progress-bar"></div>
+                                </div>
+                                <button class="mockup-btn">▶ Запустить</button>
                             </div>
-                            <div class="mockup-info-card">
-                                <span class="info-label">Сервера</span>
-                                <span class="info-value status-on">Доступны</span>
-                            </div>
-                            <div class="mockup-info-card">
-                                <span class="info-label">Версия</span>
-                                <span class="info-value">2.0.3</span>
-                            </div>
-                            <div class="mockup-info-card">
-                                <span class="info-label">GPU</span>
-                                <span class="info-value">RTX 4070</span>
+                            <div class="mockup-info-grid">
+                                <div class="mockup-info-card">
+                                    <span class="info-label">RTX Remix</span>
+                                    <span class="info-value status-on">Включён</span>
+                                </div>
+                                <div class="mockup-info-card">
+                                    <span class="info-label">Сервера</span>
+                                    <span class="info-value status-on">Доступны</span>
+                                </div>
+                                <div class="mockup-info-card">
+                                    <span class="info-label">Версия</span>
+                                    <span class="info-value">2.6.4</span>
+                                </div>
+                                <div class="mockup-info-card">
+                                    <span class="info-label">GPU</span>
+                                    <span class="info-value">RTX 4070</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -194,173 +186,180 @@
             </div>
         </div>
     </section>
-    <!-- Features Section -->
+
+    <!-- Features Section (Bento Grid) -->
     <section class="section features" id="features">
         <div class="container">
             <div class="section-header" data-animate="fade-up">
-                <span class="section-badge">Возможности</span>
+                <span class="section-label">Возможности</span>
                 <h2 class="section-title">Всё, что нужно для <span class="gradient-text">RTX в GMod</span></h2>
-                <p class="section-subtitle">RTX Launcher решает все технические сложности за вас — просто запустите и
-                    наслаждайтесь</p>
+                <p class="section-subtitle">RTX Launcher решает все технические сложности за вас — просто запустите и наслаждайтесь</p>
             </div>
-            <div class="features-grid">
-                <div class="feature-card" data-animate="fade-up" data-delay="0">
-                    <div class="feature-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                        </svg>
+            <div class="bento-grid">
+
+                <!-- Card 1 — Large (Запуск в один клик) -->
+                <div class="bento-card bento-card-1" data-animate="fade-up">
+                    <div>
+                        <div class="bento-icon">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                            </svg>
+                        </div>
+                        <h3 class="bento-title">Запуск в один клик</h3>
+                        <p class="bento-desc">Никаких сложных настроек. Установи, нажми «Запустить» — и играй с RTX без лишних действий.</p>
                     </div>
-                    <h3 class="feature-title">Запуск в один клик</h3>
-                    <p class="feature-desc">Никаких сложных настроек. Установи, нажми «Запустить» — и играй с RTX.</p>
                 </div>
-                <div class="feature-card" data-animate="fade-up" data-delay="100">
-                    <div class="feature-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+
+                <!-- Card 2 — Wide (RTX Remix) -->
+                <div class="bento-card bento-card-2" data-animate="fade-up" data-delay="100">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
                             <line x1="8" y1="21" x2="16" y2="21" />
                             <line x1="12" y1="17" x2="12" y2="21" />
                         </svg>
                     </div>
-                    <h3 class="feature-title">RTX Remix интеграция</h3>
-                    <p class="feature-desc">Полная совместимость с NVIDIA RTX Remix для трассировки лучей в реальном
-                        времени.</p>
+                    <div class="bento-card-text">
+                        <h3 class="bento-title">RTX Remix интеграция</h3>
+                        <p class="bento-desc">Полная совместимость с NVIDIA RTX Remix — трассировка лучей в реальном времени прямо в GMod.</p>
+                    </div>
                 </div>
-                <div class="feature-card" data-animate="fade-up" data-delay="200">
-                    <div class="feature-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+
+                <!-- Card 3 (Игра на серверах) -->
+                <div class="bento-card bento-card-3" data-animate="fade-up" data-delay="150">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                             <circle cx="9" cy="7" r="4" />
                             <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                         </svg>
                     </div>
-                    <h3 class="feature-title">Игра на серверах</h3>
-                    <p class="feature-desc">Подключайся к любым серверам GMod и играй с RTX графикой вместе с друзьями.
-                    </p>
+                    <div class="bento-card-text">
+                        <h3 class="bento-title">Игра на серверах</h3>
+                        <p class="bento-desc">Подключайся к любым серверам GMod и играй с RTX вместе с друзьями.</p>
+                    </div>
                 </div>
-                <div class="feature-card" data-animate="fade-up" data-delay="300">
-                    <div class="feature-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
+
+                <!-- Card 4 (Реалистичное освещение) -->
+                <div class="bento-card bento-card-4" data-animate="fade-up" data-delay="200">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="4" />
+                            <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707" />
                         </svg>
                     </div>
-                    <h3 class="feature-title">Реалистичное освещение</h3>
-                    <p class="feature-desc">Глобальное освещение, мягкие тени, отражения и объёмный свет преображают
-                        каждую карту.</p>
+                    <div class="bento-card-text">
+                        <h3 class="bento-title">Реалистичный свет</h3>
+                        <p class="bento-desc">Глобальное освещение, тени и отражения в каждой сцене.</p>
+                    </div>
                 </div>
-                <div class="feature-card" data-animate="fade-up" data-delay="400">
-                    <div class="feature-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+
+                <!-- Card 5 (Удобная установка) -->
+                <div class="bento-card bento-card-5" data-animate="fade-up" data-delay="250">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                         </svg>
                     </div>
-                    <h3 class="feature-title">Удобная установка</h3>
-                    <p class="feature-desc">Свой авто-инсталлятор игры и загрузка модов напрямую с ModDB в один клик.</p>
+                    <div class="bento-card-text">
+                        <h3 class="bento-title">Авто-установка</h3>
+                        <p class="bento-desc">Инсталлятор скачает игру и RTX Remix сам.</p>
+                    </div>
                 </div>
-                <div class="feature-card" data-animate="fade-up" data-delay="500">
-                    <div class="feature-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+
+                <!-- Card 6 — Wide (Open Source) -->
+                <div class="bento-card bento-card-6" data-animate="fade-up" data-delay="300">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
                         </svg>
                     </div>
-                    <h3 class="feature-title">Open Source</h3>
-                    <p class="feature-desc">Полностью открытый код. Вносите свой вклад, предлагайте идеи и улучшайте
-                        лаунчер.</p>
+                    <div class="bento-card-text">
+                        <h3 class="bento-title">Open Source</h3>
+                        <p class="bento-desc">Полностью открытый код. Вносите вклад и предлагайте улучшения.</p>
+                    </div>
+                    <span class="bento-tag">GPL-3.0</span>
                 </div>
+
             </div>
         </div>
     </section>
+
     <!-- Comparison Section -->
     <section class="section comparison" id="comparison">
         <div class="container">
             <div class="section-header" data-animate="fade-up">
-                <span class="section-badge">Сравнение</span>
+                <span class="section-label">Сравнение</span>
                 <h2 class="section-title">Почувствуй <span class="gradient-text">разницу</span></h2>
                 <p class="section-subtitle">Смотри, как RTX Remix преображает графику Garry's Mod</p>
             </div>
-            <div class="comparison-showcase" data-animate="fade-up" data-delay="100">
-                <div class="comparison-slider" id="comparison-slider">
-                    <div class="comparison-side comparison-before">
-                        <img src="images/rtx_off.jpg" alt="Without RTX" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none;">
-                        <span class="comparison-label">Без RTX</span>
-                    </div>
-                    <div class="comparison-side comparison-after">
-                        <img src="images/rtx_on.jpg" alt="With RTX" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none;">
-                        <span class="comparison-label">С RTX Remix</span>
-                    </div>
-                    <div class="comparison-handle" id="comparison-handle">
-                        <div class="handle-line"></div>
-                        <div class="handle-grip">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <polyline points="15 18 9 12 15 6" />
-                            </svg>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <polyline points="9 18 15 12 9 6" />
-                            </svg>
+            <div class="comparison-container">
+                <div class="comparison-showcase" data-animate="fade-up" data-delay="100">
+                    <div class="comparison-slider" id="comparison-slider">
+                        <div class="comparison-side comparison-before">
+                            <img src="images/rtx_off.jpg" alt="Без RTX">
+                            <span class="comparison-label">Без RTX</span>
+                        </div>
+                        <div class="comparison-side comparison-after">
+                            <img src="images/rtx_on.jpg" alt="С RTX Remix">
+                            <span class="comparison-label">С RTX Remix</span>
+                        </div>
+                        <div class="comparison-handle" id="comparison-handle">
+                            <div class="handle-grip">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="15 18 9 12 15 6" />
+                                </svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="9 18 15 12 9 6" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="comparison-features" data-animate="fade-up" data-delay="200">
-                <div class="comp-feature">
-                    <div class="comp-feature-icon">💡</div>
-                    <div>
+                <div class="comparison-features-grid" data-animate="fade-up" data-delay="200">
+                    <div class="comp-feature">
+                        <div class="comp-feature-icon">💡</div>
                         <h4>Глобальное освещение</h4>
                         <p>Свет реалистично рассеивается и отражается от поверхностей</p>
                     </div>
-                </div>
-                <div class="comp-feature">
-                    <div class="comp-feature-icon">🪞</div>
-                    <div>
+                    <div class="comp-feature">
+                        <div class="comp-feature-icon">🪞</div>
                         <h4>Трассировка отражений</h4>
                         <p>Точные отражения на металле, воде и стекле</p>
                     </div>
-                </div>
-                <div class="comp-feature">
-                    <div class="comp-feature-icon">🌫️</div>
-                    <div>
+                    <div class="comp-feature">
+                        <div class="comp-feature-icon">🌫️</div>
                         <h4>Объёмный свет</h4>
                         <p>Лучи света видимы в туманном воздухе и через окна</p>
                     </div>
-                </div>
-                <div class="comp-feature">
-                    <div class="comp-feature-icon">🎨</div>
-                    <div>
+                    <div class="comp-feature">
+                        <div class="comp-feature-icon">🎨</div>
                         <h4>PBR Материалы</h4>
-                        <p>Физически корректные материалы для реализма</p>
+                        <p>Физически корректные материалы для максимального реализма</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
     <!-- Installation Section -->
     <section class="section install" id="install">
         <div class="container">
             <div class="section-header" data-animate="fade-up">
-                <span class="section-badge">Установка</span>
+                <span class="section-label">Установка</span>
                 <h2 class="section-title">Начни за <span class="gradient-text">3 шага</span></h2>
                 <p class="section-subtitle">Простая установка — никаких специальных знаний не нужно</p>
             </div>
             <div class="install-steps">
-                <div class="install-step" data-animate="fade-up" data-delay="0">
+
+                <div class="install-step" data-animate="fade-up">
                     <div class="step-number">01</div>
                     <div class="step-content">
                         <h3>Скачай RTX Launcher</h3>
                         <p>Загрузи последнюю версию лаунчера с GitHub Releases. Поддерживается Windows 10/11.</p>
                         <a href="https://github.com/RTX-Project/Gmod-RTX-Launcher/releases/latest/download/rtx-installer.exe" class="btn btn-outline btn-sm" target="_blank" rel="noopener" data-download>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                                 <polyline points="7 10 12 15 17 10" />
                                 <line x1="12" y1="15" x2="12" y2="3" />
@@ -377,7 +376,7 @@
                             </div>
                             <div class="terminal-body">
                                 <code>
-                                    <span class="t-prompt">$</span> <span class="t-cmd">downloading</span> rtx-launcher-v2.0.3.exe<br>
+                                    <span class="t-prompt">$</span> <span class="t-cmd">downloading</span> rtx-launcher.exe<br>
                                     <span class="t-success">✓</span> Download complete <span class="t-dim">(45.2 MB)</span><br>
                                     <span class="t-prompt">$</span> <span class="t-cmd">verifying</span> checksum...<br>
                                     <span class="t-success">✓</span> Verified <span class="t-dim">SHA256 OK</span>
@@ -386,6 +385,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="install-step" data-animate="fade-up" data-delay="150">
                     <div class="step-number">02</div>
                     <div class="step-content">
@@ -402,20 +402,20 @@
                             <div class="terminal-body">
                                 <code>
                                     <span class="t-prompt">$</span> <span class="t-cmd">detecting</span> Garry's Mod...<br>
-                                    <span class="t-success">✓</span> Found at <span class="t-dim">Steam/steamapps/common/</span><br>
-                                    <span class="t-prompt">$</span> <span class="t-cmd">installing</span> RTX Remix runtime...<br>
+                                    <span class="t-success">✓</span> Found at <span class="t-dim">Steam/steamapps/</span><br>
+                                    <span class="t-prompt">$</span> <span class="t-cmd">installing</span> RTX Remix...<br>
                                     <span class="t-success">✓</span> RTX Remix <span class="t-dim">v0.5.1</span> ready
                                 </code>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="install-step" data-animate="fade-up" data-delay="300">
                     <div class="step-number">03</div>
                     <div class="step-content">
-                        <h3>Запусти и играй!</h3>
-                        <p>Нажми «Запустить» в лаунчере. GMod откроется с RTX — подключайся к серверам и наслаждайся.
-                        </p>
+                        <h3>Запусти и играй</h3>
+                        <p>Нажми «Запустить» в лаунчере. GMod откроется с RTX — подключайся к серверам и наслаждайся.</p>
                     </div>
                     <div class="step-visual">
                         <div class="terminal-window">
@@ -426,23 +426,25 @@
                             </div>
                             <div class="terminal-body">
                                 <code>
-                                    <span class="t-prompt">$</span> <span class="t-cmd">launching</span> Garry's Mod + RTX...<br>
+                                    <span class="t-prompt">$</span> <span class="t-cmd">launching</span> GMod + RTX...<br>
                                     <span class="t-success">✓</span> RTX Remix <span class="t-dim">injected</span><br>
                                     <span class="t-success">✓</span> Ray tracing <span class="t-accent">ENABLED</span><br>
-                                    <span class="t-success">✓</span> Enjoy! <span class="t-dim">🎮</span>
+                                    <span class="t-success">✓</span> Have fun! <span class="t-dim">🎮</span>
                                 </code>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </section>
+
     <!-- System Requirements -->
     <section class="section requirements">
         <div class="container">
             <div class="section-header" data-animate="fade-up">
-                <span class="section-badge">Требования</span>
+                <span class="section-label">Требования</span>
                 <h2 class="section-title">Системные <span class="gradient-text">требования</span></h2>
             </div>
             <div class="req-grid" data-animate="fade-up" data-delay="100">
@@ -450,8 +452,7 @@
                     <h3 class="req-card-title">Минимальные</h3>
                     <ul class="req-list">
                         <li><span class="req-key">GPU</span><span class="req-val">NVIDIA RTX 2060</span></li>
-                        <li><span class="req-key">CPU</span><span class="req-val">Intel i5-10400 / AMD Ryzen 5
-                                3600</span></li>
+                        <li><span class="req-key">CPU</span><span class="req-val">Intel i5-10400 / Ryzen 5 3600</span></li>
                         <li><span class="req-key">RAM</span><span class="req-val">16 GB</span></li>
                         <li><span class="req-key">Диск</span><span class="req-val">5 GB свободного места</span></li>
                         <li><span class="req-key">ОС</span><span class="req-val">Windows 10 64-bit</span></li>
@@ -463,8 +464,7 @@
                     <h3 class="req-card-title">Рекомендуемые</h3>
                     <ul class="req-list">
                         <li><span class="req-key">GPU</span><span class="req-val">NVIDIA RTX 4070+</span></li>
-                        <li><span class="req-key">CPU</span><span class="req-val">Intel i7-12700 / AMD Ryzen 7
-                                5800X</span></li>
+                        <li><span class="req-key">CPU</span><span class="req-val">Intel i7-12700 / Ryzen 7 5800X</span></li>
                         <li><span class="req-key">RAM</span><span class="req-val">32 GB</span></li>
                         <li><span class="req-key">Диск</span><span class="req-val">10 GB SSD</span></li>
                         <li><span class="req-key">ОС</span><span class="req-val">Windows 11 64-bit</span></li>
@@ -474,106 +474,97 @@
             </div>
         </div>
     </section>
+
     <!-- FAQ Section -->
     <section class="section faq" id="faq">
         <div class="container">
             <div class="section-header" data-animate="fade-up">
-                <span class="section-badge">FAQ</span>
+                <span class="section-label">FAQ</span>
                 <h2 class="section-title">Часто задаваемые <span class="gradient-text">вопросы</span></h2>
             </div>
             <div class="faq-list" data-animate="fade-up" data-delay="100">
                 <div class="faq-item">
                     <button class="faq-question" id="faq-btn-1">
                         <span>Нужна ли видеокарта NVIDIA RTX?</span>
-                        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
+                        <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="6 9 12 15 18 9" />
                         </svg>
                     </button>
                     <div class="faq-answer">
-                        <p>Да, для работы RTX Remix необходима видеокарта серии NVIDIA RTX (2060 и выше). Это связано с
-                            аппаратной поддержкой трассировки лучей.</p>
+                        <p>Да, для работы RTX Remix необходима видеокарта серии NVIDIA RTX (2060 и выше). Это связано с аппаратной поддержкой трассировки лучей (RT Cores).</p>
                     </div>
                 </div>
                 <div class="faq-item">
                     <button class="faq-question" id="faq-btn-2">
                         <span>Можно ли играть на серверах?</span>
-                        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
+                        <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="6 9 12 15 18 9" />
                         </svg>
                     </button>
                     <div class="faq-answer">
-                        <p>Да! RTX Launcher позволяет играть на серверах GMod с включённой трассировкой лучей. Другие
-                            игроки не обязаны использовать лаунчер.</p>
+                        <p>Да! RTX Launcher позволяет играть на серверах GMod с включённой трассировкой лучей. Другие игроки не обязаны использовать лаунчер.</p>
                     </div>
                 </div>
                 <div class="faq-item">
                     <button class="faq-question" id="faq-btn-3">
                         <span>Это безопасно? Не забанят ли VAC?</span>
-                        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
+                        <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="6 9 12 15 18 9" />
                         </svg>
                     </button>
                     <div class="faq-answer">
-                        <p>RTX Launcher использует RTX Remix от NVIDIA, который работает на уровне графического драйвера
-                            и не модифицирует файлы игры. Это не чит и не нарушает правила VAC.</p>
+                        <p>RTX Launcher использует RTX Remix от NVIDIA, который работает на уровне графического драйвера и не модифицирует файлы игры. Это не чит и не нарушает правила VAC.</p>
                     </div>
                 </div>
                 <div class="faq-item">
                     <button class="faq-question" id="faq-btn-4">
                         <span>Нужна ли мощная видеокарта?</span>
-                        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
+                        <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="6 9 12 15 18 9" />
                         </svg>
                     </button>
                     <div class="faq-answer">
-                        <p>Для комфортной игры с RTX Remix крайне желательна современная видеокарта NVIDIA RTX (особенно 40-й серии с поддержкой генерации кадров). Производительность (FPS) в Garry's Mod сильно зависит от конкретной карты и количества пропов на ней.</p>
+                        <p>Для комфортной игры желательна современная RTX карта (особенно 40-й серии с генерацией кадров). FPS в Garry's Mod сильно зависит от конкретной карты и количества пропов.</p>
                     </div>
                 </div>
                 <div class="faq-item">
                     <button class="faq-question" id="faq-btn-5">
                         <span>Это бесплатно?</span>
-                        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2">
+                        <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="6 9 12 15 18 9" />
                         </svg>
                     </button>
                     <div class="faq-answer">
-                        <p>Да, RTX Launcher — полностью бесплатный и open-source проект. Вы можете использовать его,
-                            модифицировать и распространять.</p>
+                        <p>Да, RTX Launcher — полностью бесплатный open-source проект под лицензией GPL-3.0. Вы можете использовать, модифицировать и распространять его.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
     <!-- CTA Section -->
     <section class="section cta" data-animate="fade-up">
         <div class="container">
             <div class="cta-card">
-                <div class="cta-glow"></div>
                 <h2 class="cta-title">Готов попробовать <span class="gradient-text">RTX в GMod</span>?</h2>
-                <p class="cta-desc">Скачай RTX Launcher бесплатно и преобрази Garry's Mod с помощью трассировки лучей.
-                </p>
+                <p class="cta-desc">Скачай RTX Launcher бесплатно и преобрази Garry's Mod с помощью трассировки лучей.</p>
                 <div class="cta-buttons">
                     <a href="https://github.com/RTX-Project/Gmod-RTX-Launcher/releases/latest/download/rtx-installer.exe" class="btn btn-primary btn-lg" target="_blank" rel="noopener" data-download>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                             <polyline points="7 10 12 15 17 10" />
                             <line x1="12" y1="15" x2="12" y2="3" />
                         </svg>
                         Скачать бесплатно
                     </a>
-                    <a href="https://github.com" class="btn btn-ghost btn-lg" target="_blank" rel="noopener">
+                    <a href="https://github.com/RTX-Project/Gmod-RTX-Launcher" class="btn btn-ghost btn-lg" target="_blank" rel="noopener">
                         Открыть GitHub →
                     </a>
                 </div>
             </div>
         </div>
     </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -582,22 +573,19 @@
                     <a href="#" class="nav-logo">
                         <span class="logo-icon">
                             <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-                                <rect x="2" y="2" width="28" height="28" rx="6" stroke="url(#logo-grad2)"
-                                    stroke-width="2.5" />
-                                <path d="M10 16L14 20L22 12" stroke="url(#logo-grad2)" stroke-width="2.5"
-                                    stroke-linecap="round" stroke-linejoin="round" />
+                                <rect x="2" y="2" width="28" height="28" rx="6" stroke="url(#logo-grad2)" stroke-width="2.5" />
+                                <path d="M10 16L14 20L22 12" stroke="url(#logo-grad2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                                 <defs>
                                     <linearGradient id="logo-grad2" x1="0" y1="0" x2="32" y2="32">
-                                        <stop stop-color="#00ff88" />
-                                        <stop offset="1" stop-color="#00d4ff" />
+                                        <stop stop-color="#39e886" />
+                                        <stop offset="1" stop-color="#38bdf8" />
                                     </linearGradient>
                                 </defs>
                             </svg>
                         </span>
                         <span class="logo-text">RTX<span class="logo-accent">Launcher</span></span>
                     </a>
-                    <p class="footer-desc">Open-source лаунчер для запуска Garry's Mod с RTX Remix. Создан сообществом
-                        для сообщества.</p>
+                    <p class="footer-desc">Open-source лаунчер для Garry's Mod с RTX Remix. Создан сообществом для сообщества.</p>
                 </div>
                 <div class="footer-links-group">
                     <h4>Навигация</h4>
@@ -611,15 +599,16 @@
                     <a href="https://github.com/RTX-Project/Gmod-RTX-Launcher" target="_blank" rel="noopener">GitHub</a>
                     <a href="https://github.com/RTX-Project/Gmod-RTX-Launcher/releases" target="_blank" rel="noopener">Releases</a>
                     <a href="https://github.com/RTX-Project/Gmod-RTX-Launcher/issues" target="_blank" rel="noopener">Issues</a>
-                    <a href="https://github.com" target="_blank" rel="noopener">Wiki</a>
+                    <a href="https://github.com/RTX-Project/Gmod-RTX-Launcher" target="_blank" rel="noopener">Wiki</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 RTX Launcher. Open-source проект под лицензией GPL-3.0</p>
-                <p class="footer-credit">Сделано с ❤️ для GMod сообщества</p>
+                <p>© 2026 RTX Launcher. Open-source проект под лицензией GPL-3.0</p>
+                <p>Сделано с ❤️ для GMod сообщества</p>
             </div>
         </div>
     </footer>
+
     <script src="script.js"></script>
 </body>
 
