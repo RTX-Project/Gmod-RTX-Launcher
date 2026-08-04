@@ -212,6 +212,9 @@ struct GpuInfo {
     bool isNvidiaRtx = false;
     bool isAmdOrIntel = false;
     bool isGtxOrOlder = false;
+    bool isFrankenstein = false;
+    float driverVersion = 0.0f;
+    std::string driverVersionStr;
     std::string compatibilityNotice;
 };
 
@@ -555,6 +558,25 @@ static GpuInfo DetectGPU() {
                 std::string upperName = info.name;
                 for (auto& c : upperName) c = (char)toupper((unsigned char)c);
 
+                LARGE_INTEGER umdVersion = {0};
+                if (SUCCEEDED(pAdapter->CheckInterfaceSupport(__uuidof(IDXGIDevice), &umdVersion))) {
+                    char buf[64];
+                    sprintf_s(buf, "%d.%d.%d.%d", HIWORD(umdVersion.HighPart), LOWORD(umdVersion.HighPart), HIWORD(umdVersion.LowPart), LOWORD(umdVersion.LowPart));
+                    info.driverVersionStr = buf;
+                    
+                    if (desc.VendorId == 0x10DE) { // NVIDIA
+                        int nvidiaVersionInt = ((umdVersion.LowPart >> 16) * 10000 + (umdVersion.LowPart & 0xFFFF)) % 100000;
+                        info.driverVersion = nvidiaVersionInt / 100.0f;
+                        sprintf_s(buf, "%.2f", info.driverVersion);
+                        info.driverVersionStr = buf;
+                    }
+                }
+
+                if (upperName.find("LAPTOP") != std::string::npos || upperName.find(" CMP ") != std::string::npos || 
+                    (upperName.length() > 0 && upperName.back() == 'M')) {
+                    info.isFrankenstein = true;
+                }
+
                 if (desc.VendorId == 0x10DE) { // NVIDIA
                     if (upperName.find("RTX") != std::string::npos) {
                         info.isNvidiaRtx = true;
@@ -569,6 +591,10 @@ static GpuInfo DetectGPU() {
                 }
                 else {
                     info.compatibilityNotice = u8"Совместимость графического адаптера с модулем трассировки RTX Remix не гарантируется.";
+                }
+
+                if (info.isFrankenstein) {
+                    info.compatibilityNotice = u8"Внимание: обнаружена модифицированная (Frankenstein) видеокарта. Для её работы требуется купить подписку на Boosty у автора.";
                 }
             }
             pAdapter->Release();

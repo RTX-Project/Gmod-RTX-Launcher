@@ -43,6 +43,9 @@ struct GpuInfo {
     bool isNvidiaRtx = false;
     bool isAmdOrIntel = false;
     bool isGtxOrOlder = false;
+    bool isFrankenstein = false;
+    float driverVersion = 0.0f;
+    std::string driverVersionStr;
     std::string compatibilityNotice;
 };
 

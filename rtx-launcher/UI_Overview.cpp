@@ -287,7 +287,45 @@ void RenderUI_Overview() {
         DrawVersionCard(mainCardPos.x, gridY + bCardH + S(15), (const char*)u8"ВЕРСИИ", remixVer, modVer);
         
         std::string gpuStr = g_app.gpuInfo.name.empty() ? "NVIDIA RTX" : g_app.gpuInfo.name;
-        DrawBottomCard(mainCardPos.x + bCardW + S(15), gridY + bCardH + S(15), "GPU", gpuStr.c_str(), false);
+        
+        // Custom GPU Card rendering
+        {
+            float x = mainCardPos.x + bCardW + S(15);
+            float y = gridY + bCardH + S(15);
+            ImVec2 pos(x, y);
+            dl->AddRectFilled(pos, ImVec2(pos.x + bCardW, pos.y + bCardH), IM_COL32(15, 20, 25, 255), 8.0f);
+            dl->AddRect(pos, ImVec2(pos.x + bCardW, pos.y + bCardH), IM_COL32(25, 30, 40, 255), 8.0f, 0, 1.0f);
+            
+            ImGui::PushFont(g_imFontSmall);
+            ImGui::SetCursorScreenPos(ImVec2(pos.x + S(15), pos.y + S(12)));
+            ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.55f, 1.0f), "GPU");
+            ImGui::PopFont();
+            
+            ImGui::PushFont(g_imFontRegular);
+            ImGui::SetCursorScreenPos(ImVec2(pos.x + S(15), pos.y + S(35)));
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "%s", gpuStr.c_str());
+            ImGui::PopFont();
+            
+            ImGui::PushFont(g_imFontSmall);
+            ImGui::SetCursorScreenPos(ImVec2(pos.x + S(15), pos.y + S(55)));
+            
+            std::string drvStr = "Драйвер: " + (g_app.gpuInfo.driverVersionStr.empty() ? "Неизвестно" : g_app.gpuInfo.driverVersionStr);
+            if (!g_app.gpuInfo.driverVersionStr.empty()) {
+                if (g_app.gpuInfo.driverVersion < 596.21f) {
+                    ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "%s (Устарел!)", drvStr.c_str());
+                } else {
+                    ImGui::TextColored(ImVec4(0.0f, 0.9f, 0.5f, 1.0f), "%s (ОК)", drvStr.c_str());
+                }
+            } else {
+                ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.55f, 1.0f), "%s", drvStr.c_str());
+            }
+            
+            if (g_app.gpuInfo.isFrankenstein) {
+                ImGui::SetCursorScreenPos(ImVec2(pos.x + S(15), pos.y + S(70)));
+                ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.0f, 1.0f), "Boosty: Требуется подписка");
+            }
+            ImGui::PopFont();
+        }
         
         static float g_fiveHourTimer = 0.0f;
         g_fiveHourTimer += ImGui::GetIO().DeltaTime;

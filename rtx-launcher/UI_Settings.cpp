@@ -209,7 +209,24 @@ void RenderUI_Settings() {
 
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(65)));
         ImGui::PushFont(g_imFontSmall);
-        if (g_app.gpuInfo.isAmdOrIntel) {
+        
+        std::string drvStr = "Драйвер: " + (g_app.gpuInfo.driverVersionStr.empty() ? "Неизвестно" : g_app.gpuInfo.driverVersionStr);
+        if (!g_app.gpuInfo.driverVersionStr.empty() && g_app.gpuInfo.driverVersion < 596.21f) {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.3f, 0.3f, 0.9f));
+            ImGui::Text("%s (Устарел!)", drvStr.c_str());
+            ImGui::PopStyleColor();
+        } else {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.55f, 0.9f));
+            ImGui::Text("%s", drvStr.c_str());
+            ImGui::PopStyleColor();
+        }
+
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(80)));
+        if (g_app.gpuInfo.isFrankenstein) {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.0f, 1.0f));
+            ImGui::Text(u8"Boosty: Требуется подписка");
+            ImGui::PopStyleColor();
+        } else if (g_app.gpuInfo.isAmdOrIntel) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.75f, 0.25f, 0.9f));
             ImGui::Text(u8"(Совместимость не гарантируется)");
             ImGui::PopStyleColor();
