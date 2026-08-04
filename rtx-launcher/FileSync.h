@@ -392,12 +392,24 @@ private:
                 wchar_t buf[256];
                 if (eta >= 0) {
                     if (eta <= 59) {
-                        swprintf_s(buf, L"Файлы: %d/%d | %.1f/%.1f МБ | %.1f МБ/с | Осталось около %dс", ctx->processedFiles, ctx->totalFiles, downMb, totalMb, speed, eta);
+                        if (totalMb >= 1024.0) {
+                            swprintf_s(buf, L"Файлы: %d/%d | %.2f/%.2f ГБ | %.1f МБ/с | Осталось около %dс", ctx->processedFiles, ctx->totalFiles, downMb / 1024.0, totalMb / 1024.0, speed, eta);
+                        } else {
+                            swprintf_s(buf, L"Файлы: %d/%d | %.1f/%.1f МБ | %.1f МБ/с | Осталось около %dс", ctx->processedFiles, ctx->totalFiles, downMb, totalMb, speed, eta);
+                        }
                     } else {
-                        swprintf_s(buf, L"Файлы: %d/%d | %.1f/%.1f МБ | %.1f МБ/с | Осталось около %dм %dс", ctx->processedFiles, ctx->totalFiles, downMb, totalMb, speed, eta / 60, eta % 60);
+                        if (totalMb >= 1024.0) {
+                            swprintf_s(buf, L"Файлы: %d/%d | %.2f/%.2f ГБ | %.1f МБ/с | Осталось около %dм %dс", ctx->processedFiles, ctx->totalFiles, downMb / 1024.0, totalMb / 1024.0, speed, eta / 60, eta % 60);
+                        } else {
+                            swprintf_s(buf, L"Файлы: %d/%d | %.1f/%.1f МБ | %.1f МБ/с | Осталось около %dм %dс", ctx->processedFiles, ctx->totalFiles, downMb, totalMb, speed, eta / 60, eta % 60);
+                        }
                     }
                 } else {
-                    swprintf_s(buf, L"Файлы: %d/%d | %.1f/%.1f МБ | %.1f МБ/с", ctx->processedFiles, ctx->totalFiles, downMb, totalMb, speed);
+                    if (totalMb >= 1024.0) {
+                        swprintf_s(buf, L"Файлы: %d/%d | %.2f/%.2f ГБ | %.1f МБ/с", ctx->processedFiles, ctx->totalFiles, downMb / 1024.0, totalMb / 1024.0, speed);
+                    } else {
+                        swprintf_s(buf, L"Файлы: %d/%d | %.1f/%.1f МБ | %.1f МБ/с", ctx->processedFiles, ctx->totalFiles, downMb, totalMb, speed);
+                    }
                 }
 
                 (*ctx->progressFn)((float)currentProcessedBytes / (float)ctx->totalBytes, buf);
