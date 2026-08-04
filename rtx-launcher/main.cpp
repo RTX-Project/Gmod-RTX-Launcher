@@ -1634,6 +1634,62 @@ void DoLaunchGame() {
         if (g_app.launchMode == 2) {
             launchArgs += L" -high +mat_dxlevel 95";
         }
+
+        // ----------------------------------------------------------------
+        // Передаём путь к Steam чтобы движок правильно инициализировал
+        // Steam API и нашёл папки Workshop через GetItemInstallInfo()
+        // ----------------------------------------------------------------
+        {
+            SteamBeta betaHelper;
+            std::wstring steamDir = betaHelper.readSteamPathFromRegistryPublic();
+            if (!steamDir.empty()) {
+                launchArgs += L" -steampath \"" + steamDir + L"\"";
+                AppendLog(L"Steam путь для запуска: " + steamDir);
+
+                // Создаём appmanifest_4000.acf в нашей steamapps папке.
+                // Это говорит Steam API, что наша копия является валидной установкой
+                // AppID 4000, после чего GetItemInstallInfo() корректно возвращает
+                // пути к воркшоп контенту из оригинальной библиотеки.
+                std::error_code ec2;
+                fs::path ourSteamApps = fs::path(dstPath) / L"steamapps";
+                fs::create_directories(ourSteamApps, ec2);
+                fs::path manifestDst = ourSteamApps / L"appmanifest_4000.acf";
+
+                // Берём оригинальный манифест и патчим installdir на наш dstPath
+                fs::path srcSteamApps2 = fs::path(srcPath).parent_path().parent_path();
+                fs::path manifestSrc = srcSteamApps2 / L"appmanifest_4000.acf";
+                if (fs::exists(manifestSrc, ec2)) {
+                    std::wifstream fin(manifestSrc);
+                    std::wostringstream buf;
+                    buf << fin.rdbuf();
+                    std::wstring content = buf.str();
+
+                    // Пишем installdir как имя папки (последний компонент dstPath)
+                    std::wstring installDirName = fs::path(dstPath).filename().wstring();
+                    std::wregex idRe(LR"regex("installdir"\s*"[^"]*")regex");
+                    content = std::regex_replace(content, idRe, L"\"installdir\"\t\t\"" + installDirName + L"\"");
+
+                    std::wofstream fout(manifestDst);
+                    fout << content;
+                    AppendLog(L"✓ appmanifest_4000.acf создан: " + manifestDst.wstring());
+                } else {
+                    // Если оригинальный манифест не найден — создаём минимальный
+                    std::wofstream fout(manifestDst);
+                    fout << L"\"AppState\"\n{\n"
+                         << L"\t\"appid\"\t\t\"4000\"\n"
+                         << L"\t\"Universe\"\t\t\"1\"\n"
+                         << L"\t\"name\"\t\t\"Garry's Mod\"\n"
+                         << L"\t\"StateFlags\"\t\t\"4\"\n"
+                         << L"\t\"installdir\"\t\t\"" << fs::path(dstPath).filename().wstring() << L"\"\n"
+                         << L"\t\"LastUpdated\"\t\t\"0\"\n"
+                         << L"\t\"SizeOnDisk\"\t\t\"0\"\n"
+                         << L"\t\"buildid\"\t\t\"0\"\n"
+                         << L"}\n";
+                    AppendLog(L"✓ Минимальный appmanifest_4000.acf создан.");
+                }
+            }
+        }
+
         AppendLog(L"Запуск: " + exePath + L" " + launchArgs);
 
         SHELLEXECUTEINFOW sei = {};

@@ -92,6 +92,11 @@ public:
         return result; // manifestFound остаётся false
     }
 
+    // Публичный доступ к пути Steam для передачи в аргументы запуска игры
+    std::wstring readSteamPathFromRegistryPublic() {
+        return readSteamPathFromRegistry();
+    }
+
 private:
     std::wstring readSteamPathFromRegistry() {
         // Сначала пользовательский путь (актуальная установка steam.exe),
