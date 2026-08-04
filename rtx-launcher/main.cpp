@@ -1563,6 +1563,55 @@ void DoLaunchGame() {
             return;
         }
 
+        // ----------------------------------------------------------------
+        // Создаём junction на папку workshop Steam, чтобы воркшоп моды грузились
+        // Структура: <dstPath>\steamapps\workshop\content\4000 -> <src_steamapps>\workshop\content\4000
+        // ----------------------------------------------------------------
+        {
+            // srcPath = .../steamapps/common/GarrysMod → steamapps два уровня выше
+            fs::path srcSteamApps = fs::path(srcPath).parent_path().parent_path(); // .../steamapps
+            fs::path workshopSrc  = srcSteamApps / L"workshop" / L"content" / L"4000";
+            fs::path workshopDst  = fs::path(dstPath) / L"steamapps" / L"workshop" / L"content" / L"4000";
+            std::error_code ec2;
+
+            if (fs::exists(workshopSrc, ec2)) {
+                // Создаём промежуточные папки
+                fs::create_directories(workshopDst.parent_path(), ec2);
+
+                bool needJunction = true;
+                if (fs::exists(workshopDst, ec2)) {
+                    // Проверяем — это уже junction или нет
+                    DWORD attr = GetFileAttributesW(workshopDst.c_str());
+                    if (attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_REPARSE_POINT)) {
+                        needJunction = false; // уже есть junction
+                    } else {
+                        // Папка существует, но не junction — удаляем чтобы создать заново
+                        fs::remove_all(workshopDst, ec2);
+                    }
+                }
+
+                if (needJunction) {
+                    // CreateSymbolicLinkW требует SeCreateSymbolicLinkPrivilege
+                    // Используем mklink /J через cmd — это junction, не требует прав администратора
+                    std::wstring cmd = L"cmd /c mklink /J \"" + workshopDst.wstring() + L"\" \"" + workshopSrc.wstring() + L"\"";
+                    STARTUPINFOW si = {}; si.cb = sizeof(si); si.dwFlags = STARTF_USESHOWWINDOW; si.wShowWindow = SW_HIDE;
+                    PROCESS_INFORMATION pi = {};
+                    if (CreateProcessW(nullptr, &cmd[0], nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) {
+                        WaitForSingleObject(pi.hProcess, 5000);
+                        CloseHandle(pi.hProcess);
+                        CloseHandle(pi.hThread);
+                        AppendLog(L"✓ Workshop junction создан: " + workshopDst.wstring());
+                    } else {
+                        AppendLog(L"⚠ Не удалось создать junction для workshop. Моды из воркшопа могут не загрузиться.");
+                    }
+                } else {
+                    AppendLog(L"✓ Workshop junction уже существует.");
+                }
+            } else {
+                AppendLog(L"ℹ Папка workshop Steam не найдена по пути: " + workshopSrc.wstring() + L". Если у вас нет воркшоп-модов, это нормально.");
+            }
+        }
+
         // Запуск игры
         g_app.downloadProgress = 1.0f;
         { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"Запуск Garry's Mod..."; g_app.downloadStatsText = L"Игра запускается"; }
