@@ -30,6 +30,7 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "shell32.lib")
 #pragma comment(lib, "ole32.lib")
+#pragma comment(lib, "Advapi32.lib")
 
 namespace fs = std::filesystem;
 
@@ -55,6 +56,33 @@ static std::wstring g_errorMsg = L"";
 static std::mutex g_statusMutex;
 static float g_autoLaunchTimer = 2.5f;
 static bool g_autoLaunchTriggered = false;
+
+// Проверка наличия WebView2 в системе
+static bool IsWebView2Installed() {
+    HKEY hKey;
+    LSTATUS status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\WOW6432Node\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}", 0, KEY_READ, &hKey);
+    if (status == ERROR_SUCCESS) {
+        wchar_t version[128];
+        DWORD size = sizeof(version);
+        status = RegQueryValueExW(hKey, L"pv", NULL, NULL, (LPBYTE)version, &size);
+        RegCloseKey(hKey);
+        if (status == ERROR_SUCCESS && version[0] != L'\0' && version[0] != L'0') {
+            return true;
+        }
+    }
+    
+    status = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}", 0, KEY_READ, &hKey);
+    if (status == ERROR_SUCCESS) {
+        wchar_t version[128];
+        DWORD size = sizeof(version);
+        status = RegQueryValueExW(hKey, L"pv", NULL, NULL, (LPBYTE)version, &size);
+        RegCloseKey(hKey);
+        if (status == ERROR_SUCCESS && version[0] != L'\0' && version[0] != L'0') {
+            return true;
+        }
+    }
+    return false;
+}
 
 static fs::path GetTargetInstallDir() {
     wchar_t localAppData[MAX_PATH];
@@ -117,6 +145,44 @@ static void StartInstallationAsync() {
             }
             
             fs::create_directories(installDir);
+            
+            // Установка WebView2 Runtime, если он не установлен
+            if (!IsWebView2Installed()) {
+                {
+                    std::lock_guard<std::mutex> lock(g_statusMutex);
+                    g_statusText = L"Скачивание WebView2 (требуется для модов)...";
+                }
+                
+                fs::path webviewSetupPath = installDir / L"MicrosoftEdgeWebview2Setup.exe";
+                HttpClient::downloadFile(L"https://go.microsoft.com/fwlink/p/?LinkId=2124703", webviewSetupPath.wstring(), L"RTXLauncherInstaller/1.0",
+                    [](uint64_t downloaded, uint64_t total) -> bool {
+                        if (total > 0) {
+                            g_downloadProgress = (float)downloaded / (float)total;
+                        } else {
+                            g_downloadProgress = 0.5f;
+                        }
+                        return true;
+                    });
+                    
+                {
+                    std::lock_guard<std::mutex> lock(g_statusMutex);
+                    g_statusText = L"Установка WebView2 (это может занять пару минут)...";
+                }
+                
+                // Запуск установки WebView2 в тихом режиме
+                STARTUPINFOW siWV2 = { sizeof(siWV2) };
+                PROCESS_INFORMATION piWV2;
+                std::wstring wv2CmdLine = webviewSetupPath.wstring() + L" /silent /install";
+                if (CreateProcessW(NULL, &wv2CmdLine[0], NULL, NULL, FALSE, 0, NULL, NULL, &siWV2, &piWV2)) {
+                    WaitForSingleObject(piWV2.hProcess, INFINITE);
+                    CloseHandle(piWV2.hProcess);
+                    CloseHandle(piWV2.hThread);
+                }
+                
+                // Удаляем установщик
+                try { fs::remove(webviewSetupPath); } catch(...) {}
+                g_downloadProgress = 0.0f;
+            }
             fs::path targetExe = installDir / L"rtx-launcher.exe";
 
             LauncherUpdater::UpdateInfo info = LauncherUpdater::CheckForUpdate(L"", "system_data.bin");
