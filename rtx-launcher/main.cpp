@@ -1461,13 +1461,20 @@ void DoLaunchGame() {
                 downloadUrl = urlPromise.get_future().get();
             }
             
+            std::wstring versionToSave = downloadUrl;
+            std::wregex mirrorRe(LR"(/downloads/mirror/(\d+))");
+            std::wsmatch match;
+            if (std::regex_search(downloadUrl, match, mirrorRe)) {
+                versionToSave = match[1].str();
+            }
+            
             if (downloadUrl.empty()) {
                 AppendLog(L"Ошибка: не удалось получить ссылку для скачивания мода.");
                 // Не прерываем запуск игры, даже если мод не найден
-            } else if (downloadUrl == currentVersionStr) {
+            } else if (versionToSave == currentVersionStr) {
                 AppendLog(L"Установлена актуальная версия мода. Пропуск скачивания.");
             } else {
-                AppendLog(L"Найдена новая версия: " + downloadUrl);
+                AppendLog(L"Найдена новая версия: " + versionToSave);
                 std::wstring zipPath = dstPath + L"\\moddb_temp.zip";
                 
                 auto startTime = std::chrono::steady_clock::now();
@@ -1539,7 +1546,7 @@ void DoLaunchGame() {
                     }
                     
                     // Обновляем versions.txt
-                    versionsMap[modFolderName] = downloadUrl;
+                    versionsMap[modFolderName] = versionToSave;
                     std::wofstream vf(versionsPath, std::ios::trunc);
                     for (const auto& pair : versionsMap) {
                         vf << pair.first << L"=" << pair.second << L"\n";
