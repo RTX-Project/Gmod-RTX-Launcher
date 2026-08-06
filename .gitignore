@@ -30,3 +30,6 @@ graphify-out/
 temp_mod.zip
 dxvk-remix-gmod.zip  
  
+
+# repowise API keys (local)
+.repowise/.env

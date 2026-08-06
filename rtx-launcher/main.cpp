@@ -1267,6 +1267,239 @@ void ShowDiskSelectionModal(void (*callback)()) {
     g_diskModalTimer = 0.0f;
 }
 
+static void PerformFirstLaunchInstall(const std::wstring& srcPath, const std::wstring& dstPath) {
+    AppendLog(L"Первый запуск: полная установка компонентов...");
+    { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] Подготовка файлов..."; g_app.downloadStatsText = L""; }
+
+    // 1. Полное копирование файлов из Steam
+    {
+        { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] Копирование файлов..."; g_app.downloadStatsText = L""; }
+        g_app.downloadProgress = 0.10f;
+
+        FileSync sync;
+        sync.verifyHash = false;
+        sync.deleteRemoved = true;
+        sync.sync(fs::path(srcPath), fs::path(dstPath), GetTempDir() / L"launcher",
+            [](const std::wstring& msg) { AppendLog(msg); },
+            []() { return g_app.stopRequested.load(); },
+            [](float p, const std::wstring& text) {
+                g_app.downloadProgress = 0.10f + p * 0.55f;
+                { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadStatsText = text; }
+            },
+            []() {
+                if (g_app.pauseRequested.load()) {
+                }
+            });
+
+        if (g_app.stopRequested.load()) {
+            g_app.isDownloading = false;
+            HideDownloadPanelFade();
+            AppendLog(L"Запуск отменён пользователем.");
+            return;
+        }
+    }
+
+    // 2. Распаковка DXVK RTX
+    { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] Распаковка DXVK RTX..."; g_app.downloadStatsText = L""; }
+    g_app.downloadProgress = 0.75f;
+    AppendLog(L"Извлечение встроенных файлов DXVK RTX...");
+    ExtractResourceZipToDir(IDR_DXVK_ZIP, dstPath + L"\\bin\\win64");
+
+    // 3. Применение патчей
+    { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] Применение патчей..."; g_app.downloadStatsText = L""; }
+    g_app.downloadProgress = 0.85f;
+    AppendLog(L"Применение бинарных патчей...");
+    HexPatcher::ApplyPatches(dstPath, [](const std::wstring& msg) { AppendLog(msg); });
+
+    // 4. Фиксы с GitHub
+    { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] Загрузка фиксов..."; g_app.downloadStatsText = L""; }
+    g_app.downloadProgress = 0.90f;
+    AppendLog(L"Скачивание и применение фиксов...");
+    GameFixesUpdater::DownloadAndApplyFixes(dstPath, L"Xenthio/garrys-mod-rtx-remixed",
+        [](const std::wstring& msg) { AppendLog(msg); },
+        [](float p, const std::wstring& title, const std::wstring& stats) {
+            g_app.downloadProgress = 0.90f + p * 0.08f;
+            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] " + title; g_app.downloadStatsText = stats; }
+        });
+
+    std::wstring topbrPath = dstPath + L"\\rtx-remix\\mods\\~gmod_topbr";
+    AppendLog(L"Удаление папки ~gmod_topbr: " + topbrPath);
+    std::error_code ec;
+    fs::remove_all(topbrPath, ec);
+}
+
+static void PerformQuickLaunchUpdate(const std::wstring& dstPath) {
+    AppendLog(L"Быстрый запуск: проверка обновлений и старт...");
+    std::wstring prefix = g_autoStartGameAfterInstall ? L"[Запуск] " : L"[Установка] ";
+    { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = prefix + L"Проверка обновлений..."; g_app.downloadStatsText = L""; }
+    g_app.downloadProgress = 0.50f;
+
+    if (!fs::exists(dstPath + L"\\bin\\win64\\dxvk.conf")) {
+        ExtractResourceZipToDir(IDR_DXVK_ZIP, dstPath + L"\\bin\\win64");
+    }
+
+    // Быстрая проверка обновления фиксов с GitHub
+    bool autoStart = g_autoStartGameAfterInstall;
+    GameFixesUpdater::DownloadAndApplyFixes(dstPath, L"Xenthio/garrys-mod-rtx-remixed",
+        [](const std::wstring& msg) { AppendLog(msg); },
+        [autoStart](float p, const std::wstring& title, const std::wstring& stats) {
+            g_app.downloadProgress = 0.50f + p * 0.40f;
+            std::wstring pfx = autoStart ? L"[Проверка] " : L"[Установка] ";
+            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = pfx + title; g_app.downloadStatsText = stats; }
+        });
+}
+
+static void HandleWorkshopModsSync(const std::wstring& srcPath, const std::wstring& dstPath) {
+    // ----------------------------------------------------------------
+    // Создаём junction на папку workshop Steam, чтобы воркшоп моды грузились
+    // Структура: <dstPath>\steamapps\workshop\content\4000 -> <src_steamapps>\workshop\content\4000
+    // ----------------------------------------------------------------
+    fs::path srcSteamApps = fs::path(srcPath).parent_path().parent_path(); // .../steamapps
+    fs::path workshopSrc  = srcSteamApps / L"workshop" / L"content" / L"4000";
+    fs::path workshopDst  = fs::path(dstPath) / L"steamapps" / L"workshop" / L"content" / L"4000";
+    std::error_code ec2;
+
+    if (fs::exists(workshopSrc, ec2)) {
+        // Создаём промежуточные папки
+        fs::create_directories(workshopDst.parent_path(), ec2);
+
+        bool needJunction = true;
+        if (fs::exists(workshopDst, ec2)) {
+            // Проверяем — это уже junction или нет
+            DWORD attr = GetFileAttributesW(workshopDst.c_str());
+            if (attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_REPARSE_POINT)) {
+                needJunction = false; // уже есть junction
+            } else {
+                // Папка существует, но не junction — удаляем чтобы создать заново
+                fs::remove_all(workshopDst, ec2);
+            }
+        }
+
+        if (needJunction) {
+            // CreateSymbolicLinkW требует SeCreateSymbolicLinkPrivilege
+            // Используем mklink /J через cmd — это junction, не требует прав администратора
+            std::wstring cmd = L"cmd /c mklink /J \"" + workshopDst.wstring() + L"\" \"" + workshopSrc.wstring() + L"\"";
+            STARTUPINFOW si = {}; si.cb = sizeof(si); si.dwFlags = STARTF_USESHOWWINDOW; si.wShowWindow = SW_HIDE;
+            PROCESS_INFORMATION pi = {};
+            if (CreateProcessW(nullptr, &cmd[0], nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) {
+                WaitForSingleObject(pi.hProcess, 5000);
+                CloseHandle(pi.hProcess);
+                CloseHandle(pi.hThread);
+                AppendLog(L"✓ Workshop junction создан: " + workshopDst.wstring());
+            } else {
+                AppendLog(L"⚠ Не удалось создать junction для workshop. Моды из воркшопа могут не загрузиться.");
+            }
+        } else {
+            AppendLog(L"✓ Workshop junction уже существует.");
+        }
+    } else {
+        AppendLog(L"ℹ Папка workshop Steam не найдена по пути: " + workshopSrc.wstring() + L". Если у вас нет воркшоп-модов, это нормально.");
+    }
+}
+
+static void LaunchGmodProcess(const std::wstring& srcPath, const std::wstring& dstPath) {
+    g_app.downloadProgress = 1.0f;
+    { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"Запуск Garry's Mod..."; g_app.downloadStatsText = L"Игра запускается"; }
+
+    std::wstring exePath;
+    for (auto& name : { std::wstring(L"gmod.exe"), std::wstring(L"hl2.exe"), std::wstring(L"bin\\win64\\gmod.exe"), std::wstring(L"bin\\win64\\hl2.exe") }) {
+        std::wstring candidate = dstPath + L"\\" + name;
+        if (fs::exists(candidate)) { exePath = candidate; break; }
+    }
+
+    if (exePath.empty()) {
+        AppendLog(L"gmod.exe не найден в папке игры. Ошибка конфигурации.");
+        g_app.isDownloading = false;
+        return;
+    }
+
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    std::wstring launchArgs = L"-dxlevel 90 +mat_disable_d3d9ex 1 -nod3d9ex -windowed -noborder -w " + std::to_wstring(screenWidth) + L" -h " + std::to_wstring(screenHeight);
+    if (g_app.launchMode == 2) {
+        launchArgs += L" -high +mat_dxlevel 95";
+    }
+
+    // ----------------------------------------------------------------
+    // Передаём путь к Steam чтобы движок правильно инициализировал
+    // Steam API и нашёл папки Workshop через GetItemInstallInfo()
+    // ----------------------------------------------------------------
+    {
+        SteamBeta betaHelper;
+        std::wstring steamDir = betaHelper.readSteamPathFromRegistryPublic();
+        if (!steamDir.empty()) {
+            launchArgs += L" -steampath \"" + steamDir + L"\"";
+            AppendLog(L"Steam путь для запуска: " + steamDir);
+
+            // Создаём appmanifest_4000.acf в нашей steamapps папке.
+            // Это говорит Steam API, что наша копия является валидной установкой
+            // AppID 4000, после чего GetItemInstallInfo() корректно возвращает
+            // пути к воркшоп контенту из оригинальной библиотеки.
+            std::error_code ec2;
+            fs::path ourSteamApps = fs::path(dstPath) / L"steamapps";
+            fs::create_directories(ourSteamApps, ec2);
+            fs::path manifestDst = ourSteamApps / L"appmanifest_4000.acf";
+
+            // Берём оригинальный манифест и патчим installdir на наш dstPath
+            fs::path srcSteamApps2 = fs::path(srcPath).parent_path().parent_path();
+            fs::path manifestSrc = srcSteamApps2 / L"appmanifest_4000.acf";
+            if (fs::exists(manifestSrc, ec2)) {
+                std::wifstream fin(manifestSrc);
+                std::wostringstream buf;
+                buf << fin.rdbuf();
+                std::wstring content = buf.str();
+
+                // Пишем installdir как имя папки (последний компонент dstPath)
+                std::wstring installDirName = fs::path(dstPath).filename().wstring();
+                std::wregex idRe(LR"regex("installdir"\s*"[^"]*")regex");
+                content = std::regex_replace(content, idRe, L"\"installdir\"\t\t\"" + installDirName + L"\"");
+
+                std::wofstream fout(manifestDst);
+                fout << content;
+                AppendLog(L"✓ appmanifest_4000.acf создан: " + manifestDst.wstring());
+            } else {
+                // Если оригинальный манифест не найден — создаём минимальный
+                std::wofstream fout(manifestDst);
+                fout << L"\"AppState\"\n{\n"
+                     << L"\t\"appid\"\t\t\"4000\"\n"
+                     << L"\t\"Universe\"\t\t\"1\"\n"
+                     << L"\t\"name\"\t\t\"Garry's Mod\"\n"
+                     << L"\t\"StateFlags\"\t\t\"4\"\n"
+                     << L"\t\"installdir\"\t\t\"" << fs::path(dstPath).filename().wstring() << L"\"\n"
+                     << L"\t\"LastUpdated\"\t\t\"0\"\n"
+                     << L"\t\"SizeOnDisk\"\t\t\"0\"\n"
+                     << L"\t\"buildid\"\t\t\"0\"\n"
+                     << L"}\n";
+                AppendLog(L"✓ Минимальный appmanifest_4000.acf создан.");
+            }
+        }
+    }
+
+    AppendLog(L"Запуск: " + exePath + L" " + launchArgs);
+
+    STARTUPINFOW si = { sizeof(si) };
+    PROCESS_INFORMATION pi;
+    std::wstring cmdLine = L"\"" + exePath + L"\" " + launchArgs;
+    
+    // Рабочая директория должна быть папкой с exe (например bin/win64), либо корнем игры
+    // HL2.exe и gmod.exe обычно требуют корень игры.
+    fs::path workDir = fs::path(exePath).parent_path();
+    if (workDir.filename() == L"win64") {
+        workDir = workDir.parent_path().parent_path(); // Выходим из bin/win64 в корень
+    }
+
+    if (CreateProcessW(nullptr, &cmdLine[0], nullptr, nullptr, FALSE, 0, nullptr, workDir.c_str(), &si, &pi)) {
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+    }
+    else {
+        AppendLog(L"Ошибка при запуске игры. Код: " + std::to_wstring(GetLastError()));
+    }
+
+    g_app.isDownloading = false;
+    HideDownloadPanelFade();
+}
+
 void DoLaunchGame() {
     if (g_app.launchMode == 0) {
         ShowLaunchModeModal(DoLaunchGame);
@@ -1321,84 +1554,11 @@ void DoLaunchGame() {
         g_app.isFirstLaunchMode = isFirstLaunch;
 
         if (isFirstLaunch) {
-            AppendLog(L"Первый запуск: полная установка компонентов...");
-            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] Подготовка файлов..."; g_app.downloadStatsText = L""; }
-
-            // 1. Полное копирование файлов из Steam
-            {
-                { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] Копирование файлов..."; g_app.downloadStatsText = L""; }
-                g_app.downloadProgress = 0.10f;
-
-                FileSync sync;
-                sync.verifyHash = false;
-                sync.deleteRemoved = true;
-                sync.sync(fs::path(srcPath), fs::path(dstPath), GetTempDir() / L"launcher",
-                    [](const std::wstring& msg) { AppendLog(msg); },
-                    []() { return g_app.stopRequested.load(); },
-                    [](float p, const std::wstring& text) {
-                        g_app.downloadProgress = 0.10f + p * 0.55f;
-                        { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadStatsText = text; }
-                    },
-                    []() {
-                        if (g_app.pauseRequested.load()) {
-                        }
-                    });
-
-                if (g_app.stopRequested.load()) {
-                    g_app.isDownloading = false;
-                    HideDownloadPanelFade();
-                    AppendLog(L"Запуск отменён пользователем.");
-                    return;
-                }
-            }
-
-            // 2. Распаковка DXVK RTX
-            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] Распаковка DXVK RTX..."; g_app.downloadStatsText = L""; }
-            g_app.downloadProgress = 0.75f;
-            AppendLog(L"Извлечение встроенных файлов DXVK RTX...");
-            ExtractResourceZipToDir(IDR_DXVK_ZIP, dstPath + L"\\bin\\win64");
-
-            // 3. Применение патчей
-            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] Применение патчей..."; g_app.downloadStatsText = L""; }
-            g_app.downloadProgress = 0.85f;
-            AppendLog(L"Применение бинарных патчей...");
-            HexPatcher::ApplyPatches(dstPath, [](const std::wstring& msg) { AppendLog(msg); });
-
-            // 4. Фиксы с GitHub
-            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] Загрузка фиксов..."; g_app.downloadStatsText = L""; }
-            g_app.downloadProgress = 0.90f;
-            AppendLog(L"Скачивание и применение фиксов...");
-            GameFixesUpdater::DownloadAndApplyFixes(dstPath, L"Xenthio/garrys-mod-rtx-remixed",
-                [](const std::wstring& msg) { AppendLog(msg); },
-                [](float p, const std::wstring& title, const std::wstring& stats) {
-                    g_app.downloadProgress = 0.90f + p * 0.08f;
-                    { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"[Установка] " + title; g_app.downloadStatsText = stats; }
-                });
-
-            std::wstring topbrPath = dstPath + L"\\rtx-remix\\mods\\~gmod_topbr";
-            AppendLog(L"Удаление папки ~gmod_topbr: " + topbrPath);
-            std::error_code ec;
-            fs::remove_all(topbrPath, ec);
+            PerformFirstLaunchInstall(srcPath, dstPath);
+            if (g_app.stopRequested.load()) return;
         }
         else {
-            AppendLog(L"Быстрый запуск: проверка обновлений и старт...");
-            std::wstring prefix = g_autoStartGameAfterInstall ? L"[Запуск] " : L"[Установка] ";
-            { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = prefix + L"Проверка обновлений..."; g_app.downloadStatsText = L""; }
-            g_app.downloadProgress = 0.50f;
-
-            if (!fs::exists(dstPath + L"\\bin\\win64\\dxvk.conf")) {
-                ExtractResourceZipToDir(IDR_DXVK_ZIP, dstPath + L"\\bin\\win64");
-            }
-
-            // Быстрая проверка обновления фиксов с GitHub
-            bool autoStart = g_autoStartGameAfterInstall;
-            GameFixesUpdater::DownloadAndApplyFixes(dstPath, L"Xenthio/garrys-mod-rtx-remixed",
-                [](const std::wstring& msg) { AppendLog(msg); },
-                [autoStart](float p, const std::wstring& title, const std::wstring& stats) {
-                    g_app.downloadProgress = 0.50f + p * 0.40f;
-                    std::wstring pfx = autoStart ? L"[Проверка] " : L"[Установка] ";
-                    { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = pfx + title; g_app.downloadStatsText = stats; }
-                });
+            PerformQuickLaunchUpdate(dstPath);
         }
 
         // ----------------------------------------------------------------
@@ -1570,54 +1730,7 @@ void DoLaunchGame() {
             return;
         }
 
-        // ----------------------------------------------------------------
-        // Создаём junction на папку workshop Steam, чтобы воркшоп моды грузились
-        // Структура: <dstPath>\steamapps\workshop\content\4000 -> <src_steamapps>\workshop\content\4000
-        // ----------------------------------------------------------------
-        {
-            // srcPath = .../steamapps/common/GarrysMod → steamapps два уровня выше
-            fs::path srcSteamApps = fs::path(srcPath).parent_path().parent_path(); // .../steamapps
-            fs::path workshopSrc  = srcSteamApps / L"workshop" / L"content" / L"4000";
-            fs::path workshopDst  = fs::path(dstPath) / L"steamapps" / L"workshop" / L"content" / L"4000";
-            std::error_code ec2;
-
-            if (fs::exists(workshopSrc, ec2)) {
-                // Создаём промежуточные папки
-                fs::create_directories(workshopDst.parent_path(), ec2);
-
-                bool needJunction = true;
-                if (fs::exists(workshopDst, ec2)) {
-                    // Проверяем — это уже junction или нет
-                    DWORD attr = GetFileAttributesW(workshopDst.c_str());
-                    if (attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_REPARSE_POINT)) {
-                        needJunction = false; // уже есть junction
-                    } else {
-                        // Папка существует, но не junction — удаляем чтобы создать заново
-                        fs::remove_all(workshopDst, ec2);
-                    }
-                }
-
-                if (needJunction) {
-                    // CreateSymbolicLinkW требует SeCreateSymbolicLinkPrivilege
-                    // Используем mklink /J через cmd — это junction, не требует прав администратора
-                    std::wstring cmd = L"cmd /c mklink /J \"" + workshopDst.wstring() + L"\" \"" + workshopSrc.wstring() + L"\"";
-                    STARTUPINFOW si = {}; si.cb = sizeof(si); si.dwFlags = STARTF_USESHOWWINDOW; si.wShowWindow = SW_HIDE;
-                    PROCESS_INFORMATION pi = {};
-                    if (CreateProcessW(nullptr, &cmd[0], nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) {
-                        WaitForSingleObject(pi.hProcess, 5000);
-                        CloseHandle(pi.hProcess);
-                        CloseHandle(pi.hThread);
-                        AppendLog(L"✓ Workshop junction создан: " + workshopDst.wstring());
-                    } else {
-                        AppendLog(L"⚠ Не удалось создать junction для workshop. Моды из воркшопа могут не загрузиться.");
-                    }
-                } else {
-                    AppendLog(L"✓ Workshop junction уже существует.");
-                }
-            } else {
-                AppendLog(L"ℹ Папка workshop Steam не найдена по пути: " + workshopSrc.wstring() + L". Если у вас нет воркшоп-модов, это нормально.");
-            }
-        }
+        HandleWorkshopModsSync(srcPath, dstPath);
 
         // Запуск игры
         g_app.downloadProgress = 1.0f;

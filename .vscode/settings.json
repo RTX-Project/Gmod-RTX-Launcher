@@ -1,0 +1,4 @@
+{
+    "repowise.diagnostics.enabled": true,
+    "repowise.server.autoStart": "always"
+}

@@ -1,0 +1,12 @@
+provider: gemini
+model: gemini-3.5-flash-lite
+embedder: gemini
+reasoning: auto
+distill:
+  commands:
+    enabled: false
+hooks:
+  read_skeleton: false
+  search_digest: false
+editor_files:
+  claude_md: false
