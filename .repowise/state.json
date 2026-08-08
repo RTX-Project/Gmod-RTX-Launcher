@@ -1,6 +1,6 @@
 {
-  "last_sync_commit": "b1c3e87dd967e74602ee157525cef530c1b17ce5",
-  "total_pages": 813,
+  "last_sync_commit": "bb01ceeb4ef3573c65c53564e19f19e3f3ddf869",
+  "total_pages": 830,
   "provider": "gemini",
   "model": "gemini-3.5-flash-lite",
   "docs_mode": "llm",
@@ -40,11 +40,11 @@
   },
   "knowledge_graph": {
     "version": "1.0.0",
-    "node_count": 2034,
+    "node_count": 2035,
     "layer_count": 5,
     "tour_steps": 12,
     "has_summaries": true,
-    "fingerprint": "a4678ce6e48c3820"
+    "fingerprint": "4d74398c669388fd"
   },
   "onboarding_slots_offered": [
     "active_landscape",
@@ -58,5 +58,5 @@
   "config_fingerprint": "b38397f3a2be1302324ee5e91abb99e8e8a0be922f7cb634f9fd1ee63753047d",
   "renderer_fingerprint": "3ccf0a761d6507c15360006a197bf56cd6d46c2698c8ae631ca6b789b87f06c4:2d6407057d94311810c91100d0497e1dc2b78aa2fab0fa8e08e4e8e789045f72",
   "last_full_rescore_at": 1786013822.0,
-  "last_docs_commit": "b1c3e87dd967e74602ee157525cef530c1b17ce5"
+  "last_docs_commit": "bb01ceeb4ef3573c65c53564e19f19e3f3ddf869"
 }
