@@ -157,12 +157,15 @@ private:
         return v;
     }
 
+    static bool isNumberChar(char c) {
+        return std::isdigit(static_cast<unsigned char>(c)) || c == '.' || c == 'e' || c == 'E' || c == '-' || c == '+';
+    }
+
     static JsonValue parseNumber(const std::string& s, size_t& pos) {
         JsonValue v; v.type = Type::Number;
         size_t start = pos;
         if (pos < s.size() && (s[pos] == '-' || s[pos] == '+')) pos++;
-        while (pos < s.size() && (std::isdigit(static_cast<unsigned char>(s[pos])) ||
-               s[pos] == '.' || s[pos] == 'e' || s[pos] == 'E' || s[pos] == '-' || s[pos] == '+')) pos++;
+        while (pos < s.size() && isNumberChar(s[pos])) pos++;
         v.numberValue = std::stod(s.substr(start, pos - start));
         return v;
     }

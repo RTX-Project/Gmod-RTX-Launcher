@@ -43,6 +43,19 @@ public:
         return parts;
     }
 
+    static std::wstring getRedirectLocation(HINTERNET hRequest, const UrlParts& u) {
+        wchar_t locBuf[2048] = {};
+        DWORD locBufLen = sizeof(locBuf);
+        if (WinHttpQueryHeaders(hRequest, WINHTTP_QUERY_LOCATION, WINHTTP_HEADER_NAME_BY_INDEX, locBuf, &locBufLen, WINHTTP_NO_HEADER_INDEX)) {
+            std::wstring newUrl = locBuf;
+            if (newUrl.rfind(L"http://", 0) != 0 && newUrl.rfind(L"https://", 0) != 0) {
+                newUrl = (u.https ? L"https://" : L"http://") + u.host + newUrl;
+            }
+            return newUrl;
+        }
+        return L"";
+    }
+
     // Простой GET, возвращает тело ответа как std::string (UTF-8/ASCII, для JSON достаточно).
     static std::string getText(const std::wstring& initialUrl, const std::wstring& userAgent, const std::wstring& authToken = L"") {
         std::wstring currentUrl = initialUrl;
@@ -91,15 +104,9 @@ public:
                 WINHTTP_HEADER_NAME_BY_INDEX, &statusCode, &statusCodeSize, WINHTTP_NO_HEADER_INDEX);
 
             if (statusCode == 301 || statusCode == 302 || statusCode == 303 || statusCode == 307 || statusCode == 308) {
-                wchar_t locBuf[2048] = {};
-                DWORD locBufLen = sizeof(locBuf);
-                if (WinHttpQueryHeaders(hRequest, WINHTTP_QUERY_LOCATION, WINHTTP_HEADER_NAME_BY_INDEX,
-                    locBuf, &locBufLen, WINHTTP_NO_HEADER_INDEX)) {
-                    std::wstring newUrl = locBuf;
+                std::wstring newUrl = getRedirectLocation(hRequest, u);
+                if (!newUrl.empty()) {
                     WinHttpCloseHandle(hRequest); WinHttpCloseHandle(hConnect); WinHttpCloseHandle(hSession);
-                    if (newUrl.rfind(L"http://", 0) != 0 && newUrl.rfind(L"https://", 0) != 0) {
-                        newUrl = (u.https ? L"https://" : L"http://") + u.host + newUrl;
-                    }
                     currentUrl = newUrl;
                     continue;
                 }
@@ -181,15 +188,9 @@ public:
                 WINHTTP_HEADER_NAME_BY_INDEX, &statusCode, &statusCodeSize, WINHTTP_NO_HEADER_INDEX);
 
             if (statusCode == 301 || statusCode == 302 || statusCode == 303 || statusCode == 307 || statusCode == 308) {
-                wchar_t locBuf[2048] = {};
-                DWORD locBufLen = sizeof(locBuf);
-                if (WinHttpQueryHeaders(hRequest, WINHTTP_QUERY_LOCATION, WINHTTP_HEADER_NAME_BY_INDEX,
-                    locBuf, &locBufLen, WINHTTP_NO_HEADER_INDEX)) {
-                    std::wstring newUrl = locBuf;
+                std::wstring newUrl = getRedirectLocation(hRequest, u);
+                if (!newUrl.empty()) {
                     WinHttpCloseHandle(hRequest); WinHttpCloseHandle(hConnect); WinHttpCloseHandle(hSession);
-                    if (newUrl.rfind(L"http://", 0) != 0 && newUrl.rfind(L"https://", 0) != 0) {
-                        newUrl = (u.https ? L"https://" : L"http://") + u.host + newUrl;
-                    }
                     std::ofstream log(L"moddb_debug.txt", std::ios::app);
                     char utf8[1024];
                     WideCharToMultiByte(CP_UTF8, 0, newUrl.c_str(), -1, utf8, 1024, NULL, NULL);
