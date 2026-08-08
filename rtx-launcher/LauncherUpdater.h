@@ -15,8 +15,9 @@ class LauncherUpdater {
 public:
 
 
+
     inline static const std::wstring CURRENT_VERSION = L"0.0.2.7";
-    inline static const int CURRENT_BUILD_NUMBER = 284; // Full localization to English
+    inline static const int CURRENT_BUILD_NUMBER = 282; // Full localization to English
     inline static const long long CURRENT_RELEASE_ID = 0;
     inline static const std::wstring REPO_OWNER = L"RTX-Project";
     inline static const std::wstring REPO_NAME = L"Gmod-RTX-Launcher";
