@@ -462,8 +462,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
     ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
     // Setup fonts
-    if (std::filesystem::exists("segoeui.ttf")) {
-        io.Fonts->AddFontFromFileTTF("segoeui.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesCyrillic());
+    if (std::filesystem::exists("C:\\Windows\\Fonts\\segoeui.ttf")) {
+        io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesCyrillic());
     }
 
     bool done = false;
