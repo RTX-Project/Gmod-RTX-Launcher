@@ -42,7 +42,7 @@ const wchar_t* kModDBScraperScript =
     L"      window.moddbNavigating = true;"
     L"      log('Fetching start page: ' + el.href);"
     L"      fetch(el.href).then(function(r){ return r.text(); }).then(function(html) {"
-    L"        var match = html.match(/href=[\"'](\/downloads\/mirror\/[^\"']+)["']/);"
+    L"        var match = html.match(/href=[\\\"'](\\/downloads\\/mirror\\/[^\\\"']+)[\"']/);"
     L"        if (match) {"
     L"          var mirrorUrl = 'https://www.moddb.com' + match[1];"
     L"          log('Found mirror via fetch: ' + mirrorUrl);"
