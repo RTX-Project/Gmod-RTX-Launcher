@@ -11,6 +11,25 @@
 
 extern std::string WStringToUTF8(const std::wstring& wstr);
 
+    static std::wstring ExtractVersionStr(const std::wstring& name) {
+        std::wstring result = L"";
+        bool inVersion = false;
+        for (size_t i = 0; i < name.length(); i++) {
+            wchar_t c = name[i];
+            if (iswdigit(c) || (inVersion && c == L'.')) {
+                inVersion = true;
+                result += c;
+            } else if (inVersion) {
+                break;
+            }
+        }
+        while (!result.empty() && result.back() == L'.') {
+            result.pop_back();
+        }
+        return result.empty() ? name : result;
+    }
+
+
 class LauncherUpdater {
 public:
 
@@ -54,26 +73,36 @@ public:
                 if (rootJson.arrayValue.empty()) return info;
                 int maxBuild = -1;
                 std::wstring maxVersionStr = L"";
+                bool maxIsStable = false;
 
                 for (const auto& rel : rootJson.arrayValue) {
                     std::string tName = rel["tag_name"].asString();
                     std::string rName = rel["name"].asString();
-                    int buildNum = ParseBuildNumber(tName, rName);
+                    std::wstring wRName = UTF8ToWString(rName);
                     
-                    std::wstring relVer = UTF8ToWString(tName);
-                    if (relVer.rfind(L"v", 0) == 0 || relVer.rfind(L"V", 0) == 0) {
-                        relVer = relVer.substr(1);
+                    int buildNum = ParseBuildNumber(tName, rName);
+                    std::wstring relVer = ExtractVersionStr(wRName);
+                    bool isStable = (wRName.find(L"Beta") == std::wstring::npos && wRName.find(L"beta") == std::wstring::npos && wRName.find(L"alpha") == std::wstring::npos);
+
+                    bool shouldReplace = false;
+
+                    if (maxVersionStr.empty()) {
+                        shouldReplace = true;
+                    } else if (IsVersionNewer(relVer, maxVersionStr)) {
+                        shouldReplace = true;
+                    } else if (!IsVersionNewer(maxVersionStr, relVer)) { // Versions are equal
+                        if (isStable && !maxIsStable) {
+                            shouldReplace = true; // Stable beats Beta of the same version
+                        } else if (isStable == maxIsStable && buildNum > maxBuild) {
+                            shouldReplace = true; // Higher build beats lower build of the same type
+                        }
                     }
 
-                    if (buildNum > maxBuild) {
+                    if (shouldReplace) {
                         maxBuild = buildNum;
                         maxVersionStr = relVer;
+                        maxIsStable = isStable;
                         targetRelease = rel;
-                    } else if (buildNum == maxBuild) {
-                        if (IsVersionNewer(relVer, maxVersionStr)) {
-                            maxVersionStr = relVer;
-                            targetRelease = rel;
-                        }
                     }
                 }
                 // Fallback, if no build numbers were found (which shouldn't happen), it will use the first one that was parsed (or index 0).
@@ -86,9 +115,13 @@ public:
 
             std::string tagNameUtf8 = targetRelease["tag_name"].asString();
             std::string relNameUtf8 = targetRelease["name"].asString();
-            std::wstring latestVersion = UTF8ToWString(tagNameUtf8);
-            if (latestVersion.rfind(L"v", 0) == 0 || latestVersion.rfind(L"V", 0) == 0) {
-                latestVersion = latestVersion.substr(1);
+            
+            std::wstring latestVersion = ExtractVersionStr(UTF8ToWString(relNameUtf8));
+            if (latestVersion == UTF8ToWString(relNameUtf8)) { // Fallback if no version found in name
+                latestVersion = UTF8ToWString(tagNameUtf8);
+                if (latestVersion.rfind(L"v", 0) == 0 || latestVersion.rfind(L"V", 0) == 0) {
+                    latestVersion = latestVersion.substr(1);
+                }
             }
 
             long long releaseId = targetRelease["id"].asInt64(0);
