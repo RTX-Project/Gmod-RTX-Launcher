@@ -17,7 +17,7 @@ public:
 
 
     inline static const std::wstring CURRENT_VERSION = L"0.0.2.8";
-    inline static const int CURRENT_BUILD_NUMBER = 288; // Full localization to English
+    inline static const int CURRENT_BUILD_NUMBER = 289; // Full localization to English
     inline static const long long CURRENT_RELEASE_ID = 0;
     inline static const std::wstring REPO_OWNER = L"RTX-Project";
     inline static const std::wstring REPO_NAME = L"Gmod-RTX-Launcher";
