@@ -13,7 +13,7 @@ extern std::string WStringToUTF8(const std::wstring& wstr);
 
 class LauncherUpdater {
 public:
-    inline static const std::wstring CURRENT_VERSION = L"0.0.2.6.6";
+    inline static const std::wstring CURRENT_VERSION = L"0.0.2.7";
     inline static const int CURRENT_BUILD_NUMBER = 280; // Full localization to English
     inline static const long long CURRENT_RELEASE_ID = 0;
     inline static const std::wstring REPO_OWNER = L"RTX-Project";
