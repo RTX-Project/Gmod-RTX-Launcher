@@ -78,10 +78,14 @@ public:
                 for (const auto& rel : rootJson.arrayValue) {
                     std::string tName = rel["tag_name"].asString();
                     std::string rName = rel["name"].asString();
+                    std::wstring wTName = UTF8ToWString(tName);
                     std::wstring wRName = UTF8ToWString(rName);
                     
                     int buildNum = ParseBuildNumber(tName, rName);
-                    std::wstring relVer = ExtractVersionStr(wRName);
+                    std::wstring relVer = ExtractVersionStr(wTName);
+                    if (relVer == wTName && relVer.find(L".") == std::wstring::npos) {
+                        relVer = ExtractVersionStr(wRName);
+                    }
                     bool isStable = (wRName.find(L"Beta") == std::wstring::npos && wRName.find(L"beta") == std::wstring::npos && wRName.find(L"alpha") == std::wstring::npos);
 
                     bool shouldReplace = false;
@@ -116,12 +120,12 @@ public:
             std::string tagNameUtf8 = targetRelease["tag_name"].asString();
             std::string relNameUtf8 = targetRelease["name"].asString();
             
-            std::wstring latestVersion = ExtractVersionStr(UTF8ToWString(relNameUtf8));
-            if (latestVersion == UTF8ToWString(relNameUtf8)) { // Fallback if no version found in name
-                latestVersion = UTF8ToWString(tagNameUtf8);
-                if (latestVersion.rfind(L"v", 0) == 0 || latestVersion.rfind(L"V", 0) == 0) {
-                    latestVersion = latestVersion.substr(1);
-                }
+            std::wstring wTagName = UTF8ToWString(tagNameUtf8);
+            std::wstring wRelName = UTF8ToWString(relNameUtf8);
+            std::wstring latestVersion = ExtractVersionStr(wTagName);
+            
+            if (latestVersion == wTagName && latestVersion.find(L".") == std::wstring::npos) { 
+                latestVersion = ExtractVersionStr(wRelName);
             }
 
             long long releaseId = targetRelease["id"].asInt64(0);
