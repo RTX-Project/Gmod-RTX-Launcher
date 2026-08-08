@@ -427,6 +427,61 @@ static void RenderInstallerUI(HWND hWnd, int windowWidth, int windowHeight) {
 }
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow) {
+    HICON hIcon = LoadIconW(hInstance, MAKEINTRESOURCE(101));
+    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, hInstance, hIcon, NULL, NULL, NULL, L"RTXInstallerClass", hIcon };
+    RegisterClassExW(&wc);
+
+    int windowWidth = 660;
+    int windowHeight = 400;
+
+    int screenW = GetSystemMetrics(SM_CXSCREEN);
+    int screenH = GetSystemMetrics(SM_CYSCREEN);
+    int posX = (screenW - windowWidth) / 2;
+    int posY = (screenH - windowHeight) / 2;
+
+    HWND hWnd = CreateWindowExW(WS_EX_APPWINDOW, wc.lpszClassName, L"Установка RTX Launcher",
+        WS_POPUP | WS_SYSMENU, posX, posY, windowWidth, windowHeight, NULL, NULL, wc.hInstance, NULL);
+
+    if (!CreateDeviceD3D(hWnd)) {
+        CleanupDeviceD3D();
+        UnregisterClassW(wc.lpszClassName, wc.hInstance);
+        return 1;
+    }
+
+    ShowWindow(hWnd, nCmdShow);
+    UpdateWindow(hWnd);
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.IniFilename = NULL;
+
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplWin32_Init(hWnd);
+    ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
+
+    // Setup fonts
+    if (std::filesystem::exists("segoeui.ttf")) {
+        io.Fonts->AddFontFromFileTTF("segoeui.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesCyrillic());
+    }
+
+    bool done = false;
+    while (!done) {
+        MSG msg;
+        while (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE)) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+            if (msg.message == WM_QUIT)
+                done = true;
+        }
+        if (done) break;
+
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+
+        RenderInstallerUI(hWnd, windowWidth, windowHeight);
 
         ImGui::Render();
         const float clearColor[4] = { 0.06f, 0.07f, 0.09f, 1.00f };
@@ -447,6 +502,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 
     return 0;
 }
+
 
 // Helpers DirectX 11
 static bool CreateDeviceD3D(HWND hWnd) {
