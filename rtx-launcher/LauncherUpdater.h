@@ -52,13 +52,27 @@ public:
             if (rootJson.isArray()) {
                 if (rootJson.arrayValue.empty()) return info;
                 int maxBuild = -1;
+                std::wstring maxVersionStr = L"";
+
                 for (const auto& rel : rootJson.arrayValue) {
                     std::string tName = rel["tag_name"].asString();
                     std::string rName = rel["name"].asString();
                     int buildNum = ParseBuildNumber(tName, rName);
+                    
+                    std::wstring relVer = UTF8ToWString(tName);
+                    if (relVer.rfind(L"v", 0) == 0 || relVer.rfind(L"V", 0) == 0) {
+                        relVer = relVer.substr(1);
+                    }
+
                     if (buildNum > maxBuild) {
                         maxBuild = buildNum;
+                        maxVersionStr = relVer;
                         targetRelease = rel;
+                    } else if (buildNum == maxBuild) {
+                        if (IsVersionNewer(relVer, maxVersionStr)) {
+                            maxVersionStr = relVer;
+                            targetRelease = rel;
+                        }
                     }
                 }
                 // Fallback, if no build numbers were found (which shouldn't happen), it will use the first one that was parsed (or index 0).
