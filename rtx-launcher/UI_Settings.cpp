@@ -14,7 +14,7 @@ void RenderUI_Settings() {
     float contentW = ImGui::GetContentRegionAvail().x;
     float availH = ImGui::GetContentRegionAvail().y;
     
-    float topPadding = S(30);
+    float topPadding = S(20);
     float mainCardH = availH - topPadding * 2;
     if (mainCardH < S(200)) mainCardH = S(200);
     
@@ -31,16 +31,16 @@ void RenderUI_Settings() {
 
     ImGui::PushFont(g_imFontTitle);
     const char* title = L(u8"НАСТРОЙКИ", "SETTINGS");
-    ImGui::SetCursorScreenPos(ImVec2(mainCardPos.x + S(30), mainCardPos.y + S(30)));
+    ImGui::SetCursorScreenPos(ImVec2(mainCardPos.x + S(30), mainCardPos.y + S(20)));
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", title);
     ImGui::PopFont();
 
-    ImGui::SetCursorScreenPos(ImVec2(mainCardPos.x + S(30), mainCardPos.y + S(75)));
+    ImGui::SetCursorScreenPos(ImVec2(mainCardPos.x + S(30), mainCardPos.y + S(60)));
     ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0,0,0,0));
-    ImGui::BeginChild("SettingsChild", ImVec2(mainCardSize.x - S(60), mainCardSize.y - S(95)), false, ImGuiWindowFlags_NoScrollbar);
+    ImGui::BeginChild("SettingsChild", ImVec2(mainCardSize.x - S(60), mainCardSize.y - S(75)), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-    float rowH = S(100);
-    float spacing = S(16);
+    float rowH = S(85);
+    float spacing = S(12);
     float colW = (mainCardSize.x - S(60) - spacing) / 2.0f;
     
     auto DrawCard = [&](ImVec2 pos, ImVec2 size, auto renderContent) {
@@ -78,7 +78,7 @@ void RenderUI_Settings() {
     // Row 1, Col 1: Game Location
     // ----------------------------------------------------
     DrawCard(p0, ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(12)));
         ImGui::PushFont(g_imFontRegular);
         ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Расположение игры", "Game Location"));
         ImGui::PopFont();
@@ -86,7 +86,7 @@ void RenderUI_Settings() {
         std::string pathUtf8 = WStringToUTF8(g_app.installRootPath);
         if (pathUtf8.empty()) pathUtf8 = L(u8"Не выбрано", "Not selected");
         
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(32)));
         ImGui::PushFont(g_imFontSmall);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
         ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + size.x - S(40));
@@ -95,19 +95,19 @@ void RenderUI_Settings() {
         ImGui::PopStyleColor();
         ImGui::PopFont();
         
-        DrawCardAction("LocBtn", ImVec2(pos.x + S(20), pos.y + size.y - S(28)), L(u8"СМЕНИТЬ ДИСК →", "CHANGE DRIVE →"), [&]() { ShowDiskSelectionModal(OnDiskChanged); });
+        DrawCardAction("LocBtn", ImVec2(pos.x + S(20), pos.y + size.y - S(26)), L(u8"СМЕНИТЬ ДИСК →", "CHANGE DRIVE →"), [&]() { ShowDiskSelectionModal(OnDiskChanged); });
     });
 
     // ----------------------------------------------------
     // Row 1, Col 2: Recovery
     // ----------------------------------------------------
     DrawCard(ImVec2(p0.x + colW + spacing, p0.y), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(12)));
         ImGui::PushFont(g_imFontRegular);
         ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Восстановление", "Recovery"));
         ImGui::PopFont();
         
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(32)));
         ImGui::PushFont(g_imFontSmall);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
         ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + size.x - S(40));
@@ -123,12 +123,12 @@ void RenderUI_Settings() {
     // Row 2, Col 1: Launch Mode
     // ----------------------------------------------------
     DrawCard(ImVec2(p0.x, p0.y + rowH + spacing), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(12)));
         ImGui::PushFont(g_imFontRegular);
         ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Режим запуска", "Launch Mode"));
         ImGui::PopFont();
         
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(32)));
         ImGui::PushFont(g_imFontSmall);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
         ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + size.x - S(40));
@@ -141,19 +141,19 @@ void RenderUI_Settings() {
         ImGui::PopStyleColor();
         ImGui::PopFont();
         
-        DrawCardAction("ModeBtn", ImVec2(pos.x + S(20), pos.y + size.y - S(28)), L(u8"ПЕРЕКЛЮЧИТЬ РЕЖИМ →", "SWITCH MODE →"), [&]() { g_app.launchMode = (g_app.launchMode == 2) ? 1 : 2; SaveSettings(); });
+        DrawCardAction("ModeBtn", ImVec2(pos.x + S(20), pos.y + size.y - S(26)), L(u8"ПЕРЕКЛЮЧИТЬ РЕЖИМ →", "SWITCH MODE →"), [&]() { g_app.launchMode = (g_app.launchMode == 2) ? 1 : 2; SaveSettings(); });
     });
 
     // ----------------------------------------------------
     // Row 2, Col 2: Repository & Fixes
     // ----------------------------------------------------
     DrawCard(ImVec2(p0.x + colW + spacing, p0.y + rowH + spacing), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(12)));
         ImGui::PushFont(g_imFontRegular);
         ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Репозиторий и Фиксы", "Repository & Fixes"));
         ImGui::PopFont();
         
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(32)));
         ImGui::PushFont(g_imFontSmall);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
         ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + size.x - S(40));
@@ -162,19 +162,19 @@ void RenderUI_Settings() {
         ImGui::PopStyleColor();
         ImGui::PopFont();
         
-        DrawCardAction("GitBtn", ImVec2(pos.x + S(20), pos.y + size.y - S(28)), L(u8"ОТКРЫТЬ В БРАУЗЕРЕ →", "OPEN IN BROWSER →"), [&]() { DoOpenRtxGithub(); });
+        DrawCardAction("GitBtn", ImVec2(pos.x + S(20), pos.y + size.y - S(26)), L(u8"ОТКРЫТЬ В БРАУЗЕРЕ →", "OPEN IN BROWSER →"), [&]() { DoOpenRtxGithub(); });
     });
 
     // ----------------------------------------------------
     // Row 3, Col 1: Beta Channel
     // ----------------------------------------------------
     DrawCard(ImVec2(p0.x, p0.y + (rowH + spacing) * 2), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(12)));
         ImGui::PushFont(g_imFontRegular);
         ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Бета-канал", "Beta Channel"));
         ImGui::PopFont();
         
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(32)));
         ImGui::PushFont(g_imFontSmall);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
         ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + size.x - S(40));
@@ -195,19 +195,19 @@ void RenderUI_Settings() {
     // Row 3, Col 2: GPU Information
     // ----------------------------------------------------
     DrawCard(ImVec2(p0.x + colW + spacing, p0.y + (rowH + spacing) * 2), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(12)));
         ImGui::PushFont(g_imFontRegular);
         ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Видеокарта", "Graphics Card"));
         ImGui::PopFont();
         
         std::string gpuName = g_app.gpuInfo.name.empty() ? L(u8"Не определена", "Not detected") : g_app.gpuInfo.name;
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(32)));
         ImGui::PushFont(g_imFontRegular);
         ImGui::TextColored(g_app.gpuInfo.isAmdOrIntel ? ImVec4(1.0f, 0.75f, 0.25f, 1.0f) : ImVec4(0.0f, 0.90f, 0.46f, 1.0f), "%s", gpuName.c_str());
         ImVec2 gpuSize = ImGui::CalcTextSize(gpuName.c_str());
         ImGui::PopFont();
 
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(65)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(52)));
         ImGui::PushFont(g_imFontSmall);
         
         std::string drvStr = std::string(L(u8"Драйвер: ", "Driver: ")) + (g_app.gpuInfo.driverVersionStr.empty() ? L(u8"Неизвестно", "Unknown") : g_app.gpuInfo.driverVersionStr);
@@ -221,7 +221,7 @@ void RenderUI_Settings() {
             ImGui::PopStyleColor();
         }
 
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(80)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(68)));
         if (g_app.gpuInfo.isFrankenstein) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.0f, 1.0f));
             ImGui::Text("%s", L(u8"Boosty: Требуется подписка", "Boosty: Subscription required"));
@@ -242,33 +242,46 @@ void RenderUI_Settings() {
     // Row 4, Col 1: Language
     // ----------------------------------------------------
     DrawCard(ImVec2(p0.x, p0.y + (rowH + spacing) * 3), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(12)));
         ImGui::PushFont(g_imFontRegular);
         ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Язык / Language", "Language / Язык"));
         ImGui::PopFont();
         
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(45)));
+                ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(36)));
         ImGui::PushFont(g_imFontSmall);
         
         bool isRu = (g_app.language != "en");
         bool isEn = (g_app.language == "en");
 
-        ImGui::PushStyleColor(ImGuiCol_Text, isRu ? ImVec4(1,1,1,1) : ImVec4(0.5,0.5,0.5,1));
-        if (ImGui::Selectable("Русский", isRu, 0, ImVec2(S(100), S(20)))) {
-            g_app.language = "ru";
-            SaveSettings();
-        }
-        ImGui::PopStyleColor();
+        auto DrawLangOption = [&](const char* label, bool active, ImVec2 cPos, auto onClick) {
+            ImVec2 tSize = ImGui::CalcTextSize(label);
+            ImVec2 boxSize(S(100), S(32)); 
+            ImGui::SetCursorScreenPos(cPos);
+            bool clicked = ImGui::InvisibleButton(label, boxSize);
+            bool hovered = ImGui::IsItemHovered();
+            
+            if (active) {
+                dl->AddRectFilled(cPos, ImVec2(cPos.x + boxSize.x, cPos.y + boxSize.y), IM_COL32(32, 38, 48, 255), S(4.0f));
+            } else if (hovered) {
+                dl->AddRectFilled(cPos, ImVec2(cPos.x + boxSize.x, cPos.y + boxSize.y), IM_COL32(24, 28, 36, 255), S(4.0f));
+            }
+            
+            ImVec2 textPos(cPos.x + S(16), cPos.y + (boxSize.y - tSize.y) / 2.0f);
+            ImGui::SetCursorScreenPos(textPos);
+            ImGui::TextColored(active ? ImVec4(1,1,1,1) : ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "%s", label);
+            if (clicked && !active) onClick();
+        };
 
-        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(130), pos.y + S(45)));
-        ImGui::PushStyleColor(ImGuiCol_Text, isEn ? ImVec4(1,1,1,1) : ImVec4(0.5,0.5,0.5,1));
-        if (ImGui::Selectable("English", isEn, 0, ImVec2(S(100), S(20)))) {
-            g_app.language = "en";
-            SaveSettings();
-        }
-        ImGui::PopStyleColor();
+        DrawLangOption(u8"Русский", isRu, ImVec2(pos.x + S(20), pos.y + S(40)), [&]() {
+            g_app.language = "ru"; SaveSettings();
+        });
+        
+        DrawLangOption("English", isEn, ImVec2(pos.x + S(130), pos.y + S(40)), [&]() {
+            g_app.language = "en"; SaveSettings();
+        });
         
         ImGui::PopFont();
+
     });
 
     ImGui::EndChild();
