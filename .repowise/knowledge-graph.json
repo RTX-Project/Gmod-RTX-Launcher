@@ -242,7 +242,8 @@
         "config",
         "low_signal_summary"
       ],
-      "summary": "Configuration file: skills.json."
+      "summary": "Configuration file: skills.json.",
+      "primaryOwner": "RTX-Project"
     },
     {
       "id": "file:.github/workflows/build-beta.yml",
@@ -290,7 +291,8 @@
         "config",
         "low_signal_summary"
       ],
-      "summary": "Configuration file: .mcp.json."
+      "summary": "Configuration file: .mcp.json.",
+      "primaryOwner": "RTX-Project"
     },
     {
       "id": "file:CppProperties.json",
@@ -319,7 +321,8 @@
       "pagerank": 0.001405,
       "communityId": 14,
       "tags": [],
-      "summary": "Project overview and entry point for new readers."
+      "summary": "Project overview and entry point for new readers.",
+      "primaryOwner": "RTX-Project"
     },
     {
       "id": "file:README_DEV.md",
@@ -362,8 +365,7 @@
       "pagerank": 0.002599,
       "communityId": 6,
       "tags": [],
-      "summary": "Docs & Tooling module script defining initOSDetection, initNavbar, initMobileMenu.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module script defining initOSDetection, initNavbar, initMobileMenu."
     },
     {
       "id": "file:rtx-installer/main_installer.cpp",
@@ -435,8 +437,7 @@
       "pagerank": 0.001462,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module ArchiveExtract defining ArchiveExtract, OutFile_OpenUtf16, MyCreateDir.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module ArchiveExtract defining ArchiveExtract, OutFile_OpenUtf16, MyCreateDir."
     },
     {
       "id": "file:rtx-launcher/BinaryPatcher.h",
@@ -449,8 +450,7 @@
       "pagerank": 0.001462,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module BinaryPatcher defining BinaryPatcher, PatchDef, FilePatch.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module BinaryPatcher defining BinaryPatcher, PatchDef, FilePatch."
     },
     {
       "id": "file:rtx-launcher/FileSync.h",
@@ -463,8 +463,7 @@
       "pagerank": 0.001462,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module FileSync defining SpeedSample, SyncStats, FileSync.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module FileSync defining SpeedSample, SyncStats, FileSync."
     },
     {
       "id": "file:rtx-launcher/GameFixesUpdater.h",
@@ -477,8 +476,7 @@
       "pagerank": 0.001462,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module GameFixesUpdater defining GameFixesUpdater, DownloadAndApplyFixes.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module GameFixesUpdater defining GameFixesUpdater, DownloadAndApplyFixes."
     },
     {
       "id": "file:rtx-launcher/Globals.h",
@@ -491,8 +489,7 @@
       "pagerank": 0.006572,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module Globals defining Page, WizardStep, RtxModsView.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Globals defining Page, WizardStep, RtxModsView."
     },
     {
       "id": "file:rtx-launcher/HexPatcher.h",
@@ -505,8 +502,7 @@
       "pagerank": 0.001462,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module HexPatcher defining HexPatcher, HexToBytes, HexToMask.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module HexPatcher defining HexPatcher, HexToBytes, HexToMask."
     },
     {
       "id": "file:rtx-launcher/HttpClient.h",
@@ -519,8 +515,7 @@
       "pagerank": 0.004089,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module HttpClient defining HttpClient, UrlParts, parseUrl.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module HttpClient defining HttpClient, UrlParts, parseUrl."
     },
     {
       "id": "file:rtx-launcher/JsonValue.h",
@@ -533,8 +528,7 @@
       "pagerank": 0.00385,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module JsonValue defining JsonValue, Type, isObject.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module JsonValue defining JsonValue, Type, isObject."
     },
     {
       "id": "file:rtx-launcher/LauncherUpdater.h",
@@ -547,8 +541,7 @@
       "pagerank": 0.004089,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module LauncherUpdater defining WStringToUTF8, LauncherUpdater, UpdateInfo.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LauncherUpdater defining WStringToUTF8, LauncherUpdater, UpdateInfo."
     },
     {
       "id": "file:rtx-launcher/ModDBScraper.cpp",
@@ -561,8 +554,7 @@
       "pagerank": 0.011423,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module ModDBScraper defining ScraperState, ScraperWndProc, FetchLatestDownloadUrlAsync.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module ModDBScraper defining ScraperState, ScraperWndProc, FetchLatestDownloadUrlAsync."
     },
     {
       "id": "file:rtx-launcher/ModDBScraper.h",
@@ -575,8 +567,7 @@
       "pagerank": 0.011821,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module ModDBScraper defining ModDBScraper.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module ModDBScraper defining ModDBScraper."
     },
     {
       "id": "file:rtx-launcher/PROGRESS.md",
@@ -617,8 +608,7 @@
       "pagerank": 0.003324,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module RtxRemixUpdater defining RtxReleaseInfo, RtxUpdateCheckResult, RtxRemixUpdater.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module RtxRemixUpdater defining RtxReleaseInfo, RtxUpdateCheckResult, RtxRemixUpdater."
     },
     {
       "id": "file:rtx-launcher/Sha1.h",
@@ -631,8 +621,7 @@
       "pagerank": 0.003354,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module Sha1 defining Sha1, Sha1, reset.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Sha1 defining Sha1, Sha1, reset."
     },
     {
       "id": "file:rtx-launcher/SteamBeta.h",
@@ -645,8 +634,7 @@
       "pagerank": 0.001462,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module SteamBeta defining BetaCheckResult, SteamBeta, check.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module SteamBeta defining BetaCheckResult, SteamBeta, check."
     },
     {
       "id": "file:rtx-launcher/Theme.h",
@@ -659,8 +647,7 @@
       "pagerank": 0.001988,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module Theme defining LerpColor, CurrentAccent, CurrentAccentHover.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Theme defining LerpColor, CurrentAccent, CurrentAccentHover."
     },
     {
       "id": "file:rtx-launcher/UI_Authors.cpp",
@@ -673,8 +660,7 @@
       "pagerank": 0.003488,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module UI_Authors defining DoOpenRtxGithub, RenderUI_Authors.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module UI_Authors defining DoOpenRtxGithub, RenderUI_Authors."
     },
     {
       "id": "file:rtx-launcher/UI_Authors.h",
@@ -687,8 +673,7 @@
       "pagerank": 0.00245,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module UI_Authors defining RenderUI_Authors.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module UI_Authors defining RenderUI_Authors."
     },
     {
       "id": "file:rtx-launcher/UI_Overview.cpp",
@@ -701,8 +686,7 @@
       "pagerank": 0.003488,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module UI_Overview defining CheckLauncherUpdatesAsync, AppendLog, RunInBackground.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module UI_Overview defining CheckLauncherUpdatesAsync, AppendLog, RunInBackground."
     },
     {
       "id": "file:rtx-launcher/UI_Overview.h",
@@ -715,8 +699,7 @@
       "pagerank": 0.00245,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module UI_Overview defining RenderUI_Overview.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module UI_Overview defining RenderUI_Overview."
     },
     {
       "id": "file:rtx-launcher/UI_RtxMods.cpp",
@@ -729,8 +712,7 @@
       "pagerank": 0.003232,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module UI_RtxMods defining LoadRtxReleases, RenderUI_RtxMods.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module UI_RtxMods defining LoadRtxReleases, RenderUI_RtxMods."
     },
     {
       "id": "file:rtx-launcher/UI_RtxMods.h",
@@ -743,8 +725,7 @@
       "pagerank": 0.002149,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module UI_RtxMods defining RenderUI_RtxMods.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module UI_RtxMods defining RenderUI_RtxMods."
     },
     {
       "id": "file:rtx-launcher/UI_Settings.cpp",
@@ -757,8 +738,7 @@
       "pagerank": 0.003095,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module UI_Settings defining SaveSettings, OnDiskChanged, DoOpenRtxGithub.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module UI_Settings defining SaveSettings, OnDiskChanged, DoOpenRtxGithub."
     },
     {
       "id": "file:rtx-launcher/UI_Settings.h",
@@ -771,8 +751,7 @@
       "pagerank": 0.001988,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module UI_Settings defining RenderUI_Settings.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module UI_Settings defining RenderUI_Settings."
     },
     {
       "id": "file:rtx-launcher/UI_Updates.cpp",
@@ -785,8 +764,7 @@
       "pagerank": 0.003488,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module UI_Updates defining CheckLauncherUpdatesAsync, AppendLog, RunInBackground.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module UI_Updates defining CheckLauncherUpdatesAsync, AppendLog, RunInBackground."
     },
     {
       "id": "file:rtx-launcher/UI_Updates.h",
@@ -799,8 +777,7 @@
       "pagerank": 0.00245,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module UI_Updates defining RenderUI_Updates.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module UI_Updates defining RenderUI_Updates."
     },
     {
       "id": "file:rtx-launcher/UI_Wizard.cpp",
@@ -813,8 +790,7 @@
       "pagerank": 0.003488,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module UI_Wizard defining RenderSingleWizardStep, RenderUI_Wizard.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module UI_Wizard defining RenderSingleWizardStep, RenderUI_Wizard."
     },
     {
       "id": "file:rtx-launcher/UI_Wizard.h",
@@ -827,8 +803,7 @@
       "pagerank": 0.00245,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module UI_Wizard defining RenderUI_Wizard.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module UI_Wizard defining RenderUI_Wizard."
     },
     {
       "id": "file:rtx-launcher/ZipExtract.h",
@@ -841,8 +816,7 @@
       "pagerank": 0.003411,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module ZipExtract defining ComPtr, ComPtr, ComPtr.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module ZipExtract defining ComPtr, ComPtr, ComPtr."
     },
     {
       "id": "file:rtx-launcher/imgui/.github/FUNDING.yml",
@@ -979,8 +953,7 @@
       "pagerank": 0.003173,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_allegro5 defining ImDrawVertAllegro, DRAW_VERT_IMGUI_TO_ALLEGRO, ImGui_ImplAllegro5_Data.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_allegro5 defining ImDrawVertAllegro, DRAW_VERT_IMGUI_TO_ALLEGRO, ImGui_ImplAllegro5_Data."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_allegro5.h",
@@ -993,8 +966,7 @@
       "pagerank": 0.002754,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_allegro5 defining ALLEGRO_DISPLAY, ImGui_ImplAllegro5_Init, ImGui_ImplAllegro5_Shutdown.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_allegro5 defining ALLEGRO_DISPLAY, ImGui_ImplAllegro5_Init, ImGui_ImplAllegro5_Shutdown."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_android.cpp",
@@ -1007,8 +979,7 @@
       "pagerank": 0.00293,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_android defining ImGui_ImplAndroid_KeyCodeToImGuiKey, ImGui_ImplAndroid_HandleInputEvent, ImGui_ImplAndroid_Init.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_android defining ImGui_ImplAndroid_KeyCodeToImGuiKey, ImGui_ImplAndroid_HandleInputEvent, ImGui_ImplAndroid_Init."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_android.h",
@@ -1021,8 +992,7 @@
       "pagerank": 0.00265,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_android defining ANativeWindow, AInputEvent, ImGui_ImplAndroid_Init.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_android defining ANativeWindow, AInputEvent, ImGui_ImplAndroid_Init."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_dx10.cpp",
@@ -1035,8 +1005,7 @@
       "pagerank": 0.00293,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_dx10 defining ImGui_ImplDX10_Texture, ImGui_ImplDX10_Data, ImGui_ImplDX10_Data.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_dx10 defining ImGui_ImplDX10_Texture, ImGui_ImplDX10_Data, ImGui_ImplDX10_Data."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_dx10.h",
@@ -1049,8 +1018,7 @@
       "pagerank": 0.00265,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_dx10 defining ID3D10Device, ID3D10SamplerState, ID3D10Buffer.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_dx10 defining ID3D10Device, ID3D10SamplerState, ID3D10Buffer."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_dx11.cpp",
@@ -1063,8 +1031,7 @@
       "pagerank": 0.004095,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_dx11 defining ImGui_ImplDX11_Texture, ImGui_ImplDX11_Data, ImGui_ImplDX11_Data.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_dx11 defining ImGui_ImplDX11_Texture, ImGui_ImplDX11_Data, ImGui_ImplDX11_Data."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_dx11.h",
@@ -1077,8 +1044,7 @@
       "pagerank": 0.003384,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_dx11 defining ID3D11Device, ID3D11DeviceContext, ID3D11SamplerState.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_dx11 defining ID3D11Device, ID3D11DeviceContext, ID3D11SamplerState."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_dx12.cpp",
@@ -1091,8 +1057,7 @@
       "pagerank": 0.00293,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_dx12 defining ImGui_ImplDX12_RenderBuffers, ImGui_ImplDX12_Texture, ImGui_ImplDX12_Texture.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_dx12 defining ImGui_ImplDX12_RenderBuffers, ImGui_ImplDX12_Texture, ImGui_ImplDX12_Texture."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_dx12.h",
@@ -1105,8 +1070,7 @@
       "pagerank": 0.00265,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_dx12 defining ImGui_ImplDX12_InitInfo, ImGui_ImplDX12_InitInfo, ImGui_ImplDX12_Init.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_dx12 defining ImGui_ImplDX12_InitInfo, ImGui_ImplDX12_InitInfo, ImGui_ImplDX12_Init."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_dx9.cpp",
@@ -1119,8 +1083,7 @@
       "pagerank": 0.00293,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_dx9 defining ImGui_ImplDX9_Data, ImGui_ImplDX9_Data, CUSTOMVERTEX.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_dx9 defining ImGui_ImplDX9_Data, ImGui_ImplDX9_Data, CUSTOMVERTEX."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_dx9.h",
@@ -1133,8 +1096,7 @@
       "pagerank": 0.00265,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_dx9 defining IDirect3DDevice9, ImGui_ImplDX9_Init, ImGui_ImplDX9_Shutdown.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_dx9 defining IDirect3DDevice9, ImGui_ImplDX9_Init, ImGui_ImplDX9_Shutdown."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_glfw.cpp",
@@ -1147,8 +1109,7 @@
       "pagerank": 0.004342,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_glfw defining ImGui_ImplGlfw_WindowToContext, ImGui_ImplGlfw_ContextMap_Add, ImGui_ImplGlfw_ContextMap_Remove.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_glfw defining ImGui_ImplGlfw_WindowToContext, ImGui_ImplGlfw_ContextMap_Add, ImGui_ImplGlfw_ContextMap_Remove."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_glfw.h",
@@ -1161,8 +1122,7 @@
       "pagerank": 0.002534,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_glfw defining GLFWwindow, GLFWmonitor, ImGui_ImplGlfw_InitForOpenGL.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_glfw defining GLFWwindow, GLFWmonitor, ImGui_ImplGlfw_InitForOpenGL."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_glut.cpp",
@@ -1175,8 +1135,7 @@
       "pagerank": 0.00293,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_glut defining ImGui_ImplGLUT_KeyToImGuiKey, ImGui_ImplGLUT_Init, ImGui_ImplGLUT_InstallFuncs.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_glut defining ImGui_ImplGLUT_KeyToImGuiKey, ImGui_ImplGLUT_Init, ImGui_ImplGLUT_InstallFuncs."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_glut.h",
@@ -1189,8 +1148,7 @@
       "pagerank": 0.00265,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_glut defining ImGui_ImplGLUT_Init, ImGui_ImplGLUT_InstallFuncs, ImGui_ImplGLUT_Shutdown.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_glut defining ImGui_ImplGLUT_Init, ImGui_ImplGLUT_InstallFuncs, ImGui_ImplGLUT_Shutdown."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_metal.h",
@@ -1203,8 +1161,7 @@
       "pagerank": 0.001405,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_metal defining MTLRenderPassDescriptor, ImGui_ImplMetal_Init, ImGui_ImplMetal_Shutdown.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_metal defining MTLRenderPassDescriptor, ImGui_ImplMetal_Init, ImGui_ImplMetal_Shutdown."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_metal.mm",
@@ -1217,8 +1174,7 @@
       "pagerank": 0.001405,
       "communityId": 37,
       "tags": [],
-      "summary": "Application module imgui_impl_metal.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_metal."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_metal4.h",
@@ -1231,8 +1187,7 @@
       "pagerank": 0.001405,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_metal4 defining MTL4RenderPassDescriptor, ImGui_ImplMetal4_Init, ImGui_ImplMetal4_Shutdown.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_metal4 defining MTL4RenderPassDescriptor, ImGui_ImplMetal4_Init, ImGui_ImplMetal4_Shutdown."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_metal4.mm",
@@ -1245,8 +1200,7 @@
       "pagerank": 0.001405,
       "communityId": 38,
       "tags": [],
-      "summary": "Application module imgui_impl_metal4.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_metal4."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_null.cpp",
@@ -1259,8 +1213,7 @@
       "pagerank": 0.003136,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_null defining ImGui_ImplNull_Init, ImGui_ImplNull_Shutdown, ImGui_ImplNull_NewFrame.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_null defining ImGui_ImplNull_Init, ImGui_ImplNull_Shutdown, ImGui_ImplNull_NewFrame."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_null.h",
@@ -1273,8 +1226,7 @@
       "pagerank": 0.003136,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_null defining ImGui_ImplNull_Init, ImGui_ImplNull_Shutdown, ImGui_ImplNull_NewFrame.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_null defining ImGui_ImplNull_Init, ImGui_ImplNull_Shutdown, ImGui_ImplNull_NewFrame."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_opengl2.cpp",
@@ -1287,8 +1239,7 @@
       "pagerank": 0.00378,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_opengl2 defining GL_CALL, GL_CALL, ImGui_ImplOpenGL2_Data.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_opengl2 defining GL_CALL, GL_CALL, ImGui_ImplOpenGL2_Data."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_opengl2.h",
@@ -1301,8 +1252,7 @@
       "pagerank": 0.003012,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_opengl2 defining ImGui_ImplOpenGL2_Init, ImGui_ImplOpenGL2_Shutdown, ImGui_ImplOpenGL2_NewFrame.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_opengl2 defining ImGui_ImplOpenGL2_Init, ImGui_ImplOpenGL2_Shutdown, ImGui_ImplOpenGL2_NewFrame."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_opengl3.cpp",
@@ -1315,8 +1265,7 @@
       "pagerank": 0.004132,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_opengl3 defining GL_CALL, GL_CALL, ImGui_ImplOpenGL3_Data.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_opengl3 defining GL_CALL, GL_CALL, ImGui_ImplOpenGL3_Data."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_opengl3.h",
@@ -1329,8 +1278,7 @@
       "pagerank": 0.002576,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_opengl3 defining ImGui_ImplOpenGL3_Init, ImGui_ImplOpenGL3_Shutdown, ImGui_ImplOpenGL3_NewFrame.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_opengl3 defining ImGui_ImplOpenGL3_Init, ImGui_ImplOpenGL3_Shutdown, ImGui_ImplOpenGL3_NewFrame."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_opengl3_loader.h",
@@ -1343,8 +1291,7 @@
       "pagerank": 0.002576,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_opengl3_loader defining glPolygonMode, glScissor, glTexParameteri.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_opengl3_loader defining glPolygonMode, glScissor, glTexParameteri."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_osx.h",
@@ -1357,8 +1304,7 @@
       "pagerank": 0.001405,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_osx defining NSEvent, NSView, ImGui_ImplOSX_Init.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_osx defining NSEvent, NSView, ImGui_ImplOSX_Init."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_osx.mm",
@@ -1371,8 +1317,7 @@
       "pagerank": 0.001405,
       "communityId": 39,
       "tags": [],
-      "summary": "Application module imgui_impl_osx.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_osx."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_sdl2.cpp",
@@ -1385,8 +1330,7 @@
       "pagerank": 0.004802,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_sdl2 defining ImGui_ImplSDL2_Data, ImGui_ImplSDL2_Data, ImGui_ImplSDL2_UpdateMonitors.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_sdl2 defining ImGui_ImplSDL2_Data, ImGui_ImplSDL2_Data, ImGui_ImplSDL2_UpdateMonitors."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_sdl2.h",
@@ -1399,8 +1343,7 @@
       "pagerank": 0.003712,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_sdl2 defining SDL_Window, SDL_Renderer, _SDL_GameController.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_sdl2 defining SDL_Window, SDL_Renderer, _SDL_GameController."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_sdl3.cpp",
@@ -1413,8 +1356,7 @@
       "pagerank": 0.004508,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_sdl3 defining ImGui_ImplSDL3_Data, ImGui_ImplSDL3_Data, ImGui_ImplSDL3_UpdateIme.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_sdl3 defining ImGui_ImplSDL3_Data, ImGui_ImplSDL3_Data, ImGui_ImplSDL3_UpdateIme."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_sdl3.h",
@@ -1427,8 +1369,7 @@
       "pagerank": 0.003587,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_sdl3 defining SDL_Window, SDL_Renderer, SDL_Gamepad.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_sdl3 defining SDL_Window, SDL_Renderer, SDL_Gamepad."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_sdlgpu3.cpp",
@@ -1441,8 +1382,7 @@
       "pagerank": 0.002616,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_sdlgpu3 defining ImGui_ImplSDLGPU3_FrameData, ImGui_ImplSDLGPU3_Data, ImGui_ImplSDLGPU3_DestroyFrameData.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_sdlgpu3 defining ImGui_ImplSDLGPU3_FrameData, ImGui_ImplSDLGPU3_Data, ImGui_ImplSDLGPU3_DestroyFrameData."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_sdlgpu3.h",
@@ -1455,8 +1395,7 @@
       "pagerank": 0.002146,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_sdlgpu3 defining ImGui_ImplSDLGPU3_InitInfo, ImGui_ImplSDLGPU3_Init, ImGui_ImplSDLGPU3_Shutdown.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_sdlgpu3 defining ImGui_ImplSDLGPU3_InitInfo, ImGui_ImplSDLGPU3_Init, ImGui_ImplSDLGPU3_Shutdown."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_sdlgpu3_shaders.h",
@@ -1469,8 +1408,7 @@
       "pagerank": 0.002146,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_sdlgpu3_shaders.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_sdlgpu3_shaders."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_sdlrenderer2.cpp",
@@ -1483,8 +1421,7 @@
       "pagerank": 0.00293,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_sdlrenderer2 defining ImGui_ImplSDLRenderer2_Data, ImGui_ImplSDLRenderer2_Data, ImGui_ImplSDLRenderer2_SetupRenderState.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_sdlrenderer2 defining ImGui_ImplSDLRenderer2_Data, ImGui_ImplSDLRenderer2_Data, ImGui_ImplSDLRenderer2_SetupRenderState."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_sdlrenderer2.h",
@@ -1497,8 +1434,7 @@
       "pagerank": 0.00265,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_sdlrenderer2 defining SDL_Renderer, ImGui_ImplSDLRenderer2_Init, ImGui_ImplSDLRenderer2_Shutdown.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_sdlrenderer2 defining SDL_Renderer, ImGui_ImplSDLRenderer2_Init, ImGui_ImplSDLRenderer2_Shutdown."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_sdlrenderer3.cpp",
@@ -1511,8 +1447,7 @@
       "pagerank": 0.002808,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_sdlrenderer3 defining ImGui_ImplSDLRenderer3_Data, ImGui_ImplSDLRenderer3_Data, ImGui_ImplSDLRenderer3_SetupRenderState.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_sdlrenderer3 defining ImGui_ImplSDLRenderer3_Data, ImGui_ImplSDLRenderer3_Data, ImGui_ImplSDLRenderer3_SetupRenderState."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_sdlrenderer3.h",
@@ -1525,8 +1460,7 @@
       "pagerank": 0.002599,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_sdlrenderer3 defining SDL_Renderer, ImGui_ImplSDLRenderer3_Init, ImGui_ImplSDLRenderer3_Shutdown.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_sdlrenderer3 defining SDL_Renderer, ImGui_ImplSDLRenderer3_Init, ImGui_ImplSDLRenderer3_Shutdown."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_vulkan.cpp",
@@ -1539,8 +1473,7 @@
       "pagerank": 0.003664,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_vulkan defining IM_MAX, ImGui_ImplVulkan_FrameRenderBuffers, ImGui_ImplVulkan_WindowRenderBuffers.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_vulkan defining IM_MAX, ImGui_ImplVulkan_FrameRenderBuffers, ImGui_ImplVulkan_WindowRenderBuffers."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_vulkan.h",
@@ -1553,8 +1486,7 @@
       "pagerank": 0.002443,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_vulkan defining ImGui_ImplVulkan_PipelineInfo, ImGui_ImplVulkan_InitInfo, ImGui_ImplVulkan_Init.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_vulkan defining ImGui_ImplVulkan_PipelineInfo, ImGui_ImplVulkan_InitInfo, ImGui_ImplVulkan_Init."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_wgpu.cpp",
@@ -1567,8 +1499,7 @@
       "pagerank": 0.002826,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_wgpu defining ImHashData, MEMALIGN, ImGui_ImplWGPU_Texture.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_wgpu defining ImHashData, MEMALIGN, ImGui_ImplWGPU_Texture."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_wgpu.h",
@@ -1581,8 +1512,7 @@
       "pagerank": 0.003344,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_wgpu defining ImGui_ImplWGPU_InitInfo, ImGui_ImplWGPU_InitInfo, ImGui_ImplWGPU_Init.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_wgpu defining ImGui_ImplWGPU_InitInfo, ImGui_ImplWGPU_InitInfo, ImGui_ImplWGPU_Init."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_win32.cpp",
@@ -1595,8 +1525,7 @@
       "pagerank": 0.005464,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_win32 defining ImGui_ImplWin32_InitMultiViewportSupport, ImGui_ImplWin32_ShutdownMultiViewportSupport, ImGui_ImplWin32_UpdateMonitors.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_win32 defining ImGui_ImplWin32_InitMultiViewportSupport, ImGui_ImplWin32_ShutdownMultiViewportSupport, ImGui_ImplWin32_UpdateMonitors."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/imgui_impl_win32.h",
@@ -1609,8 +1538,7 @@
       "pagerank": 0.003967,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_impl_win32 defining ImGui_ImplWin32_Init, ImGui_ImplWin32_InitForOpenGL, ImGui_ImplWin32_Shutdown.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_impl_win32 defining ImGui_ImplWin32_Init, ImGui_ImplWin32_InitForOpenGL, ImGui_ImplWin32_Shutdown."
     },
     {
       "id": "file:rtx-launcher/imgui/backends/vulkan/generate_spv.sh",
@@ -1623,8 +1551,7 @@
       "pagerank": 0.001405,
       "communityId": 40,
       "tags": [],
-      "summary": "Application module generate_spv.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module generate_spv."
     },
     {
       "id": "file:rtx-launcher/imgui/docs/BACKENDS.md",
@@ -1749,8 +1676,7 @@
       "pagerank": 0.001405,
       "communityId": 49,
       "tags": [],
-      "summary": "Docs & Tooling module imconfig_allegro5 (1 symbols).",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module imconfig_allegro5 (1 symbols)."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_allegro5/main.cpp",
@@ -1765,8 +1691,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_android_opengl3/android/app/src/main/java/MainActivity.kt",
@@ -1779,8 +1704,7 @@
       "pagerank": 0.001405,
       "communityId": 5,
       "tags": [],
-      "summary": "Docs & Tooling module MainActivity defining MainActivity, onCreate, showSoftInput.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module MainActivity defining MainActivity, onCreate, showSoftInput."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_android_opengl3/main.cpp",
@@ -1795,8 +1719,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining Init, Shutdown, MainLoopStep.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining Init, Shutdown, MainLoopStep."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_apple_metal/Makefile",
@@ -1839,8 +1762,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_apple_metal4/Makefile",
@@ -1883,8 +1805,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_apple_opengl2/Makefile",
@@ -1914,8 +1835,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_glfw_metal/Makefile",
@@ -1945,8 +1865,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_glfw_opengl2/Makefile",
@@ -1976,8 +1895,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining glfw_error_callback, main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining glfw_error_callback, main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_glfw_opengl3/Makefile",
@@ -2007,8 +1925,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining glfw_error_callback, main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining glfw_error_callback, main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_glfw_vulkan/Makefile",
@@ -2038,8 +1955,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining glfw_error_callback, check_vk_result, debug_report.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining glfw_error_callback, check_vk_result, debug_report."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_glfw_wgpu/README.md",
@@ -2067,8 +1983,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining InitWGPU, CreateWGPUSurface, glfw_error_callback.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining InitWGPU, CreateWGPUSurface, glfw_error_callback."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_glut_opengl2/Makefile",
@@ -2098,8 +2013,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining MainLoopStep, main, MainLoopStep.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining MainLoopStep, main, MainLoopStep."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_null/Makefile",
@@ -2129,8 +2043,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl2_directx11/main.cpp",
@@ -2145,8 +2058,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining CreateDeviceD3D, CleanupDeviceD3D, CreateRenderTarget.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining CreateDeviceD3D, CleanupDeviceD3D, CreateRenderTarget."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl2_metal/Makefile",
@@ -2176,8 +2088,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl2_opengl2/Makefile",
@@ -2220,8 +2131,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl2_opengl3/Makefile",
@@ -2264,8 +2174,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl2_sdlrenderer2/Makefile",
@@ -2308,8 +2217,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl2_vulkan/Makefile",
@@ -2339,8 +2247,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining check_vk_result, debug_report, IsExtensionAvailable.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining check_vk_result, debug_report, IsExtensionAvailable."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl2_wgpu/README.md",
@@ -2368,8 +2275,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining InitWGPU, CreateWGPUSurface, ResizeSurface.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining InitWGPU, CreateWGPUSurface, ResizeSurface."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl3_directx11/main.cpp",
@@ -2384,8 +2290,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining CreateDeviceD3D, CleanupDeviceD3D, CreateRenderTarget.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining CreateDeviceD3D, CleanupDeviceD3D, CreateRenderTarget."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl3_metal/Makefile",
@@ -2415,8 +2320,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl3_metal4/Makefile",
@@ -2446,8 +2350,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl3_opengl3/Makefile",
@@ -2490,8 +2393,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl3_sdlgpu3/Makefile",
@@ -2521,8 +2423,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl3_sdlrenderer3/Makefile",
@@ -2552,8 +2453,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining main."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl3_vulkan/Makefile",
@@ -2583,8 +2483,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining check_vk_result, debug_report, IsExtensionAvailable.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining check_vk_result, debug_report, IsExtensionAvailable."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_sdl3_wgpu/README.md",
@@ -2612,8 +2511,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining InitWGPU, CreateWGPUSurface, ResizeSurface.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining InitWGPU, CreateWGPUSurface, ResizeSurface."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_win32_directx10/main.cpp",
@@ -2628,8 +2526,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining CreateDeviceD3D, CleanupDeviceD3D, CreateRenderTarget.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining CreateDeviceD3D, CleanupDeviceD3D, CreateRenderTarget."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_win32_directx11/main.cpp",
@@ -2644,8 +2541,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining CreateDeviceD3D, CleanupDeviceD3D, CreateRenderTarget.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining CreateDeviceD3D, CleanupDeviceD3D, CreateRenderTarget."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_win32_directx12/main.cpp",
@@ -2660,8 +2556,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining FrameContext, ExampleDescriptorHeapAllocator, Create.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining FrameContext, ExampleDescriptorHeapAllocator, Create."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_win32_directx9/main.cpp",
@@ -2676,8 +2571,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining CreateDeviceD3D, CleanupDeviceD3D, ResetDevice.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining CreateDeviceD3D, CleanupDeviceD3D, ResetDevice."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_win32_opengl3/main.cpp",
@@ -2692,8 +2586,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining WGL_WindowData, CreateDeviceWGL, CleanupDeviceWGL.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining WGL_WindowData, CreateDeviceWGL, CleanupDeviceWGL."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/example_win32_vulkan/main.cpp",
@@ -2708,8 +2601,7 @@
       "tags": [
         "entry_point"
       ],
-      "summary": "Docs & Tooling module main defining check_vk_result, debug_report, IsExtensionAvailable.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module main defining check_vk_result, debug_report, IsExtensionAvailable."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/libs/emscripten/emscripten_mainloop_stub.h",
@@ -2722,8 +2614,7 @@
       "pagerank": 0.00386,
       "communityId": 0,
       "tags": [],
-      "summary": "Docs & Tooling module emscripten_mainloop_stub defining MainLoopForEmscripten.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module emscripten_mainloop_stub defining MainLoopForEmscripten."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/libs/emscripten/shell_minimal.html",
@@ -2749,8 +2640,7 @@
       "pagerank": 0.003355,
       "communityId": 0,
       "tags": [],
-      "summary": "Docs & Tooling module glfw3 defining GLFWmonitor, GLFWwindow, GLFWcursor.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module glfw3 defining GLFWmonitor, GLFWwindow, GLFWcursor."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/libs/glfw/include/GLFW/glfw3native.h",
@@ -2763,8 +2653,7 @@
       "pagerank": 0.002534,
       "communityId": 0,
       "tags": [],
-      "summary": "Docs & Tooling module glfw3native defining glfwGetWin32Window, glfwGetWGLContext, glfwGetCocoaWindow.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module glfw3native defining glfwGetWin32Window, glfwGetWGLContext, glfwGetCocoaWindow."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/libs/usynergy/uSynergy.c",
@@ -2777,8 +2666,7 @@
       "pagerank": 0.009203,
       "communityId": 7,
       "tags": [],
-      "summary": "Docs & Tooling module uSynergy defining sNetToNative16, sNetToNative32, sTrace.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module uSynergy defining sNetToNative16, sNetToNative32, sTrace."
     },
     {
       "id": "file:rtx-launcher/imgui/examples/libs/usynergy/uSynergy.h",
@@ -2791,8 +2679,7 @@
       "pagerank": 0.009203,
       "communityId": 7,
       "tags": [],
-      "summary": "Docs & Tooling module uSynergy defining uSynergyClipboardFormat, uSynergyClipboardFormat, uSynergyContext.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Docs & Tooling module uSynergy defining uSynergyClipboardFormat, uSynergyClipboardFormat, uSynergyContext."
     },
     {
       "id": "file:rtx-launcher/imgui/imconfig.h",
@@ -2805,8 +2692,7 @@
       "pagerank": 0.071706,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imconfig.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imconfig."
     },
     {
       "id": "file:rtx-launcher/imgui/imgui.h",
@@ -2819,8 +2705,7 @@
       "pagerank": 0.082694,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui defining IM_ASSERT, IM_COUNTOF, IM_UNUSED.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui defining IM_ASSERT, IM_COUNTOF, IM_UNUSED."
     },
     {
       "id": "file:rtx-launcher/imgui/imgui_draw.cpp",
@@ -2833,8 +2718,7 @@
       "pagerank": 0.001644,
       "communityId": 4,
       "tags": [],
-      "summary": "Application module imgui_draw defining STBRP_ASSERT, STBTT_malloc, STBTT_free.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_draw defining STBRP_ASSERT, STBTT_malloc, STBTT_free."
     },
     {
       "id": "file:rtx-launcher/imgui/imgui_internal.h",
@@ -2847,8 +2731,7 @@
       "pagerank": 0.007618,
       "communityId": 4,
       "tags": [],
-      "summary": "Application module imgui_internal defining ImBitVector, ImRect, ImGuiTextIndex.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_internal defining ImBitVector, ImRect, ImGuiTextIndex."
     },
     {
       "id": "file:rtx-launcher/imgui/imgui_tables.cpp",
@@ -2861,8 +2744,7 @@
       "pagerank": 0.001644,
       "communityId": 4,
       "tags": [],
-      "summary": "Application module imgui_tables defining TableFixFlags, BeginTable, BeginTableEx.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_tables defining TableFixFlags, BeginTable, BeginTableEx."
     },
     {
       "id": "file:rtx-launcher/imgui/imstb_rectpack.h",
@@ -2875,8 +2757,7 @@
       "pagerank": 0.001685,
       "communityId": 4,
       "tags": [],
-      "summary": "Application module imstb_rectpack defining stbrp_context, stbrp_node, stbrp_rect.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imstb_rectpack defining stbrp_context, stbrp_node, stbrp_rect."
     },
     {
       "id": "file:rtx-launcher/imgui/imstb_textedit.h",
@@ -2889,8 +2770,7 @@
       "pagerank": 0.001405,
       "communityId": 87,
       "tags": [],
-      "summary": "Application module imstb_textedit defining StbUndoRecord, StbUndoState, STB_TexteditState.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imstb_textedit defining StbUndoRecord, StbUndoState, STB_TexteditState."
     },
     {
       "id": "file:rtx-launcher/imgui/imstb_truetype.h",
@@ -2903,8 +2783,7 @@
       "pagerank": 0.001685,
       "communityId": 4,
       "tags": [],
-      "summary": "Application module imstb_truetype defining my_stbtt_initfont, my_stbtt_print, main.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imstb_truetype defining my_stbtt_initfont, my_stbtt_print, main."
     },
     {
       "id": "file:rtx-launcher/imgui/misc/cpp/imgui_stdlib.cpp",
@@ -2917,8 +2796,7 @@
       "pagerank": 0.00407,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_stdlib defining InputTextCallback_UserData, InputTextCallback, InputText.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_stdlib defining InputTextCallback_UserData, InputTextCallback, InputText."
     },
     {
       "id": "file:rtx-launcher/imgui/misc/cpp/imgui_stdlib.h",
@@ -2931,8 +2809,7 @@
       "pagerank": 0.003135,
       "communityId": 0,
       "tags": [],
-      "summary": "Application module imgui_stdlib defining InputText, InputTextMultiline, InputTextWithHint.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_stdlib defining InputText, InputTextMultiline, InputTextWithHint."
     },
     {
       "id": "file:rtx-launcher/imgui/misc/debuggers/imgui_lldb.py",
@@ -2945,8 +2822,7 @@
       "pagerank": 0.001405,
       "communityId": 88,
       "tags": [],
-      "summary": "Application module imgui_lldb defining ArraySynthBase, __init__, bind_to.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_lldb defining ArraySynthBase, __init__, bind_to."
     },
     {
       "id": "file:rtx-launcher/imgui/misc/fonts/binary_to_compressed_c.cpp",
@@ -2959,8 +2835,7 @@
       "pagerank": 0.001405,
       "communityId": 89,
       "tags": [],
-      "summary": "Application module binary_to_compressed_c defining stb_compress, SourceEncoding, binary_to_compressed_c.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module binary_to_compressed_c defining stb_compress, SourceEncoding, binary_to_compressed_c."
     },
     {
       "id": "file:rtx-launcher/imgui/misc/freetype/README.md",
@@ -2986,8 +2861,7 @@
       "pagerank": 0.002799,
       "communityId": 4,
       "tags": [],
-      "summary": "Application module imgui_freetype defining ImGuiFreeTypeDefaultFreeFunc, ImGuiLunasvgPortInit, ImGuiLunasvgPortFree.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_freetype defining ImGuiFreeTypeDefaultFreeFunc, ImGuiLunasvgPortInit, ImGuiLunasvgPortFree."
     },
     {
       "id": "file:rtx-launcher/imgui/misc/freetype/imgui_freetype.h",
@@ -3000,8 +2874,7 @@
       "pagerank": 0.002716,
       "communityId": 4,
       "tags": [],
-      "summary": "Application module imgui_freetype defining ImFontAtlas, ImFontLoader, ImGuiFreeTypeLoaderFlags_.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_freetype defining ImFontAtlas, ImFontLoader, ImGuiFreeTypeLoaderFlags_."
     },
     {
       "id": "file:rtx-launcher/imgui/misc/single_file/imgui_single_file.h",
@@ -3014,8 +2887,7 @@
       "pagerank": 0.001405,
       "communityId": 4,
       "tags": [],
-      "summary": "Application module imgui_single_file (1 symbols).",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module imgui_single_file (1 symbols)."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7z.h",
@@ -3028,8 +2900,7 @@
       "pagerank": 0.002394,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module 7z defining CSzData, CSzCoderInfo, CSzBond.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7z defining CSzData, CSzCoderInfo, CSzBond."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zAlloc.c",
@@ -3042,8 +2913,7 @@
       "pagerank": 0.002771,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module 7zAlloc defining Print_Alloc, Print_Free, SzFree.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zAlloc defining Print_Alloc, Print_Free, SzFree."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zAlloc.h",
@@ -3056,8 +2926,7 @@
       "pagerank": 0.003213,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module 7zAlloc defining SzFree, SzFreeTemp.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zAlloc defining SzFree, SzFreeTemp."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zArcIn.c",
@@ -3070,8 +2939,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module 7zArcIn defining MY_ALLOC, MY_ALLOC_ZE, MY_ALLOC_AND_CPY.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zArcIn defining MY_ALLOC, MY_ALLOC_ZE, MY_ALLOC_AND_CPY."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zBuf.c",
@@ -3084,8 +2952,7 @@
       "pagerank": 0.002753,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module 7zBuf defining Buf_Init, Buf_Create, Buf_Free.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zBuf defining Buf_Init, Buf_Create, Buf_Free."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zBuf.h",
@@ -3098,8 +2965,7 @@
       "pagerank": 0.00317,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module 7zBuf defining Buf_Init, Buf_Create, Buf_Free.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zBuf defining Buf_Init, Buf_Create, Buf_Free."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zBuf2.c",
@@ -3112,8 +2978,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module 7zBuf2 defining DynBuf_Construct, DynBuf_SeekToBeg, DynBuf_Write.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zBuf2 defining DynBuf_Construct, DynBuf_SeekToBeg, DynBuf_Write."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zCrc.c",
@@ -3126,8 +2991,7 @@
       "pagerank": 0.003264,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module 7zCrc defining CRC_UPDATE_BYTE_2, __crc32b, __crc32w.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zCrc defining CRC_UPDATE_BYTE_2, __crc32b, __crc32w."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zCrc.h",
@@ -3140,8 +3004,7 @@
       "pagerank": 0.004373,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module 7zCrc defining CRC_GET_DIGEST, CRC_UPDATE_BYTE.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zCrc defining CRC_GET_DIGEST, CRC_UPDATE_BYTE."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zCrcOpt.c",
@@ -3154,8 +3017,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module 7zCrcOpt defining CRC_UPDATE_BYTE_2, CRC_UINT32_SWAP, CRC_UPDATE_BYTE_2_BE.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zCrcOpt defining CRC_UPDATE_BYTE_2, CRC_UINT32_SWAP, CRC_UPDATE_BYTE_2_BE."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zDec.c",
@@ -3168,8 +3030,7 @@
       "pagerank": 0.001405,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module 7zDec defining CByteInToLook, ReadByte, SzDecodePpmd.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zDec defining CByteInToLook, ReadByte, SzDecodePpmd."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zFile.c",
@@ -3182,8 +3043,7 @@
       "pagerank": 0.002301,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module 7zFile defining off_t, File_Construct, File_Open.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zFile defining off_t, File_Construct, File_Open."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zFile.h",
@@ -3196,8 +3056,7 @@
       "pagerank": 0.003163,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module 7zFile defining File_Construct, InFile_Open, OutFile_Open.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zFile defining File_Construct, InFile_Open, OutFile_Open."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zStream.c",
@@ -3210,8 +3069,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module 7zStream defining SeqInStream_ReadMax, SeqInStream_ReadByte, LookInStream_SeekTo.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zStream defining SeqInStream_ReadMax, SeqInStream_ReadByte, LookInStream_SeekTo."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zTypes.h",
@@ -3224,8 +3082,7 @@
       "pagerank": 0.043187,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module 7zTypes defining MY_ALIGN, MY_ALIGN, MY_ALIGN.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zTypes defining MY_ALIGN, MY_ALIGN, MY_ALIGN."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zVersion.h",
@@ -3238,8 +3095,7 @@
       "pagerank": 0.001704,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module 7zVersion (15 symbols).",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zVersion (15 symbols)."
     },
     {
       "id": "file:rtx-launcher/lzma/C/7zWindows.h",
@@ -3252,8 +3108,7 @@
       "pagerank": 0.007941,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module 7zWindows (8 symbols).",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module 7zWindows (8 symbols)."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Aes.c",
@@ -3266,8 +3121,7 @@
       "pagerank": 0.002469,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Aes defining xtime, Ui32, gb0.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Aes defining xtime, Ui32, gb0."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Aes.h",
@@ -3280,8 +3134,7 @@
       "pagerank": 0.002503,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Aes defining AesGenTables, AesCbc_Init, Z7_DECLARE_AES_CODE_FUNC.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Aes defining AesGenTables, AesCbc_Init, Z7_DECLARE_AES_CODE_FUNC."
     },
     {
       "id": "file:rtx-launcher/lzma/C/AesOpt.c",
@@ -3294,8 +3147,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module AesOpt defining AES_FUNC_START, AES_FUNC_START2, MM_OP.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module AesOpt defining AES_FUNC_START, AES_FUNC_START2, MM_OP."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Alloc.c",
@@ -3308,8 +3160,7 @@
       "pagerank": 0.002987,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Alloc defining CONVERT_INT_TO_STR, ConvertUInt64ToString, GET_HEX_CHAR.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Alloc defining CONVERT_INT_TO_STR, ConvertUInt64ToString, GET_HEX_CHAR."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Alloc.h",
@@ -3322,8 +3173,7 @@
       "pagerank": 0.003723,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Alloc defining MyFree, SetLargePageSize, MidFree.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Alloc defining MyFree, SetLargePageSize, MidFree."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Bcj2.c",
@@ -3336,8 +3186,7 @@
       "pagerank": 0.002527,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Bcj2 defining Bcj2Dec_Init, ONE_ITER.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Bcj2 defining Bcj2Dec_Init, ONE_ITER."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Bcj2.h",
@@ -3350,8 +3199,7 @@
       "pagerank": 0.002639,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Bcj2 defining BCJ2_IS_32BIT_STREAM, CBcj2Dec, Bcj2Dec_Init.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Bcj2 defining BCJ2_IS_32BIT_STREAM, CBcj2Dec, Bcj2Dec_Init."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Bcj2Enc.c",
@@ -3364,8 +3212,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Bcj2Enc defining PRF2, PRF2, Bcj2Enc_Init.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Bcj2Enc defining PRF2, PRF2, Bcj2Enc_Init."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Bra.c",
@@ -3378,8 +3225,7 @@
       "pagerank": 0.002847,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Bra defining BR_CONVERT_VAL, Z7_BRANCH_CONV, Z7_BRANCH_FUNC_MAIN.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Bra defining BR_CONVERT_VAL, Z7_BRANCH_CONV, Z7_BRANCH_FUNC_MAIN."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Bra.h",
@@ -3392,8 +3238,7 @@
       "pagerank": 0.003392,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Bra defining Z7_BRANCH_CONV_DEC, Z7_BRANCH_CONV_ENC, Z7_BRANCH_CONV_ST_DEC.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Bra defining Z7_BRANCH_CONV_DEC, Z7_BRANCH_CONV_ENC, Z7_BRANCH_CONV_ST_DEC."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Bra86.c",
@@ -3406,8 +3251,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Bra86 defining BR_CONVERT_VAL, Z7_BRANCH_CONV_ST, BR86_NEED_CONV_FOR_MS_BYTE.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Bra86 defining BR_CONVERT_VAL, Z7_BRANCH_CONV_ST, BR86_NEED_CONV_FOR_MS_BYTE."
     },
     {
       "id": "file:rtx-launcher/lzma/C/BraIA64.c",
@@ -3420,8 +3264,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module BraIA64.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module BraIA64."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Compiler.h",
@@ -3434,8 +3277,7 @@
       "pagerank": 0.034208,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Compiler defining Z7_LIKELY, Z7_UNLIKELY, Z7_LIKELY.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Compiler defining Z7_LIKELY, Z7_UNLIKELY, Z7_LIKELY."
     },
     {
       "id": "file:rtx-launcher/lzma/C/CpuArch.c",
@@ -3448,8 +3290,7 @@
       "pagerank": 0.008861,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module CpuArch defining x86_cpuid_MACRO, x86_cpuid_MACRO, x86_cpuid_MACRO.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module CpuArch defining x86_cpuid_MACRO, x86_cpuid_MACRO, x86_cpuid_MACRO."
     },
     {
       "id": "file:rtx-launcher/lzma/C/CpuArch.h",
@@ -3462,8 +3303,7 @@
       "pagerank": 0.017541,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module CpuArch defining Z7_has_builtin, Z7_has_builtin, Z7_BSWAP32_CONST.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module CpuArch defining Z7_has_builtin, Z7_has_builtin, Z7_BSWAP32_CONST."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Delta.c",
@@ -3476,8 +3316,7 @@
       "pagerank": 0.002985,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Delta defining Delta_Init, Delta_Encode, Delta_Decode.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Delta defining Delta_Init, Delta_Encode, Delta_Decode."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Delta.h",
@@ -3490,8 +3329,7 @@
       "pagerank": 0.003717,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Delta defining Delta_Init, Delta_Encode, Delta_Decode.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Delta defining Delta_Init, Delta_Encode, Delta_Decode."
     },
     {
       "id": "file:rtx-launcher/lzma/C/DllSecur.c",
@@ -3504,8 +3342,7 @@
       "pagerank": 0.002359,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module DllSecur defining My_SetDefaultDllDirectories, LoadSecurityDlls.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module DllSecur defining My_SetDefaultDllDirectories, LoadSecurityDlls."
     },
     {
       "id": "file:rtx-launcher/lzma/C/DllSecur.h",
@@ -3518,8 +3355,7 @@
       "pagerank": 0.002244,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module DllSecur defining My_SetDefaultDllDirectories, LoadSecurityDlls.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module DllSecur defining My_SetDefaultDllDirectories, LoadSecurityDlls."
     },
     {
       "id": "file:rtx-launcher/lzma/C/LzFind.c",
@@ -3532,8 +3368,7 @@
       "pagerank": 0.002953,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module LzFind defining GET_AVAIL_BYTES, LzInWindow_Free, LzInWindow_Create2.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LzFind defining GET_AVAIL_BYTES, LzInWindow_Free, LzInWindow_Create2."
     },
     {
       "id": "file:rtx-launcher/lzma/C/LzFind.h",
@@ -3546,8 +3381,7 @@
       "pagerank": 0.003641,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module LzFind defining CMatchFinder, Inline_MatchFinder_GetPointerToCurrentPos, Inline_MatchFinder_GetNumAvailableBytes.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LzFind defining CMatchFinder, Inline_MatchFinder_GetPointerToCurrentPos, Inline_MatchFinder_GetNumAvailableBytes."
     },
     {
       "id": "file:rtx-launcher/lzma/C/LzFindMt.c",
@@ -3560,8 +3394,7 @@
       "pagerank": 0.002045,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module LzFindMt defining PRF, PRF, LOG_ITER.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LzFindMt defining PRF, PRF, LOG_ITER."
     },
     {
       "id": "file:rtx-launcher/lzma/C/LzFindMt.h",
@@ -3574,8 +3407,7 @@
       "pagerank": 0.00226,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module LzFindMt defining CMatchFinderMt, MatchFinderMt_Construct, MatchFinderMt_Destruct.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LzFindMt defining CMatchFinderMt, MatchFinderMt_Construct, MatchFinderMt_Destruct."
     },
     {
       "id": "file:rtx-launcher/lzma/C/LzFindOpt.c",
@@ -3588,8 +3420,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module LzFindOpt defining PRF, LOG_ITER, LOG_ITER.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LzFindOpt defining PRF, LOG_ITER, LOG_ITER."
     },
     {
       "id": "file:rtx-launcher/lzma/C/LzHash.h",
@@ -3602,8 +3433,7 @@
       "pagerank": 0.002467,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module LzHash (7 symbols).",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LzHash (7 symbols)."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Lzma2Dec.c",
@@ -3616,8 +3446,7 @@
       "pagerank": 0.002745,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Lzma2Dec defining LZMA2_IS_UNCOMPRESSED_STATE, LZMA2_DIC_SIZE_FROM_PROP, PRF.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Lzma2Dec defining LZMA2_IS_UNCOMPRESSED_STATE, LZMA2_DIC_SIZE_FROM_PROP, PRF."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Lzma2Dec.h",
@@ -3630,8 +3459,7 @@
       "pagerank": 0.003153,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Lzma2Dec defining Lzma2Dec_CONSTRUCT, Lzma2Dec_Construct, Lzma2Dec_FreeProbs.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Lzma2Dec defining Lzma2Dec_CONSTRUCT, Lzma2Dec_Construct, Lzma2Dec_FreeProbs."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Lzma2DecMt.c",
@@ -3644,8 +3472,7 @@
       "pagerank": 0.002131,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Lzma2DecMt defining PRF, PRF, PRF_STR.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Lzma2DecMt defining PRF, PRF, PRF_STR."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Lzma2DecMt.h",
@@ -3658,8 +3485,7 @@
       "pagerank": 0.001707,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Lzma2DecMt defining Lzma2DecMtProps_Init, CLzma2DecMt, Lzma2DecMt_Create.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Lzma2DecMt defining Lzma2DecMtProps_Init, CLzma2DecMt, Lzma2DecMt_Create."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Lzma2Enc.c",
@@ -3672,8 +3498,7 @@
       "pagerank": 0.0025,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Lzma2Enc defining LZMA2_DIC_SIZE_FROM_PROP, PRF, CLimitedSeqInStream.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Lzma2Enc defining LZMA2_DIC_SIZE_FROM_PROP, PRF, CLimitedSeqInStream."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Lzma2Enc.h",
@@ -3686,8 +3511,7 @@
       "pagerank": 0.002576,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Lzma2Enc defining CLzma2EncProps, Lzma2EncProps_Init, Lzma2EncProps_Normalize.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Lzma2Enc defining CLzma2EncProps, Lzma2EncProps_Init, Lzma2EncProps_Normalize."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Lzma86.h",
@@ -3700,8 +3524,7 @@
       "pagerank": 0.001883,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Lzma86 defining ESzFilterMode, Lzma86_Encode, Lzma86_GetUnpackSize.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Lzma86 defining ESzFilterMode, Lzma86_Encode, Lzma86_GetUnpackSize."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Lzma86Dec.c",
@@ -3714,8 +3537,7 @@
       "pagerank": 0.001405,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Lzma86Dec defining Lzma86_GetUnpackSize, Lzma86_Decode.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Lzma86Dec defining Lzma86_GetUnpackSize, Lzma86_Decode."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Lzma86Enc.c",
@@ -3728,8 +3550,7 @@
       "pagerank": 0.001405,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Lzma86Enc defining Lzma86_Encode.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Lzma86Enc defining Lzma86_Encode."
     },
     {
       "id": "file:rtx-launcher/lzma/C/LzmaDec.c",
@@ -3742,8 +3563,7 @@
       "pagerank": 0.003593,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module LzmaDec defining IF_BIT_0, UPDATE_0, UPDATE_1.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LzmaDec defining IF_BIT_0, UPDATE_0, UPDATE_1."
     },
     {
       "id": "file:rtx-launcher/lzma/C/LzmaDec.h",
@@ -3756,8 +3576,7 @@
       "pagerank": 0.005147,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module LzmaDec defining CLzmaProps, LzmaProps_Decode, CLzmaDec.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LzmaDec defining CLzmaProps, LzmaProps_Decode, CLzmaDec."
     },
     {
       "id": "file:rtx-launcher/lzma/C/LzmaEnc.c",
@@ -3770,8 +3589,7 @@
       "pagerank": 0.002967,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module LzmaEnc defining LzmaEnc_PrepareForLzma2, LzmaEnc_MemPrepare, LzmaEnc_CodeOneMemBlock.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LzmaEnc defining LzmaEnc_PrepareForLzma2, LzmaEnc_MemPrepare, LzmaEnc_CodeOneMemBlock."
     },
     {
       "id": "file:rtx-launcher/lzma/C/LzmaEnc.h",
@@ -3784,8 +3602,7 @@
       "pagerank": 0.003675,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module LzmaEnc defining CLzmaEncProps, LzmaEncProps_Init, LzmaEncProps_Normalize.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LzmaEnc defining CLzmaEncProps, LzmaEncProps_Init, LzmaEncProps_Normalize."
     },
     {
       "id": "file:rtx-launcher/lzma/C/LzmaLib.c",
@@ -3798,8 +3615,7 @@
       "pagerank": 0.002158,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module LzmaLib defining LzmaCompress, LzmaUncompress.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LzmaLib defining LzmaCompress, LzmaUncompress."
     },
     {
       "id": "file:rtx-launcher/lzma/C/LzmaLib.h",
@@ -3812,8 +3628,7 @@
       "pagerank": 0.001772,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module LzmaLib defining LzmaCompress, LzmaUncompress.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module LzmaLib defining LzmaCompress, LzmaUncompress."
     },
     {
       "id": "file:rtx-launcher/lzma/C/MtCoder.c",
@@ -3826,8 +3641,7 @@
       "pagerank": 0.002929,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module MtCoder defining MtProgressThunk_Progress, MtProgressThunk_CreateVTable, RINOK_THREAD.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module MtCoder defining MtProgressThunk_Progress, MtProgressThunk_CreateVTable, RINOK_THREAD."
     },
     {
       "id": "file:rtx-launcher/lzma/C/MtCoder.h",
@@ -3840,8 +3654,7 @@
       "pagerank": 0.003585,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module MtCoder defining MTCODER_GET_NUM_BLOCKS_FROM_THREADS, CMtProgressThunk, MtProgressThunk_CreateVTable.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module MtCoder defining MTCODER_GET_NUM_BLOCKS_FROM_THREADS, CMtProgressThunk, MtProgressThunk_CreateVTable."
     },
     {
       "id": "file:rtx-launcher/lzma/C/MtDec.c",
@@ -3854,8 +3667,7 @@
       "pagerank": 0.002572,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module MtDec defining PRF, PRF, PRF_STR_INT.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module MtDec defining PRF, PRF, PRF_STR_INT."
     },
     {
       "id": "file:rtx-launcher/lzma/C/MtDec.h",
@@ -3868,8 +3680,7 @@
       "pagerank": 0.00412,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module MtDec defining CMtProgress, MtProgress_Init, MtProgress_Progress_ST.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module MtDec defining CMtProgress, MtProgress_Init, MtProgress_Progress_ST."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Ppmd.h",
@@ -3882,8 +3693,7 @@
       "pagerank": 0.002969,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Ppmd defining PPMD_GET_MEAN_SPEC, PPMD_GET_MEAN, PPMD_UPDATE_PROB_0.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Ppmd defining PPMD_GET_MEAN_SPEC, PPMD_GET_MEAN, PPMD_UPDATE_PROB_0."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Ppmd7.c",
@@ -3896,8 +3706,7 @@
       "pagerank": 0.003389,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Ppmd7 defining U2B, U2I, I2U.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Ppmd7 defining U2B, U2I, I2U."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Ppmd7.h",
@@ -3910,8 +3719,7 @@
       "pagerank": 0.003679,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Ppmd7 defining CPpmd7_Context_, CPpmd7_Context_, CPpmd7_Context.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Ppmd7 defining CPpmd7_Context_, CPpmd7_Context_, CPpmd7_Context."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Ppmd7Dec.c",
@@ -3924,8 +3732,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Ppmd7Dec defining READ_BYTE, Ppmd7z_RangeDec_Init, RC_NORM_BASE.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Ppmd7Dec defining READ_BYTE, Ppmd7z_RangeDec_Init, RC_NORM_BASE."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Ppmd7Enc.c",
@@ -3938,8 +3745,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Ppmd7Enc defining Ppmd7z_Init_RangeEnc, Ppmd7z_RangeEnc_ShiftLow, RC_NORM_BASE.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Ppmd7Enc defining Ppmd7z_Init_RangeEnc, Ppmd7z_RangeEnc_ShiftLow, RC_NORM_BASE."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Precomp.h",
@@ -3952,8 +3758,7 @@
       "pagerank": 0.033081,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Precomp (1 symbols).",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Precomp (1 symbols)."
     },
     {
       "id": "file:rtx-launcher/lzma/C/RotateDefs.h",
@@ -3966,8 +3771,7 @@
       "pagerank": 0.002921,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module RotateDefs defining rotlFixed, rotrFixed, Z7_ROTL64.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module RotateDefs defining rotlFixed, rotrFixed, Z7_ROTL64."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Sha256.c",
@@ -3980,8 +3784,7 @@
       "pagerank": 0.002558,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Sha256 defining SHA256_UPDATE_BLOCKS, SHA256_UPDATE_BLOCKS, Sha256_SetFunction.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Sha256 defining SHA256_UPDATE_BLOCKS, SHA256_UPDATE_BLOCKS, Sha256_SetFunction."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Sha256.h",
@@ -3994,8 +3797,7 @@
       "pagerank": 0.002712,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Sha256 defining CSha256, Sha256_SetFunction, Sha256_InitState.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Sha256 defining CSha256, Sha256_SetFunction, Sha256_InitState."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Sha256Opt.c",
@@ -4008,8 +3810,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Sha256Opt defining ADD_EPI32, SHA256_MSG1, SHA25G_MSG2.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Sha256Opt defining ADD_EPI32, SHA256_MSG1, SHA25G_MSG2."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Sort.c",
@@ -4022,8 +3823,7 @@
       "pagerank": 0.002444,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Sort defining HeapSortDown, HeapSort, HeapSort64.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Sort defining HeapSortDown, HeapSort, HeapSort64."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Sort.h",
@@ -4036,8 +3836,7 @@
       "pagerank": 0.002444,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Sort defining HeapSort, HeapSort64.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Sort defining HeapSort, HeapSort64."
     },
     {
       "id": "file:rtx-launcher/lzma/C/SwapBytes.c",
@@ -4050,8 +3849,7 @@
       "pagerank": 0.002158,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module SwapBytes defining SWAP2_128, SWAP_SHUF_REV_SEQ_2_VALS, SWAP_SHUF_REV_SEQ_4_VALS.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module SwapBytes defining SWAP2_128, SWAP_SHUF_REV_SEQ_2_VALS, SWAP_SHUF_REV_SEQ_4_VALS."
     },
     {
       "id": "file:rtx-launcher/lzma/C/SwapBytes.h",
@@ -4064,8 +3862,7 @@
       "pagerank": 0.001772,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module SwapBytes defining z7_SwapBytes2, z7_SwapBytes4, z7_SwapBytesPrepare.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module SwapBytes defining z7_SwapBytes2, z7_SwapBytes4, z7_SwapBytesPrepare."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Threads.c",
@@ -4078,8 +3875,7 @@
       "pagerank": 0.002633,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Threads defining GetError, HandleToWRes, BOOLToWRes.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Threads defining GetError, HandleToWRes, BOOLToWRes."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Threads.h",
@@ -4092,8 +3888,7 @@
       "pagerank": 0.004332,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Threads defining HandlePtr_Close, Handle_WaitObject, Thread_CONSTRUCT.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Threads defining HandlePtr_Close, Handle_WaitObject, Thread_CONSTRUCT."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Util/7z/7zMain.c",
@@ -4106,8 +3901,7 @@
       "pagerank": 0.001405,
       "communityId": 2,
       "tags": [],
-      "summary": "Utility module 7zMain defining Print, Buf_EnsureSize, MY_UTF8_START.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Utility module 7zMain defining Print, Buf_EnsureSize, MY_UTF8_START."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Util/7z/Precomp.c",
@@ -4120,8 +3914,7 @@
       "pagerank": 0.002431,
       "communityId": 2,
       "tags": [],
-      "summary": "Utility module Precomp.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Utility module Precomp."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Util/7z/Precomp.h",
@@ -4134,8 +3927,7 @@
       "pagerank": 0.003621,
       "communityId": 2,
       "tags": [],
-      "summary": "Utility module Precomp (1 symbols).",
-      "primaryOwner": "RTX-Project"
+      "summary": "Utility module Precomp (1 symbols)."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Util/7z/makefile",
@@ -4163,8 +3955,7 @@
       "pagerank": 0.001405,
       "communityId": 2,
       "tags": [],
-      "summary": "Utility module LzmaUtil defining Print, PrintHelp, PrintError.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Utility module LzmaUtil defining Print, PrintHelp, PrintError."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Util/Lzma/Precomp.h",
@@ -4177,8 +3968,7 @@
       "pagerank": 0.001554,
       "communityId": 2,
       "tags": [],
-      "summary": "Utility module Precomp (1 symbols).",
-      "primaryOwner": "RTX-Project"
+      "summary": "Utility module Precomp (1 symbols)."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Util/Lzma/makefile",
@@ -4206,8 +3996,7 @@
       "pagerank": 0.001405,
       "communityId": 2,
       "tags": [],
-      "summary": "Utility module LzmaLibExports defining DllMain, DllMain.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Utility module LzmaLibExports defining DllMain, DllMain."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Util/LzmaLib/Precomp.c",
@@ -4220,8 +4009,7 @@
       "pagerank": 0.002598,
       "communityId": 2,
       "tags": [],
-      "summary": "Utility module Precomp.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Utility module Precomp."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Util/LzmaLib/Precomp.h",
@@ -4234,8 +4022,7 @@
       "pagerank": 0.004211,
       "communityId": 2,
       "tags": [],
-      "summary": "Utility module Precomp (1 symbols).",
-      "primaryOwner": "RTX-Project"
+      "summary": "Utility module Precomp (1 symbols)."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Util/LzmaLib/makefile",
@@ -4263,8 +4050,7 @@
       "pagerank": 0.002439,
       "communityId": 2,
       "tags": [],
-      "summary": "Utility module Precomp.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Utility module Precomp."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Util/SfxSetup/Precomp.h",
@@ -4277,8 +4063,7 @@
       "pagerank": 0.003649,
       "communityId": 2,
       "tags": [],
-      "summary": "Utility module Precomp (1 symbols).",
-      "primaryOwner": "RTX-Project"
+      "summary": "Utility module Precomp (1 symbols)."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Util/SfxSetup/SfxSetup.c",
@@ -4291,8 +4076,7 @@
       "pagerank": 0.001405,
       "communityId": 2,
       "tags": [],
-      "summary": "Utility module SfxSetup defining FindExt, MAKE_CHAR_UPPER, FindItem.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Utility module SfxSetup defining FindExt, MAKE_CHAR_UPPER, FindItem."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Util/SfxSetup/makefile",
@@ -4320,8 +4104,7 @@
       "pagerank": 0.002169,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module Xz defining Xz_WriteVarInt, Xz_Construct, Xz_Free.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Xz defining Xz_WriteVarInt, Xz_Construct, Xz_Free."
     },
     {
       "id": "file:rtx-launcher/lzma/C/Xz.h",
@@ -4334,8 +4117,7 @@
       "pagerank": 0.002695,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module Xz defining Xz_ReadVarInt, Xz_WriteVarInt, CXzFilter.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module Xz defining Xz_ReadVarInt, Xz_WriteVarInt, CXzFilter."
     },
     {
       "id": "file:rtx-launcher/lzma/C/XzCrc64.c",
@@ -4348,8 +4130,7 @@
       "pagerank": 0.002455,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module XzCrc64 (3 symbols).",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module XzCrc64 (3 symbols)."
     },
     {
       "id": "file:rtx-launcher/lzma/C/XzCrc64.h",
@@ -4362,8 +4143,7 @@
       "pagerank": 0.002469,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module XzCrc64 defining CRC64_GET_DIGEST, CRC64_UPDATE_BYTE.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module XzCrc64 defining CRC64_GET_DIGEST, CRC64_UPDATE_BYTE."
     },
     {
       "id": "file:rtx-launcher/lzma/C/XzCrc64Opt.c",
@@ -4376,8 +4156,7 @@
       "pagerank": 0.001405,
       "communityId": 1,
       "tags": [],
-      "summary": "Application module XzCrc64Opt defining CRC64_UPDATE_BYTE_2, CRC64_UPDATE_BYTE_2_BE.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module XzCrc64Opt defining CRC64_UPDATE_BYTE_2, CRC64_UPDATE_BYTE_2_BE."
     },
     {
       "id": "file:rtx-launcher/lzma/C/XzDec.c",
@@ -4390,8 +4169,7 @@
       "pagerank": 0.001882,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module XzDec defining PRF, PRF, PRF_STR.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module XzDec defining PRF, PRF, PRF_STR."
     },
     {
       "id": "file:rtx-launcher/lzma/C/XzEnc.c",
@@ -4404,8 +4182,7 @@
       "pagerank": 0.001867,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module XzEnc defining XZ_GET_PAD_SIZE, XZ_GET_MAX_BLOCK_PACK_SIZE, XZ_GET_ESTIMATED_BLOCK_TOTAL_PACK_SIZE.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module XzEnc defining XZ_GET_PAD_SIZE, XZ_GET_MAX_BLOCK_PACK_SIZE, XZ_GET_ESTIMATED_BLOCK_TOTAL_PACK_SIZE."
     },
     {
       "id": "file:rtx-launcher/lzma/C/XzEnc.h",
@@ -4418,8 +4195,7 @@
       "pagerank": 0.001632,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module XzEnc defining CXzFilterProps, XzFilterProps_Init, CXzProps.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module XzEnc defining CXzFilterProps, XzFilterProps_Init, CXzProps."
     },
     {
       "id": "file:rtx-launcher/lzma/C/XzIn.c",
@@ -4432,8 +4208,7 @@
       "pagerank": 0.001405,
       "communityId": 2,
       "tags": [],
-      "summary": "Application module XzIn defining XZ_FOOTER_SIG_CHECK, Xz_ReadHeader, READ_VARINT_AND_CHECK.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module XzIn defining XZ_FOOTER_SIG_CHECK, Xz_ReadHeader, READ_VARINT_AND_CHECK."
     },
     {
       "id": "file:rtx-launcher/main.cpp",
@@ -4462,8 +4237,7 @@
       "pagerank": 0.003152,
       "communityId": 3,
       "tags": [],
-      "summary": "Application module resource (4 symbols).",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module resource (4 symbols)."
     },
     {
       "id": "file:rtx-launcher/webview2/include/WebView2EnvironmentOptions.h",
@@ -4476,8 +4250,7 @@
       "pagerank": 0.001405,
       "communityId": 95,
       "tags": [],
-      "summary": "Application module WebView2EnvironmentOptions defining COREWEBVIEW2ENVIRONMENTOPTIONS_STRING_PROPERTY, COREWEBVIEW2ENVIRONMENTOPTIONS_BOOL_PROPERTY, DEFINE_AUTO_COMEM_STRING.",
-      "primaryOwner": "RTX-Project"
+      "summary": "Application module WebView2EnvironmentOptions defining COREWEBVIEW2ENVIRONMENTOPTIONS_STRING_PROPERTY, COREWEBVIEW2ENVIRONMENTOPTIONS_BOOL_PROPERTY, DEFINE_AUTO_COMEM_STRING."
     },
     {
       "id": "file:test.cpp",
@@ -4492,7 +4265,8 @@
       "tags": [
         "test"
       ],
-      "summary": "Tests for test."
+      "summary": "Tests for test.",
+      "primaryOwner": "RTX-Project"
     },
     {
       "id": "file:test.cs",
@@ -4507,7 +4281,8 @@
       "tags": [
         "test"
       ],
-      "summary": "Tests for test."
+      "summary": "Tests for test.",
+      "primaryOwner": "RTX-Project"
     },
     {
       "id": "function:rtx-launcher/Globals.h:CheckLauncherUpdatesAsync",
@@ -37417,7 +37192,7 @@
     {
       "id": "layer:utility",
       "name": "LZMA Compression Utilities",
-      "description": "Contains utility programs and precompiled headers for handling LZMA compression and archives.",
+      "description": "Provides compression, decompression, and archiving utility tools based on the LZMA SDK.",
       "nodeIds": [
         "file:rtx-launcher/lzma/C/Util/7z/7zMain.c",
         "file:rtx-launcher/lzma/C/Util/7z/Precomp.c",
@@ -37440,8 +37215,8 @@
     },
     {
       "id": "layer:config",
-      "name": "Workflows and Agent Config",
-      "description": "Houses CI/CD workflow configurations and agent metadata definitions.",
+      "name": "CI Workflows and Agent Config",
+      "description": "Contains automation workflows for building and releasing, alongside agent skill definitions.",
       "nodeIds": [
         "file:.agents/AGENTS.md",
         "file:.agents/skills.json",
@@ -37454,7 +37229,7 @@
     {
       "id": "layer:application",
       "name": "Core Launcher and GUI",
-      "description": "Implements the core application logic, mod scraping functionality, and Dear ImGui user interface components.",
+      "description": "Implements the main application logic, graphical user interface components, and ModDB integration for the launcher.",
       "nodeIds": [
         "file:.mcp.json",
         "file:CppProperties.json",
@@ -37878,8 +37653,8 @@
     },
     {
       "id": "layer:docs-tooling",
-      "name": "Examples and Platform Libraries",
-      "description": "Provides platform-specific integration examples and external libraries for rendering backends like GLFW and Vulkan.",
+      "name": "GUI Examples and Platform Libraries",
+      "description": "Provides cross-platform examples, backend integrations, and utility libraries for the Dear ImGui interface.",
       "nodeIds": [
         "file:docs/index.html",
         "file:docs/script.js",
@@ -38062,7 +37837,7 @@
     {
       "id": "layer:test",
       "name": "Application Test Suite",
-      "description": "Contains test source files in C++ and C# used for verifying application logic.",
+      "description": "Contains test files used to verify core functionality and code behavior.",
       "nodeIds": [
         "file:test.cpp",
         "file:test.cs"

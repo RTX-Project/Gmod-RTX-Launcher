@@ -176,12 +176,21 @@ static void PerformInstallationThread() {
         }
         fs::path targetExe = installDir / L"rtx-launcher.exe";
 
+#ifdef BETA_BUILD
+        LauncherUpdater::INCLUDE_PRERELEASES = true;
+#else
+        LauncherUpdater::INCLUDE_PRERELEASES = false;
+#endif
         LauncherUpdater::UpdateInfo info = LauncherUpdater::CheckForUpdate(L"", "system_data.bin");
         std::wstring downloadUrl = info.downloadUrl;
         
         // Если GitHub API недоступно (лимит запросов или приватный репозиторий), используем прямую ссылку-запасной вариант
         if (downloadUrl.empty()) {
-            downloadUrl = L"https://github.com/RTX-Project/Gmod-RTX-Launcher/releases/download/v0.0.2.3/system_data.bin";
+#ifdef BETA_BUILD
+            downloadUrl = L"https://github.com/RTX-Project/Gmod-RTX-Launcher/releases/download/beta-latest/system_data.bin";
+#else
+            downloadUrl = L"https://github.com/RTX-Project/Gmod-RTX-Launcher/releases/latest/download/system_data.bin";
+#endif
         }
 
         {
@@ -205,7 +214,11 @@ static void PerformInstallationThread() {
         }
         g_installState = InstallState::CreatingShortcut;
 
+#ifdef BETA_BUILD
+        CreateDesktopShortcut(targetExe, L"Garry's Mod RTX Remix (Beta)");
+#else
         CreateDesktopShortcut(targetExe, L"Garry's Mod RTX Remix");
+#endif
 
         {
             std::lock_guard<std::mutex> lock(g_statusMutex);
@@ -286,7 +299,11 @@ static void RenderInstallerUI(HWND hWnd, int windowWidth, int windowHeight) {
     // --- Верхний заголовок программы ---
     ImGui::SetCursorPos(ImVec2(70, 12));
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.9f));
+#ifdef BETA_BUILD
+    ImGui::Text("GMOD RTX REMIX LAUNCHER (BETA)");
+#else
     ImGui::Text("GMOD RTX REMIX LAUNCHER");
+#endif
     ImGui::PopStyleColor();
 
     ImGui::SetCursorPos(ImVec2(24, 45));

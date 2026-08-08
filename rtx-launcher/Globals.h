@@ -63,6 +63,7 @@ struct AppState {
     bool receiveBetaUpdates = false;
     bool showChangelog = false;
     std::wstring changelogText;
+    std::string language = "ru";
 
     std::vector<std::string> consoleLines;
     std::mutex consoleMutex;
@@ -156,6 +157,13 @@ extern WizardStep g_wizardStep;
 extern WizardStep g_wizardTargetStep;
 extern bool g_wizardIsSliding;
 extern float g_wizardSlideProgress;
+
+inline const char* L(const char* ru, const char* en) {
+    return (g_app.language == "en") ? en : ru;
+}
+inline const wchar_t* L(const wchar_t* ru, const wchar_t* en) {
+    return (g_app.language == "en") ? en : ru;
+}
 
 // Main page transition variables
 extern bool g_pageIsSliding;

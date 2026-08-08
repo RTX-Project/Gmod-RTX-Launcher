@@ -30,7 +30,7 @@ void RenderUI_Settings() {
     dl->AddRect(mainCardPos, ImVec2(mainCardPos.x + mainCardSize.x, mainCardPos.y + mainCardSize.y), IM_COL32(20, 45, 50, 100), 12.0f, 0, 1.0f);
 
     ImGui::PushFont(g_imFontTitle);
-    const char* title = (const char*)u8"НАСТРОЙКИ";
+    const char* title = L(u8"НАСТРОЙКИ", "SETTINGS");
     ImGui::SetCursorScreenPos(ImVec2(mainCardPos.x + S(30), mainCardPos.y + S(30)));
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", title);
     ImGui::PopFont();
@@ -80,11 +80,11 @@ void RenderUI_Settings() {
     DrawCard(p0, ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
         ImGui::PushFont(g_imFontRegular);
-        ImGui::TextColored(ImVec4(1, 1, 1, 1), u8"Расположение игры");
+        ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Расположение игры", "Game Location"));
         ImGui::PopFont();
         
         std::string pathUtf8 = WStringToUTF8(g_app.installRootPath);
-        if (pathUtf8.empty()) pathUtf8 = u8"Не выбрано";
+        if (pathUtf8.empty()) pathUtf8 = L(u8"Не выбрано", "Not selected");
         
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
         ImGui::PushFont(g_imFontSmall);
@@ -95,7 +95,7 @@ void RenderUI_Settings() {
         ImGui::PopStyleColor();
         ImGui::PopFont();
         
-        DrawCardAction("LocBtn", ImVec2(pos.x + S(20), pos.y + size.y - S(28)), u8"СМЕНИТЬ ДИСК →", [&]() { ShowDiskSelectionModal(OnDiskChanged); });
+        DrawCardAction("LocBtn", ImVec2(pos.x + S(20), pos.y + size.y - S(28)), L(u8"СМЕНИТЬ ДИСК →", "CHANGE DRIVE →"), [&]() { ShowDiskSelectionModal(OnDiskChanged); });
     });
 
     // ----------------------------------------------------
@@ -104,14 +104,14 @@ void RenderUI_Settings() {
     DrawCard(ImVec2(p0.x + colW + spacing, p0.y), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
         ImGui::PushFont(g_imFontRegular);
-        ImGui::TextColored(ImVec4(1, 1, 1, 1), u8"Восстановление");
+        ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Восстановление", "Recovery"));
         ImGui::PopFont();
         
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
         ImGui::PushFont(g_imFontSmall);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
         ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + size.x - S(40));
-        ImGui::Text(u8"Автоматически удалять кэш и лишние файлы при запуске для предотвращения сбоев.");
+        ImGui::Text("%s", L(u8"Автоматически удалять кэш и лишние файлы при запуске для предотвращения сбоев.", "Automatically delete cache and redundant files on launch to prevent crashes."));
         ImGui::PopTextWrapPos();
         ImGui::PopStyleColor();
         ImGui::PopFont();
@@ -125,7 +125,7 @@ void RenderUI_Settings() {
     DrawCard(ImVec2(p0.x, p0.y + rowH + spacing), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
         ImGui::PushFont(g_imFontRegular);
-        ImGui::TextColored(ImVec4(1, 1, 1, 1), u8"Режим запуска");
+        ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Режим запуска", "Launch Mode"));
         ImGui::PopFont();
         
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
@@ -133,15 +133,15 @@ void RenderUI_Settings() {
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
         ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + size.x - S(40));
         if (g_app.launchMode == 2) {
-            ImGui::Text(u8"Совместимость. Рекомендуется для стабильности на некоторых системах.");
+            ImGui::Text("%s", L(u8"Совместимость. Рекомендуется для стабильности на некоторых системах.", "Compatibility. Recommended for stability on some systems."));
         } else {
-            ImGui::Text(u8"Обычный. Максимальная производительность.");
+            ImGui::Text("%s", L(u8"Обычный. Максимальная производительность.", "Normal. Maximum performance."));
         }
         ImGui::PopTextWrapPos();
         ImGui::PopStyleColor();
         ImGui::PopFont();
         
-        DrawCardAction("ModeBtn", ImVec2(pos.x + S(20), pos.y + size.y - S(28)), u8"ПЕРЕКЛЮЧИТЬ РЕЖИМ →", [&]() { g_app.launchMode = (g_app.launchMode == 2) ? 1 : 2; SaveSettings(); });
+        DrawCardAction("ModeBtn", ImVec2(pos.x + S(20), pos.y + size.y - S(28)), L(u8"ПЕРЕКЛЮЧИТЬ РЕЖИМ →", "SWITCH MODE →"), [&]() { g_app.launchMode = (g_app.launchMode == 2) ? 1 : 2; SaveSettings(); });
     });
 
     // ----------------------------------------------------
@@ -150,19 +150,19 @@ void RenderUI_Settings() {
     DrawCard(ImVec2(p0.x + colW + spacing, p0.y + rowH + spacing), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
         ImGui::PushFont(g_imFontRegular);
-        ImGui::TextColored(ImVec4(1, 1, 1, 1), u8"Репозиторий и Фиксы");
+        ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Репозиторий и Фиксы", "Repository & Fixes"));
         ImGui::PopFont();
         
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
         ImGui::PushFont(g_imFontSmall);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
         ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + size.x - S(40));
-        ImGui::Text(u8"Открыть страницу проекта на GitHub для скачивания обновлений или сообщений об ошибках.");
+        ImGui::Text("%s", L(u8"Открыть страницу проекта на GitHub для скачивания обновлений или сообщений об ошибках.", "Open project page on GitHub to download updates or report issues."));
         ImGui::PopTextWrapPos();
         ImGui::PopStyleColor();
         ImGui::PopFont();
         
-        DrawCardAction("GitBtn", ImVec2(pos.x + S(20), pos.y + size.y - S(28)), u8"ОТКРЫТЬ В БРАУЗЕРЕ →", [&]() { DoOpenRtxGithub(); });
+        DrawCardAction("GitBtn", ImVec2(pos.x + S(20), pos.y + size.y - S(28)), L(u8"ОТКРЫТЬ В БРАУЗЕРЕ →", "OPEN IN BROWSER →"), [&]() { DoOpenRtxGithub(); });
     });
 
     // ----------------------------------------------------
@@ -171,14 +171,14 @@ void RenderUI_Settings() {
     DrawCard(ImVec2(p0.x, p0.y + (rowH + spacing) * 2), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
         ImGui::PushFont(g_imFontRegular);
-        ImGui::TextColored(ImVec4(1, 1, 1, 1), u8"Бета-канал");
+        ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Бета-канал", "Beta Channel"));
         ImGui::PopFont();
         
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
         ImGui::PushFont(g_imFontSmall);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
         ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + size.x - S(40));
-        ImGui::Text(u8"Получать ранние тестовые обновления. Могут содержать ошибки.");
+        ImGui::Text("%s", L(u8"Получать ранние тестовые обновления. Могут содержать ошибки.", "Receive early test updates. May contain bugs."));
         ImGui::PopTextWrapPos();
         ImGui::PopStyleColor();
         ImGui::PopFont();
@@ -197,10 +197,10 @@ void RenderUI_Settings() {
     DrawCard(ImVec2(p0.x + colW + spacing, p0.y + (rowH + spacing) * 2), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
         ImGui::PushFont(g_imFontRegular);
-        ImGui::TextColored(ImVec4(1, 1, 1, 1), u8"Видеокарта");
+        ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Видеокарта", "Graphics Card"));
         ImGui::PopFont();
         
-        std::string gpuName = g_app.gpuInfo.name.empty() ? u8"Не определена" : g_app.gpuInfo.name;
+        std::string gpuName = g_app.gpuInfo.name.empty() ? L(u8"Не определена", "Not detected") : g_app.gpuInfo.name;
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(40)));
         ImGui::PushFont(g_imFontRegular);
         ImGui::TextColored(g_app.gpuInfo.isAmdOrIntel ? ImVec4(1.0f, 0.75f, 0.25f, 1.0f) : ImVec4(0.0f, 0.90f, 0.46f, 1.0f), "%s", gpuName.c_str());
@@ -210,10 +210,10 @@ void RenderUI_Settings() {
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(65)));
         ImGui::PushFont(g_imFontSmall);
         
-        std::string drvStr = "Драйвер: " + (g_app.gpuInfo.driverVersionStr.empty() ? "Неизвестно" : g_app.gpuInfo.driverVersionStr);
+        std::string drvStr = std::string(L(u8"Драйвер: ", "Driver: ")) + (g_app.gpuInfo.driverVersionStr.empty() ? L(u8"Неизвестно", "Unknown") : g_app.gpuInfo.driverVersionStr);
         if (!g_app.gpuInfo.driverVersionStr.empty() && g_app.gpuInfo.driverVersion < 596.21f) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.3f, 0.3f, 0.9f));
-            ImGui::Text("%s (Устарел!)", drvStr.c_str());
+            ImGui::Text("%s %s", drvStr.c_str(), L(u8"(Устарел!)", "(Outdated!)"));
             ImGui::PopStyleColor();
         } else {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.55f, 0.9f));
@@ -224,17 +224,50 @@ void RenderUI_Settings() {
         ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(80)));
         if (g_app.gpuInfo.isFrankenstein) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.0f, 1.0f));
-            ImGui::Text(u8"Boosty: Требуется подписка");
+            ImGui::Text("%s", L(u8"Boosty: Требуется подписка", "Boosty: Subscription required"));
             ImGui::PopStyleColor();
         } else if (g_app.gpuInfo.isAmdOrIntel) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.75f, 0.25f, 0.9f));
-            ImGui::Text(u8"(Совместимость не гарантируется)");
+            ImGui::Text("%s", L(u8"(Совместимость не гарантируется)", "(Compatibility not guaranteed)"));
             ImGui::PopStyleColor();
         } else if (g_app.gpuInfo.isNvidiaRtx) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.90f, 0.46f, 0.9f));
-            ImGui::Text(u8"(Полная аппаратная поддержка)");
+            ImGui::Text("%s", L(u8"(Полная аппаратная поддержка)", "(Full hardware support)"));
             ImGui::PopStyleColor();
         }
+        ImGui::PopFont();
+    });
+
+    // ----------------------------------------------------
+    // Row 4, Col 1: Language
+    // ----------------------------------------------------
+    DrawCard(ImVec2(p0.x, p0.y + (rowH + spacing) * 3), ImVec2(colW, rowH), [&](ImVec2 pos, ImVec2 size) {
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(16)));
+        ImGui::PushFont(g_imFontRegular);
+        ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", L(u8"Язык / Language", "Language / Язык"));
+        ImGui::PopFont();
+        
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(20), pos.y + S(45)));
+        ImGui::PushFont(g_imFontSmall);
+        
+        bool isRu = (g_app.language != "en");
+        bool isEn = (g_app.language == "en");
+
+        ImGui::PushStyleColor(ImGuiCol_Text, isRu ? ImVec4(1,1,1,1) : ImVec4(0.5,0.5,0.5,1));
+        if (ImGui::Selectable("Русский", isRu, 0, ImVec2(S(100), S(20)))) {
+            g_app.language = "ru";
+            SaveSettings();
+        }
+        ImGui::PopStyleColor();
+
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + S(130), pos.y + S(45)));
+        ImGui::PushStyleColor(ImGuiCol_Text, isEn ? ImVec4(1,1,1,1) : ImVec4(0.5,0.5,0.5,1));
+        if (ImGui::Selectable("English", isEn, 0, ImVec2(S(100), S(20)))) {
+            g_app.language = "en";
+            SaveSettings();
+        }
+        ImGui::PopStyleColor();
+        
         ImGui::PopFont();
     });
 

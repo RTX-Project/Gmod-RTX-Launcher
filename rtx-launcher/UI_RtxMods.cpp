@@ -25,7 +25,7 @@ void RenderUI_RtxMods() {
     dl->AddRect(mainCardPos, ImVec2(mainCardPos.x + mainCardSize.x, mainCardPos.y + mainCardSize.y), IM_COL32(20, 45, 50, 100), 12.0f, 0, 1.0f);
 
     ImGui::PushFont(g_imFontTitle);
-    const char* title = (const char*)u8"METROSTROI RTX";
+    const char* title = L(u8"METROSTROI RTX", "METROSTROI RTX");
     ImGui::SetCursorScreenPos(ImVec2(mainCardPos.x + S(30), mainCardPos.y + S(30)));
     ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", title);
     ImGui::PopFont();
@@ -35,7 +35,7 @@ void RenderUI_RtxMods() {
     // ModDB download is now handled during Launch Game
     
     ImGui::SetCursorScreenPos(ImVec2(mainCardPos.x + mainCardSize.x - S(210), mainCardPos.y + S(30)));
-    if (ImGui::Button((const char*)u8"Обновить релизы", ImVec2(S(180), S(35)))) LoadRtxReleases();
+    if (ImGui::Button(L(u8"Обновить релизы", "Refresh Releases"), ImVec2(S(180), S(35)))) LoadRtxReleases();
     ImGui::PopFont();
     
     auto drawCard = [](const char* id, const char* title, const char* subtitle, bool selected, ImU32 imgColor, bool isBeta, const char* desc, bool disabled) {
@@ -110,7 +110,7 @@ void RenderUI_RtxMods() {
     
     ImGui::BeginChild("ModsChild", ImVec2(mainCardSize.x - S(60), mainCardSize.y - S(110)), false, ImGuiWindowFlags_NoScrollbar);
     
-    if (drawCard("Mode0", u8"Оригинал + Освещение", u8"Бета", g_app.rtxSelectedIndex == 0, IM_COL32(180, 80, 20, 255), true, u8"Оригинальные материалы с улучшенным освещением.\nВозможны графические баги.", false)) {
+    if (drawCard("Mode0", L(u8"Оригинал + Освещение", "Original + Lighting"), L(u8"Бета", "Beta"), g_app.rtxSelectedIndex == 0, IM_COL32(180, 80, 20, 255), true, L(u8"Оригинальные материалы с улучшенным освещением.\nВозможны графические баги.", "Original materials with improved lighting.\nGraphical bugs are possible."), false)) {
         if (g_app.rtxSelectedIndex != 0) {
             g_app.rtxSelectedIndex = 0;
             SaveSettings();
@@ -118,7 +118,7 @@ void RenderUI_RtxMods() {
     }
     ImGui::SameLine(S(255));
     if (g_app.rtxSelectedIndex == 1) g_app.rtxSelectedIndex = 0; // Prevent staying on blocked mode
-    drawCard("Mode1", u8"Улучшенные текстуры", u8"СКОРО", false, IM_COL32(20, 80, 180, 255), false, u8"Замена оригинальных текстур на PBR материалы.\nВключает освещение.\n\n(Временно недоступно)", true);
+    drawCard("Mode1", L(u8"Улучшенные текстуры", "Improved Textures"), L(u8"СКОРО", "SOON"), false, IM_COL32(20, 80, 180, 255), false, L(u8"Замена оригинальных текстур на PBR материалы.\nВключает освещение.\n\n(Временно недоступно)", "Replacement of original textures with PBR materials.\nIncludes lighting.\n\n(Temporarily unavailable)"), true);
     
     ImGui::EndChild();
     ImGui::PopStyleColor();

@@ -31,7 +31,7 @@ void RenderUI_Overview() {
         ImGui::SetCursorScreenPos(ImVec2(mainCardPos.x + mainCardSize.x - S(190), mainCardPos.y + S(15)));
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.15f, 0.2f, 0.8f));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.15f, 0.2f, 0.25f, 1.0f));
-        if (ImGui::Button(u8"Проверить обновления", ImVec2(S(175), S(28)))) {
+        if (ImGui::Button(L(u8"Проверить обновления", "Check for updates"), ImVec2(S(175), S(28)))) {
             CheckLauncherUpdatesAsync();
         }
         ImGui::PopStyleColor(2);
@@ -54,15 +54,15 @@ void RenderUI_Overview() {
         
         if (isRunning || g_app.isDownloading) {
             if (g_launcherUpdateInfo.hasUpdate && g_app.isDownloading) {
-                wStatus = L"Обновление лаунчера...";
+                wStatus = L(L"Обновление лаунчера...", L"Updating launcher...");
             } else {
-                wStatus = g_app.isFirstLaunchMode ? L"Установка..." : L"Подготовка к запуску...";
+                wStatus = g_app.isFirstLaunchMode ? L(L"Установка...", L"Installing...") : L(L"Подготовка к запуску...", L"Preparing to launch...");
             }
             statusColor = ImVec4(1.0f, 0.7f, 0.0f, 1.0f);
         } else if (isInstalled) {
-            wStatus = L"Готов к запуску";
+            wStatus = L(L"Готов к запуску", L"Ready to launch");
         } else {
-            wStatus = L"Требуется установка";
+            wStatus = L(L"Требуется установка", L"Installation required");
             statusColor = ImVec4(1.0f, 0.4f, 0.2f, 1.0f);
         }
         
@@ -140,9 +140,9 @@ void RenderUI_Overview() {
         if (s_transition < 0.99f) {
             const char* btnText;
             if (g_launcherUpdateInfo.hasUpdate) {
-                btnText = (const char*)u8"Обновить лаунчер";
+                btnText = L(u8"Обновить лаунчер", "Update launcher");
             } else {
-                btnText = isInstalled ? (const char*)u8"► Запустить" : (const char*)u8"Установить";
+                btnText = isInstalled ? L(u8"► Запустить", "► Launch") : L(u8"Установить", "Install");
             }
             ImGui::PushFont(g_imFontHeading);
             ImVec2 textSz = ImGui::CalcTextSize(btnText);
@@ -171,7 +171,7 @@ void RenderUI_Overview() {
                             [](const std::wstring& msg) { AppendLog(msg); },
                             [](float p) {
                                 g_app.downloadProgress = p;
-                                { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L"Загрузка обновления..."; }
+                                { std::lock_guard<std::mutex> lock(g_app.statsMutex); g_app.downloadTitleText = L(L"Загрузка обновления...", L"Downloading update..."); }
                             },
                             g_app.githubToken);
                     });
@@ -206,11 +206,11 @@ void RenderUI_Overview() {
             ImGui::PopFont();
         };
         
-        DrawBottomCard(mainCardPos.x, gridY, "RTX REMIX", (const char*)u8"Включён", true);
-        DrawBottomCard(mainCardPos.x + bCardW + S(15), gridY, (const char*)u8"ФИКСЫ", (const char*)u8"Включены", true);
+        DrawBottomCard(mainCardPos.x, gridY, "RTX REMIX", L(u8"Включён", "Enabled"), true);
+        DrawBottomCard(mainCardPos.x + bCardW + S(15), gridY, L(u8"ФИКСЫ", "FIXES"), L(u8"Включены", "Enabled"), true);
         
         auto GetModVersion = [&](const std::wstring& gamePath) -> std::string {
-            if (gamePath.empty()) return "Неизвестно";
+            if (gamePath.empty()) return L(u8"Неизвестно", "Unknown");
             
             std::error_code ec;
             std::string foundVersion = "";
@@ -250,7 +250,7 @@ void RenderUI_Overview() {
                 }
             }
             
-            return "Неизвестно";
+            return L(u8"Неизвестно", "Unknown");
         };
         
         std::string remixVer = "1.5.2";
@@ -284,7 +284,7 @@ void RenderUI_Overview() {
             ImGui::PopFont();
         };
         
-        DrawVersionCard(mainCardPos.x, gridY + bCardH + S(15), (const char*)u8"ВЕРСИИ", remixVer, modVer);
+        DrawVersionCard(mainCardPos.x, gridY + bCardH + S(15), L(u8"ВЕРСИИ", "VERSIONS"), remixVer, modVer);
         
         std::string gpuStr = g_app.gpuInfo.name.empty() ? "NVIDIA RTX" : g_app.gpuInfo.name;
         
@@ -309,12 +309,12 @@ void RenderUI_Overview() {
             ImGui::PushFont(g_imFontSmall);
             ImGui::SetCursorScreenPos(ImVec2(pos.x + S(15), pos.y + S(55)));
             
-            std::string drvStr = "Драйвер: " + (g_app.gpuInfo.driverVersionStr.empty() ? "Неизвестно" : g_app.gpuInfo.driverVersionStr);
+            std::string drvStr = std::string(L(u8"Драйвер: ", "Driver: ")) + (g_app.gpuInfo.driverVersionStr.empty() ? L(u8"Неизвестно", "Unknown") : g_app.gpuInfo.driverVersionStr);
             if (!g_app.gpuInfo.driverVersionStr.empty()) {
                 if (g_app.gpuInfo.driverVersion < 596.21f) {
-                    ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "%s (Устарел!)", drvStr.c_str());
+                    ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "%s %s", drvStr.c_str(), L(u8"(Устарел!)", "(Outdated!)"));
                 } else {
-                    ImGui::TextColored(ImVec4(0.0f, 0.9f, 0.5f, 1.0f), "%s (ОК)", drvStr.c_str());
+                    ImGui::TextColored(ImVec4(0.0f, 0.9f, 0.5f, 1.0f), "%s (OK)", drvStr.c_str());
                 }
             } else {
                 ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.55f, 1.0f), "%s", drvStr.c_str());
@@ -322,7 +322,7 @@ void RenderUI_Overview() {
             
             if (g_app.gpuInfo.isFrankenstein) {
                 ImGui::SetCursorScreenPos(ImVec2(pos.x + S(15), pos.y + S(70)));
-                ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.0f, 1.0f), "Boosty: Требуется подписка");
+                ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.0f, 1.0f), "%s", L(u8"Boosty: Требуется подписка", "Boosty: Subscription required"));
             }
             ImGui::PopFont();
         }

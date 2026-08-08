@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'README.md'
+      - 'README_DEV.md'
+      - 'docs/**'
   workflow_dispatch:
 
 jobs:
@@ -42,8 +46,10 @@ jobs:
       run: |
         msbuild rtx-launcher\rtx-launcher.vcxproj /p:Configuration=Release /p:Platform=x64
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        $env:CL="/D BETA_BUILD"
         msbuild rtx-installer\rtx-installer.vcxproj /p:Configuration=Release /p:Platform=x64
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        $env:CL=""
         
     - name: Debug Output Dir
       run: |
@@ -62,7 +68,8 @@ jobs:
     - name: Generate Changelog
       run: |
         echo "Изменения в этой бета-версии:" > changelog.txt
-        git log -5 --pretty=format:"- %s" >> changelog.txt
+        $log = git log -15 --pretty=format:"- %s"
+        $log | Where-Object { $_ -notmatch '\[skip ci\]' -and $_ -notmatch 'Update README' -and $_ -notmatch 'Bump build number' } | Select-Object -First 5 | Out-File -FilePath changelog.txt -Append -Encoding UTF8
         
     - name: Release to Beta Channel
       uses: softprops/action-gh-release@v2

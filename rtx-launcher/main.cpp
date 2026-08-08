@@ -378,7 +378,7 @@ static void UpdateChangelogCache(const LauncherUpdater::UpdateInfo& info) {
     }
 
     if (info.buildNumber > lastBuild) {
-        std::string newEntry = u8"● Сборка #" + std::to_string(info.buildNumber) + "\n" + WStringToUTF8(info.releaseNotes) + "\n\n";
+        std::string newEntry = std::string(L(u8"● Сборка #", "● Build #")) + std::to_string(info.buildNumber) + "\n" + WStringToUTF8(info.releaseNotes) + "\n\n";
         historyText = newEntry + historyText;
         lastBuild = info.buildNumber;
         
@@ -388,9 +388,9 @@ static void UpdateChangelogCache(const LauncherUpdater::UpdateInfo& info) {
         }
     } else if (info.buildNumber == lastBuild && info.buildNumber > 0) {
         // Отредактировали существующий релиз на GitHub без смены билда. Обновляем верхнюю запись!
-        std::string newEntry = u8"● Сборка #" + std::to_string(info.buildNumber) + "\n" + WStringToUTF8(info.releaseNotes) + "\n\n";
+        std::string newEntry = std::string(L(u8"● Сборка #", "● Build #")) + std::to_string(info.buildNumber) + "\n" + WStringToUTF8(info.releaseNotes) + "\n\n";
         
-        std::string searchToken = u8"● Сборка #";
+        std::string searchToken = L(u8"● Сборка #", "● Build #");
         size_t nextEntryPos = historyText.find(searchToken, searchToken.length());
         if (nextEntryPos != std::string::npos) {
             historyText = newEntry + historyText.substr(nextEntryPos);
@@ -482,6 +482,9 @@ void SaveSettings() {
     if (!g_app.installRootPath.empty()) {
         f << L"installRootPath=" << g_app.installRootPath << L"\n";
     }
+    if (!g_app.language.empty()) {
+        f << L"language=" << UTF8ToWString(g_app.language) << L"\n";
+    }
     f << L"launchMode=" << g_app.launchMode << L"\n";
     f << L"rtxSelectedIndex=" << g_app.rtxSelectedIndex << L"\n";
     if (!g_app.githubToken.empty()) {
@@ -498,6 +501,9 @@ static void LoadSettings() {
     while (std::getline(f, line)) {
         if (line.rfind(L"installRootPath=", 0) == 0) {
             g_app.installRootPath = line.substr(16);
+        }
+        else if (line.rfind(L"language=", 0) == 0) {
+            g_app.language = WStringToUTF8(line.substr(9));
         }
         else if (line.rfind(L"launchMode=", 0) == 0) {
             g_app.launchMode = _wtoi(line.substr(11).c_str());
@@ -582,19 +588,19 @@ static GpuInfo DetectGPU() {
                         info.isNvidiaRtx = true;
                     } else {
                         info.isGtxOrOlder = true;
-                        info.compatibilityNotice = u8"Видеокарта NVIDIA GTX: технология RTX Remix задействует аппаратные RT-ядра. На видеокартах без серии RTX стабильность и скорость рендеринга не гарантируются.";
+                        info.compatibilityNotice = L(u8"Видеокарта NVIDIA GTX: технология RTX Remix задействует аппаратные RT-ядра. На видеокартах без серии RTX стабильность и скорость рендеринга не гарантируются.", "NVIDIA GTX Graphics Card: RTX Remix technology utilizes hardware RT cores. On non-RTX graphics cards, stability and rendering speed are not guaranteed.");
                     }
                 }
                 else if (desc.VendorId == 0x1002 || desc.VendorId == 0x8086) { // AMD (0x1002) / Intel (0x8086)
                     info.isAmdOrIntel = true;
-                    info.compatibilityNotice = u8"Внимание: обнаружена видеокарта AMD Radeon / Intel Arc. Технология NVIDIA RTX Remix создана под архитектуру RTX — производительность и корректность трассировки не гарантируются.";
+                    info.compatibilityNotice = L(u8"Внимание: обнаружена видеокарта AMD Radeon / Intel Arc. Технология NVIDIA RTX Remix создана под архитектуру RTX — производительность и корректность трассировки не гарантируются.", "Warning: AMD Radeon / Intel Arc graphics card detected. NVIDIA RTX Remix technology is built for RTX architecture — performance and correct ray tracing are not guaranteed.");
                 }
                 else {
-                    info.compatibilityNotice = u8"Совместимость графического адаптера с модулем трассировки RTX Remix не гарантируется.";
+                    info.compatibilityNotice = L(u8"Совместимость графического адаптера с модулем трассировки RTX Remix не гарантируется.", "Compatibility of the graphics adapter with the RTX Remix ray tracing module is not guaranteed.");
                 }
 
                 if (info.isFrankenstein) {
-                    info.compatibilityNotice = u8"Внимание: обнаружена модифицированная (Frankenstein) видеокарта. Для её работы требуется купить подписку на Boosty у автора.";
+                    info.compatibilityNotice = L(u8"Внимание: обнаружена модифицированная (Frankenstein) видеокарта. Для её работы требуется купить подписку на Boosty у автора.", "Warning: Modified (Frankenstein) graphics card detected. A Boosty subscription from the author is required for its operation.");
                 }
             }
             pAdapter->Release();
@@ -3051,28 +3057,28 @@ void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
     bool isRunning = g_app.operationRunning.load();
     if (currentStepToDraw == WizardStep::Welcome) {
         ImGui::PushFont(g_imFontHeading);
-        ImGui::TextColored(ImVec4(0.46f, 0.73f, 0.0f, 1.0f), u8"Добро пожаловать в Metrostroi RTX Remixed!");
+        ImGui::TextColored(ImVec4(0.46f, 0.73f, 0.0f, 1.0f), "%s", L(u8"Добро пожаловать в Metrostroi RTX Remixed!", "Welcome to Metrostroi RTX Remixed!"));
         ImGui::PopFont();
         ImGui::Spacing();
         ImGui::PushTextWrapPos(childW - 30.0f);
-        ImGui::TextWrapped(u8"Данная модификация представляет собой глобальное графическое переосмысление культового симулятора метро Garry's Mod Metrostroi на современном движке трассировки путей NVIDIA RTX Remix.");
+        ImGui::TextWrapped("%s", L(u8"Данная модификация представляет собой глобальное графическое переосмысление культового симулятора метро Garry's Mod Metrostroi на современном движке трассировки путей NVIDIA RTX Remix.", "This modification is a global graphical reimagining of the iconic subway simulator Garry's Mod Metrostroi on the modern NVIDIA RTX Remix path tracing engine."));
         ImGui::Spacing();
-        ImGui::TextDisabled(u8"КЛЮЧЕВЫЕ ОСОБЕННОСТИ:");
-        ImGui::BulletText(u8"Реалистичный просчёт физического света (Path Tracing) в тоннелях и на станциях");
-        ImGui::BulletText(u8"Переработанные материалы вагонов 81-717, Еж3 и станций с честными отражениями PBR");
-        ImGui::BulletText(u8"Адаптированный высокопроизводительный гибридный рендерер DXVK RTX");
+        ImGui::TextDisabled("%s", L(u8"КЛЮЧЕВЫЕ ОСОБЕННОСТИ:", "KEY FEATURES:"));
+        ImGui::BulletText("%s", L(u8"Реалистичный просчёт физического света (Path Tracing) в тоннелях и на станциях", "Realistic calculation of physical light (Path Tracing) in tunnels and on stations"));
+        ImGui::BulletText("%s", L(u8"Переработанные материалы вагонов 81-717, Еж3 и станций с честными отражениями PBR", "Reworked materials of 81-717, Ezh3 cars and stations with true PBR reflections"));
+        ImGui::BulletText("%s", L(u8"Адаптированный высокопроизводительный гибридный рендерер DXVK RTX", "Adapted high-performance hybrid renderer DXVK RTX"));
         ImGui::PopTextWrapPos();
 
         ImGui::Spacing(); ImGui::Spacing();
         PushAccentButton();
-        if (ImGui::Button(u8"Далее  →", ImVec2(180, 42))) {
+        if (ImGui::Button(L(u8"Далее  →", "Next  →"), ImVec2(180, 42))) {
             GoToWizardStep(WizardStep::LaunchMode);
         }
         PopAccentButton();
     }
     else if (currentStepToDraw == WizardStep::LaunchMode) {
         ImGui::PushFont(g_imFontHeading);
-        ImGui::Text(u8"Выберите режим запуска Garry's Mod:");
+        ImGui::Text("%s", L(u8"Выберите режим запуска Garry's Mod:", "Select Garry's Mod launch mode:"));
         ImGui::PopFont();
         ImGui::Spacing();
 
@@ -3136,11 +3142,11 @@ void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
         }
         ImGui::SetCursorPos(ImVec2(basePos.x + 14.0f, basePos.y + 8.0f));
         ImGui::PushFont(g_imFontRegular);
-        ImGui::Text(u8"● Обычный режим (По умолчанию)");
+        ImGui::Text("%s", L(u8"● Обычный режим (По умолчанию)", "● Normal Mode (Default)"));
         ImGui::PopFont();
         ImGui::SetCursorPos(ImVec2(basePos.x + 14.0f, basePos.y + 32.0f));
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.70f, 0.74f, 0.82f, 1.0f));
-        ImGui::TextWrapped(u8"Стандартный запуск Garry's Mod x64 с гибридной подсистемой RTX Remix.");
+        ImGui::TextWrapped("%s", L(u8"Стандартный запуск Garry's Mod x64 с гибридной подсистемой RTX Remix.", "Standard Garry's Mod x64 launch with RTX Remix hybrid subsystem."));
         ImGui::PopStyleColor();
         ImGui::PopID();
 
@@ -3154,11 +3160,11 @@ void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
         }
         ImGui::SetCursorPos(ImVec2(pos2.x + 14.0f, pos2.y + 8.0f));
         ImGui::PushFont(g_imFontRegular);
-        ImGui::Text(u8"● Режим повышенной совместимости (-high +mat_dxlevel 95)");
+        ImGui::Text("%s", L(u8"● Режим повышенной совместимости (-high +mat_dxlevel 95)", "● High Compatibility Mode (-high +mat_dxlevel 95)"));
         ImGui::PopFont();
         ImGui::SetCursorPos(ImVec2(pos2.x + 14.0f, pos2.y + 32.0f));
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.70f, 0.74f, 0.82f, 1.0f));
-        ImGui::TextWrapped(u8"Приоритет Windows (-high) и принудительный DirectX 9.5 (+mat_dxlevel 95).");
+        ImGui::TextWrapped("%s", L(u8"Приоритет Windows (-high) и принудительный DirectX 9.5 (+mat_dxlevel 95).", "Windows priority (-high) and forced DirectX 9.5 (+mat_dxlevel 95)."));
         ImGui::PopStyleColor();
         ImGui::PopID();
 
@@ -3170,14 +3176,14 @@ void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
         bool canProceed = (g_app.launchMode > 0);
         PushAccentButton();
         if (!canProceed) ImGui::BeginDisabled();
-        if (ImGui::Button(u8"Далее  →", ImVec2(180, 42))) {
+        if (ImGui::Button(L(u8"Далее  →", "Next  →"), ImVec2(180, 42))) {
             GoToWizardStep(WizardStep::DriveSelect);
         }
         if (!canProceed) ImGui::EndDisabled();
         PopAccentButton();
     }
     else if (currentStepToDraw == WizardStep::DriveSelect) {
-        ImGui::TextDisabled(u8"ВЫБЕРИТЕ НАКОПИТЕЛЬ ДЛЯ РАЗВЕРТЫВАНИЯ ИГРЫ:");
+        ImGui::TextDisabled("%s", L(u8"ВЫБЕРИТЕ НАКОПИТЕЛЬ ДЛЯ РАЗВЕРТЫВАНИЯ ИГРЫ:", "SELECT DRIVE FOR GAME DEPLOYMENT:"));
         ImGui::Spacing();
 
         if (g_app.availableDisks.empty()) {
@@ -3302,10 +3308,10 @@ void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
     }
     else if (currentStepToDraw == WizardStep::Progress) {
         ImGui::PushFont(g_imFontHeading);
-        ImGui::Text(u8"Идёт развертывание и патчинг компонента RTX...");
+        ImGui::Text("%s", L(u8"Идёт развертывание и патчинг компонента RTX...", "Deploying and patching RTX component..."));
         ImGui::PopFont();
         ImGui::Spacing();
-        ImGui::TextDisabled(u8"Пожалуйста, подождите. По завершении игра НЕ будет запущена автоматически.");
+        ImGui::TextDisabled("%s", L(u8"Пожалуйста, подождите. По завершении игра НЕ будет запущена автоматически.", "Please wait. The game will NOT be launched automatically upon completion."));
         ImGui::Spacing(); ImGui::Spacing();
 
         std::string statsUtf8 = WStringToUTF8(g_app.downloadStatsText);
@@ -3321,14 +3327,14 @@ void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
     }
     else if (currentStepToDraw == WizardStep::Complete) {
         ImGui::PushFont(g_imFontHeading);
-        ImGui::TextColored(ImVec4(0.46f, 0.73f, 0.0f, 1.0f), u8"Установка успешно завершена!");
+        ImGui::TextColored(ImVec4(0.46f, 0.73f, 0.0f, 1.0f), "%s", L(u8"Установка успешно завершена!", "Installation completed successfully!"));
         ImGui::PopFont();
         ImGui::Spacing();
-        ImGui::TextWrapped(u8"Модификация Metrostroi RTX Remixed полностью установлена и готова к работе!");
+        ImGui::TextWrapped("%s", L(u8"Модификация Metrostroi RTX Remixed полностью установлена и готова к работе!", "Metrostroi RTX Remixed modification is fully installed and ready to play!"));
         ImGui::Spacing(); ImGui::Spacing();
 
         PushAccentButton();
-        if (ImGui::Button(u8"ИГРАТЬ СЕЙЧАС", ImVec2(210, 48))) {
+        if (ImGui::Button(L(u8"ИГРАТЬ СЕЙЧАС", "PLAY NOW"), ImVec2(210, 48))) {
             g_autoStartGameAfterInstall = true;
             g_sidebarAnimState = SidebarAnimState::WizardOut_MenuIn;
             g_sidebarAnimTimer = 0.0f;
@@ -3338,7 +3344,7 @@ void RenderSingleWizardStep(WizardStep currentStepToDraw, float childW) {
         PopAccentButton();
 
         ImGui::SameLine(240);
-        if (ImGui::Button(u8"ПОЗЖЕ", ImVec2(170, 48))) {
+        if (ImGui::Button(L(u8"ПОЗЖЕ", "LATER"), ImVec2(170, 48))) {
             g_sidebarAnimState = SidebarAnimState::WizardOut_MenuIn;
             g_sidebarAnimTimer = 0.0f;
             SwitchPage(Page::Overview);
@@ -3451,9 +3457,9 @@ static void RenderImGuiUI() {
         std::string text;
         if (updateStarted) {
             int pct = (int)(g_app.downloadProgress * 100.0f);
-            text = u8"Загрузка обновления... " + std::to_string(pct) + u8"%";
+            text = std::string(L(u8"Загрузка обновления... ", "Downloading update... ")) + std::to_string(pct) + u8"%";
         } else {
-            text = u8"Проверка на наличие обновлений...";
+            text = L(u8"Проверка на наличие обновлений...", "Checking for updates...");
         }
 
         float textWidth = ImGui::CalcTextSize(text.c_str()).x;
@@ -3639,7 +3645,7 @@ static void RenderImGuiUI() {
 
         if (drawWizard) {
             ImGui::SetCursorPos(startCursorPos);
-            const char* steps[] = { u8"Приветствие", u8"Запуск", u8"Папка с игрой", u8"Установка", u8"Готово" };
+            const char* steps[] = { L(u8"Приветствие", "Welcome"), L(u8"Запуск", "Launch"), L(u8"Папка с игрой", "Game Folder"), L(u8"Установка", "Install"), L(u8"Готово", "Done") };
             for (int i = 0; i < 5; ++i) {
                 float offset = GetStaggeredOffset(i, true, false, false);
                 if (g_app.currentPage != Page::InstallerWizard && g_sidebarAnimState == SidebarAnimState::None) continue; // safety
@@ -3653,9 +3659,9 @@ static void RenderImGuiUI() {
             auto DrawMainMenu = [&](bool isEntering) {
                 ImGui::SetCursorPos(startCursorPos);
                 ImGui::PushID(200);
-                if (NavButton(u8"Главная", g_app.currentPage == Page::Overview, GetStaggeredOffset(0, false, g_sidebarAnimState == SidebarAnimState::SubMenuTransition, isEntering))) SwitchMainPage(Page::Overview);
-                if (NavButton(u8"Настройки", g_app.currentPage == Page::Settings, GetStaggeredOffset(1, false, g_sidebarAnimState == SidebarAnimState::SubMenuTransition, isEntering))) SwitchMainPage(Page::Settings);
-                if (NavButton(u8"Моды", g_app.currentPage == Page::RtxMods && g_sidebarAnimState == SidebarAnimState::None, GetStaggeredOffset(2, false, g_sidebarAnimState == SidebarAnimState::SubMenuTransition, isEntering))) {
+                if (NavButton(L(u8"Главная", "Overview"), g_app.currentPage == Page::Overview, GetStaggeredOffset(0, false, g_sidebarAnimState == SidebarAnimState::SubMenuTransition, isEntering))) SwitchMainPage(Page::Overview);
+                if (NavButton(L(u8"Настройки", "Settings"), g_app.currentPage == Page::Settings, GetStaggeredOffset(1, false, g_sidebarAnimState == SidebarAnimState::SubMenuTransition, isEntering))) SwitchMainPage(Page::Settings);
+                if (NavButton(L(u8"Моды", "Mods"), g_app.currentPage == Page::RtxMods && g_sidebarAnimState == SidebarAnimState::None, GetStaggeredOffset(2, false, g_sidebarAnimState == SidebarAnimState::SubMenuTransition, isEntering))) {
                     g_sidebarMenuPrevious = g_sidebarMenu;
                     g_sidebarMenu = SidebarMenu::RtxGames;
                     g_sidebarAnimState = SidebarAnimState::SubMenuTransition;
@@ -3667,7 +3673,7 @@ static void RenderImGuiUI() {
             auto DrawRtxGamesMenu = [&](bool isEntering) {
                 ImGui::SetCursorPos(startCursorPos);
                 ImGui::PushID(300);
-                if (NavButton(u8"← Назад", false, GetStaggeredOffset(0, false, true, isEntering))) {
+                if (NavButton(L(u8"← Назад", "← Back"), false, GetStaggeredOffset(0, false, true, isEntering))) {
                     g_sidebarMenuPrevious = g_sidebarMenu;
                     g_sidebarMenu = SidebarMenu::Main;
                     g_sidebarAnimState = SidebarAnimState::SubMenuTransition;
@@ -3850,7 +3856,7 @@ static void RenderImGuiUI() {
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, listAlpha);
                 ImGui::PushFont(g_imFontHeading);
                 ImGui::SetCursorPos(ImVec2(20, 16));
-                ImGui::Text((const char*)u8"Выберите диск для установки");
+                ImGui::Text("%s", L(u8"Выберите диск для установки", "Select drive for installation"));
                 ImGui::PopFont();
                 ImGui::SetCursorPos(ImVec2(20, 48));
                 ImGui::Separator();
@@ -3865,10 +3871,10 @@ static void RenderImGuiUI() {
                     std::string utf8_name = WStringToUTF8(disk.name);
 
                     char label[256];
-                    if (utf8_name == u8"Локальный диск") {
-                        snprintf(label, sizeof(label), "Диск %s##%d", utf8_path.c_str(), (int)i);
+                    if (utf8_name == L(u8"Локальный диск", "Local disk")) {
+                        snprintf(label, sizeof(label), "%s %s##%d", L(u8"Диск", "Disk"), utf8_path.c_str(), (int)i);
                     } else {
-                        snprintf(label, sizeof(label), "Диск %s (%s)##%d", utf8_path.c_str(), utf8_name.c_str(), (int)i);
+                        snprintf(label, sizeof(label), "%s %s (%s)##%d", L(u8"Диск", "Disk"), utf8_path.c_str(), utf8_name.c_str(), (int)i);
                     }
                     char info[256];
                     snprintf(info, sizeof(info), "%s | Св. %.1f ГБ из %.1f ГБ", disk.isSSD ? "SSD (Рек.)" : "HDD", freeGb, totalGb);
@@ -3899,7 +3905,7 @@ static void RenderImGuiUI() {
                 ImGui::EndChild();
 
                 ImGui::SetCursorPos(ImVec2(20, 232));
-                if (ImGui::Button((const char*)u8"Отмена", ImVec2(110, 34))) {
+                if (ImGui::Button(L(u8"Отмена", "Cancel"), ImVec2(110, 34))) {
                     g_diskModalState = DiskModalState::Closing;
                     g_diskModalTimer = 0.0f;
                     g_app.onDiskSelected = nullptr;
@@ -3939,7 +3945,7 @@ static void RenderImGuiUI() {
 
                 // Кнопка Отмена
                 ImGui::SetCursorPos(ImVec2(480, 14));
-                if (ImGui::Button((const char*)u8"Отмена", ImVec2(100, 32))) {
+                if (ImGui::Button(L(u8"Отмена", "Cancel"), ImVec2(100, 32))) {
                     DoStop();
                     g_diskModalState = DiskModalState::Closing;
                     g_diskModalTimer = 0.0f;
@@ -4029,13 +4035,13 @@ static void RenderImGuiUI() {
         if (g_launchModalState == LaunchModeModalState::Opening || g_launchModalState == LaunchModeModalState::Open) {
             ImGui::PushFont(g_imFontHeading);
             ImGui::SetCursorPos(ImVec2(20, 20));
-            ImGui::Text((const char*)u8"Режим запуска");
+            ImGui::Text("%s", L(u8"Режим запуска", "Launch Mode"));
             ImGui::PopFont();
             ImGui::SetCursorPos(ImVec2(20, 60));
             ImGui::Separator();
 
             ImGui::SetCursorPos(ImVec2(20, 80));
-            if (ImGui::Button((const char*)u8"Обычный", ImVec2(270, 80))) {
+            if (ImGui::Button(L(u8"Обычный", "Normal"), ImVec2(270, 80))) {
                 g_app.launchMode = 1;
                 SaveSettings();
                 g_launchModalState = LaunchModeModalState::Closing;
@@ -4043,7 +4049,7 @@ static void RenderImGuiUI() {
                 if (g_onLaunchModeSelected) g_onLaunchModeSelected();
             }
             ImGui::SetCursorPos(ImVec2(310, 80));
-            if (ImGui::Button((const char*)u8"Режим совместимости", ImVec2(270, 80))) {
+            if (ImGui::Button(L(u8"Режим совместимости", "Compatibility Mode"), ImVec2(270, 80))) {
                 g_app.launchMode = 2;
                 SaveSettings();
                 g_launchModalState = LaunchModeModalState::Closing;
@@ -4054,7 +4060,7 @@ static void RenderImGuiUI() {
             ImGui::SetCursorPos(ImVec2(20, 180));
             ImGui::PushFont(g_imFontSmall);
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
-            ImGui::Text((const char*)u8"Эти настройки можно будет изменить позже в настройках лаунчера");
+            ImGui::Text("%s", L(u8"Эти настройки можно будет изменить позже в настройках лаунчера", "These settings can be changed later in launcher settings"));
             ImGui::PopStyleColor();
             ImGui::PopFont();
         }
@@ -4064,14 +4070,14 @@ static void RenderImGuiUI() {
 
     // --- Changelog Modal ---
     if (g_app.showChangelog) {
-        ImGui::OpenPopup(u8"Список изменений");
+        ImGui::OpenPopup(L(u8"Список изменений", "Changelog"));
         g_app.showChangelog = false;
     }
     
     ImGui::SetNextWindowSizeConstraints(ImVec2(S(400), S(200)), ImVec2(S(800), S(600)));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(S(20), S(20)));
     ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, S(10));
-    if (ImGui::BeginPopupModal(u8"Список изменений", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings)) {
+    if (ImGui::BeginPopupModal(L(u8"Список изменений", "Changelog"), nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings)) {
         ImGui::PushFont(g_imFontRegular);
         ImGui::TextWrapped("%s", WStringToUTF8(g_app.changelogText).c_str());
         ImGui::PopFont();
@@ -4080,7 +4086,7 @@ static void RenderImGuiUI() {
         ImGui::Separator();
         ImGui::Spacing();
         
-        if (ImGui::Button(u8"Закрыть", ImVec2(S(120), S(35)))) {
+        if (ImGui::Button(L(u8"Закрыть", "Close"), ImVec2(S(120), S(35)))) {
             ImGui::CloseCurrentPopup();
             g_app.changelogText.clear();
         }
